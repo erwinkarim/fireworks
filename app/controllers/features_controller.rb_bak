@@ -1,0 +1,21 @@
+class FeaturesController < ApplicationController
+  def index
+    @features = Licserver.find(params[:licserver_id]).features.where("created_at > ?", Licserver.find(params[:licserver_id]).features.last.created_at - 1.minute)
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.xml { render xml: @features }
+      format.json { render json: @features }
+    end
+  end
+
+  def show
+    @features = Licserver.find(params[:licserver_id]).features.where("name = ?", params[:id])
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.xml { render xml: @features }
+      format.json { render json: @features }
+    end
+  end
+end

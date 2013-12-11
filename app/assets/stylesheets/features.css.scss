@@ -1,0 +1,33 @@
+// Place all the styles related to the features controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+#features_box{
+  width:90%;
+  position:relative;
+  left:50%;
+  margin-left:-45%; 
+}
+
+#graph_container{
+  position:relative;
+  left:50%;
+  margin-left:-45%;
+  width:90%;
+}
+
+.c_users_col1{
+  width:90%;
+}
+.c_users_col2{
+  text-align:center;
+  width:10%;
+}
+
+.c_users_nousers{
+  background: #F2F5F9;
+  text-align:center; 
+  font-size:large;
+  padding:5px;
+}
+

@@ -1,0 +1,94 @@
+<%= javascript_include_tag "application" %>
+<script type="text/javascript" charset="utf-8">
+    Highcharts.setOptions({
+        global: { useUTC: false }
+    });
+
+    $(document).ready(function() {
+      var options = {
+        chart: {
+          renderTo: 'summary_usage',
+          type: 'bar'
+        },
+        title: {
+          text: 'Recent Usage'
+        },
+        xAxis: {
+          categories: [],
+          title: {
+            text: 'Feature Name'
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Seats Used'
+          }
+        },
+        series: [],
+        plotOptions: {
+          series: { stacking: 'normal' }
+        }
+      };
+      
+      // Load the data from the XML file 
+      $.get('<%= licserver_features_path(params[:licserver_id], :format => :xml)  %>', function(xml) {
+        
+        // Split the lines
+        var $xml = $(xml);
+        
+        // currently used series 
+        var currentSeriesOptions = {
+          name: 'Used',
+          data: []
+        };
+        
+        // currently free series 
+        var freeSeriesOptions = {
+          name: 'Free',
+          data: []
+        };
+        
+        var currentArray = new Array();
+        var maxArray = new Array();
+  
+        $xml.find('features').each(function(i, feature) {
+        
+          //push categories (features name)
+          $(feature).find('name').each(function(i, point) {
+            options.xAxis.categories.push(
+              $(point).text()
+            );
+          });
+
+          var currentPoint = new Array; 
+
+          //not the best way to do stuff, but it'd fucking works 
+          // get current data points
+          $(feature).find('current').each(function(i, point) {
+            currentPoint[i] = parseInt($(point).text());
+            currentSeriesOptions.data.push(
+              currentPoint[i]
+            );
+          });
+         
+
+          $(feature).find('max').each(function(i, point) {
+            freeSeriesOptions.data.push(
+              parseInt($(point).text()) - currentPoint[i]
+            );
+          });
+         
+          // add datasets it to the options
+          options.series.push(freeSeriesOptions);
+          options.series.push(currentSeriesOptions);
+
+        });
+    
+        //create the damn chart
+        var chart = new Highcharts.Chart(options);
+      });
+      
+      
+    });
+</script>
+<div id="summary_usage" style="height: <%= @features.size * 100 %>px"></div>

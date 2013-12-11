@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  user: MyString
+  hostname: MyString
+  idle: MyString
+
+two:
+  user: MyString
+  hostname: MyString
+  idle: MyString

@@ -1,0 +1,104 @@
+<%= javascript_include_tag "application" %>
+<script type="text/javascript" charset="utf-8">
+
+$(document).ready(function(){
+    Highcharts.setOptions({
+        global: { useUTC: false }
+    });
+
+    var chart = new Highcharts.StockChart(
+    {
+      chart:{
+          renderTo: "all_usage", // the div id where you want to dispaly the chart
+      },
+      title: {
+          text: '<%= @feature.name  %> Usage'
+      },
+      xAxis: {
+          categories: ['current', 'max']
+      },
+      yAxis: {
+          title: {
+              text: 'Seats'
+          }
+      },
+      rangeSelector: {
+        buttons: [{
+          type: 'day', count: 1, text: '1d'  
+        },{
+          type: 'week', count: 1, text: '1w'
+        },{
+          type: 'month', count: 1, text: '1m'
+        },{
+          type: 'month', count: 3, text: '1q'
+        },{
+          type: 'ytd', text: 'YTD'
+        },{
+          type: 'all', text: 'All'
+        }],
+        selected: 1
+      },  
+      series: [{
+        name : 'current', 
+        data :  <%= @features.map { |thisf| Array.new.push(thisf.created_at.to_i*1000, thisf.current) } %>
+      }, {
+        name : 'max',
+        data :  <%= @features.map { |thisf| Array.new.push(thisf.created_at.to_i*1000, thisf.max) } %>
+      }]
+    }  
+  );          
+});
+</script>
+<div id="all_usage"></div>
+<br />
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+      var chart = new Highcharts.Chart(
+      {
+        chart: {
+          renderTo: 'monthly_usage',
+          type: 'spline', 
+          zoomType: 'x'
+        },
+        title: {
+          text: 'Last 30 days Frequency Histogram'
+        },
+        subtitle: {
+          text: 'Middle on left axis is the median, graph is zoomable'
+        }, 
+        xAxis: {
+          categories: [],
+          title: {
+            text: 'Seat Used'
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Observed Frequency'
+          }
+        },
+        tooltip: {
+          formatter: function(){
+            return this.x+' seats observered '+this.y+' times';
+          }
+        },
+        series: [{
+          name : 'All Hours',
+          data : <%= Feature.generate_monthly_stats( params[:licserver_id], params[:id], false).map {|thisf| Array.new.push(thisf[0],thisf[1])}.sort %> 
+        }, {
+          name : 'Office hours', 
+          data : <%= Feature.generate_monthly_stats( params[:licserver_id], params[:id], true).map {|thisf| Array.new.push(thisf[0],thisf[1])}.sort %> 
+        }], 
+        legend: {
+          labelFormatter: function(){
+            return this.name + '(' + this.data.length + ')' 
+          } 
+        } 
+      });
+
+    });
+    
+  
+</script>
+<div id="monthly_usage"></div>
+

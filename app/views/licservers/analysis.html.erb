@@ -1,0 +1,24 @@
+<h1>Analysis of <%= @licserver.port.to_s + '@' + @licserver.server %> <small>click on header to sort</small></h1>
+<h3>Office hours utilization for the past 6 months</h3>
+<table class="table table-striped sortable">
+  <thead>
+    <th data-sortkey="0">Name</th>
+    <th data-sortkey="1">Total Current</th>
+    <th data-sortkey="2">Total Max</th>
+    <th data-sortkey="3">Data Points</th>
+    <th data-sortkey="4" data-defaultsort="desc">%</th>
+  <thead>
+  <tbody>
+    <% @anal_dump.each do | this_anal | %>
+      <tr>
+        <td><%= link_to this_anal[0], licserver_feature_path( @licserver.id, this_anal[0])  %></td>
+        <td><%= this_anal[1] %></td>
+        <td><%= this_anal[2] %></td>
+        <td><%= this_anal[3] %></td>
+        <td><%= number_to_percentage(this_anal[1].to_f*100 / this_anal[2]) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= content_for :other_javascript do %>
+<% end %>

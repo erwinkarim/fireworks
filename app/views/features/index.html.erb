@@ -1,0 +1,58 @@
+<% stack = Array.new %>
+<% stack.push link_to "Fireworks", tags_path %>
+<% stack.push link_to "Servers", licservers_path %>
+<% stack.push link_to @licserver.port.to_s + '@' + @licserver.server, licserver_path(params[:licserver_id]) %>
+<% stack.push "Features" %>
+
+<%= generate_header(stack) %>
+<div class="well well-large">
+  <% if @features.nil? then %>
+      <p>No Features detected...</p>
+  <% else %>
+    <% @features.each do |f| %>
+      <%= link_to f.name,licserver_feature_path(params[:licserver_id],f.name), :class=>'btn' %>
+    <% end %>
+  <% end %>
+</div>
+  <table class="table table-striped">
+    <caption>Extended Features Info</caption>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Version</th>
+        <th>Seats</th>
+        <th>Expires</th>
+        <th>Deamon</th>
+      </tr>
+      <tbody>
+        <% if @features_info.nil? then %>
+          <tr colspan="5">
+            <td>No Features Detected</td>
+          </tr>
+        <% else %>
+          <% @features_info.each do |element| %>
+          <% if DateTime.parse(element[:expire].to_s) < DateTime.now + 1.month then %>
+            <% if DateTime.parse(element[:expire].to_s) < DateTime.now + 7.days then %>
+              <tr class="error">
+            <% else %>
+              <tr class="warning">
+            <% end %>
+          <% else %>
+            <tr>
+          <% end %>
+              <td><%= link_to element[:feature], licserver_feature_path(params[:licserver_id], element[:feature]) %></td> 
+              <td><%= element[:version] %></td> 
+              <td><%= element[:seats] %></td> 
+              <td><%= element[:expire] %></td> 
+              <td><%= element[:deamon] %></td> 
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </thead>
+  </table>
+<div>
+</div>
+<div class="">
+  <%= render "graph_summary" %>
+</div>

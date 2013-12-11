@@ -1,0 +1,27 @@
+<div>
+  <%= form_for @licserver , :html => {:class=>'form-search'} do |f| %>
+    <% if @licserver.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@licserver.errors.count, "error") %> prohibited this licserver from being saved:</h2>
+
+        <ul>
+        <% @licserver.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+
+    <% end %>
+
+    <h3>
+      format: port@server, @server or server
+    </h3>
+  
+    <div class="field">
+        <%= text_field_tag :lic, nil, :class=>'search-query'  %>
+    </div>
+    <div class="field">
+        <%= submit_tag "Create", :class=>"btn btn-large"%>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,64 @@
+// Place all the styles related to the licservers controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.ll_col1{
+  width:70%;
+}
+.ll_col2{
+  width:20%;
+}
+.ll_col3{
+  width:10%;
+}
+
+#lic_info_header{
+  font-size:xx-large; 
+  font-weight:bold;
+  border:1px solid black;
+  padding:5px;
+  width:50%;
+  border-bottom:none;
+  border-radius:10px 10px 0px 0px;
+}
+
+#lic_info_container{
+  width:30%;
+  padding:10px;
+  margin-left:10%;
+}
+
+#lic_info_body{
+  padding:5px;
+  border:1px solid black;
+  border-radius:0px 10px 10px 10px;
+}
+
+#lic_info_f_header, #lic_info_t_header{
+  font-size:large;
+  font-weight:bold;
+}
+#lic_info_f_element, #lic_info_t_element, #lic_info_footer_element{
+  display:inline;
+}
+
+
+#lic_new_form{
+  width:90%;
+  position:relative;
+  left:50%;
+  margin-left:-45%;
+  text-align:center;
+  font-size:20px;
+}
+
+#lic{
+  width:80%;
+  font-size:large;
+  height:30px;
+}
+
+#create_lic_button{
+  width:160px;
+  height:30px;
+}

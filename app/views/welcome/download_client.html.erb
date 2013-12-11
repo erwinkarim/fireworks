@@ -1,0 +1,65 @@
+<div class="page-header">
+<h1>Fireworks Idle Client</h1>
+<small>Help retain your license hold through fireworks idle client</small>
+</div>
+<div class="">
+  <h2>Mechanism</h2>
+  <p>
+    <ul>
+      <li>Download and install the client</li>
+      <li>Configure the client so it points to your fireworks server</li>
+      <li>That's it</li>
+    </ul>
+  </p>
+  <p>
+    The client will report your idle activities to your fireworks server. If fireworks has set some license server to be monitored for idle activity, you should be spared if you installed the client and you haven't been idle for over 30 minutes.
+  </p>
+</div>
+<div class="">
+  <h2>Download Idle Client</h2>
+  <ul class="thumbnails">
+    <li class="span4">
+      <div class="thumbnail">
+        <img src="http://placehold.it/400x300" alt="" \>
+        <div class="caption">
+          <h3>Windows</h3>
+          <p><%= link_to 'Windows XP/Vista/7/8 x32/x64', welcome_download_client_path(:type => 'Windows'), :class=>'btn btn-primary'%></p>
+          <h4>Requirements</h4>
+          <p>.Net Framework version 4 or better. Installer will load it automatically if not available</p>
+          <p>If that doesn't work, you might have to download it manually</p>
+          <p><a class="btn btn-mini" href="http://www.microsoft.com/net/download/version-4">Download .NET 4</a></p>
+          <h4>Instructions</h4>
+          <p>
+            Download the file. Unzip it. Click 'Setup.exe'. Follow on-screen instructions
+          </p>
+          <p>
+            <b>Note:</b>Windows XP may not recognize setup.exe. Click IdleTray.exe instead
+          </p>
+        </div>
+      </div>
+    </li>
+    <li class="span4">
+      <div class="thumbnail">
+        <img src="http://placehold.it/400x300" alt="" \>
+        <div class="caption">
+          <h3>Linux</h3>
+          <p>Comming soon...<p>
+        </div>
+      </div>
+    </li>
+    <li class="span4">
+      <div class="thumbnail">
+        <img src="http://placehold.it/400x300" alt="" \>
+        <div class="caption">
+          <h3>Mac OS X</h3>
+          <p><%= link_to 'Mac OS X 10.8',welcome_download_client_path(:type => 'Mac Os X'), :class=>'btn btn-primary' %></p>
+          <h4>Requirement</h4>
+          <p>Mac OS X 10.8</p>
+          <h4>Instructions</h4>
+          <p>Download, unzip, copy the App file to Application file and start</p>
+          <p>Configure the address to <i>host:port</i> format and you are all set</p>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

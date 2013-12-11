@@ -1,0 +1,40 @@
+== Welcome to Fireworks
+
+Fireworks! is a Flex LM license monitor. Fireworks will collect data on usage of your licensed features and also give you the ability to kill currently running user. Furthermore, fireworks will allow you to manage your license by regulary killing unregistered users.
+
+== Idle Time client
+Firworks comes with idle time client to help manage your precious features usage. This works by downloading the idle client to your client machine and register the client to your fireworks server. The client will send updates to server telling the server how idle the client it.
+
+If the license server is set to be managed by fireworks, fireworks will kill unregistered user who has been using the license feature for more than 2 hours, while killing registered idle user after an idle time of 30 minutes. Idle time here means no keyboard/mouse event on the machine for 30 minutes. 
+
+== Installation
+To install, follow these steps:-
+
+* git clone https://github.com/erwinkarim/fireworks.git
+* cd /path/to/fireworks
+* bundle install
+* rails server
+
+Please note that this app uses an external program lmutil which is currently on run on linux_amd64. So it won't work on Mac/Windows yet or linux 32-bit
+
+==Starting
+Remember to start the delayed_job deamond or else you won't be able to delete any license server entries
+
+Startup sequence is like this:-
+RAILS_ENV <environment> script/delayed_job start
+RAILS_ENV <environment> rails server
+
+==Rereq
+The following packages needed to be installed to ensure the lmutil program can run
+* redhat-lsd
+
+==Common Issues
+* The license server is alive but firefox is not picking up any features
+
+Solution: You need to ensure that the license server hostname is resolvable. You might need to add an entry in /etc/hosts to ensure that the hostname is resolvable. 
+
+You can test the connection by running the library
+/path/lib/myplugin/lmutil lmstat -a -c <port@server>
+
+==Help
+If you need help installing it or request new features or report bugs, kindly contact me at erwinkarim at gmail dot com

@@ -1,0 +1,33 @@
+<div class="span12">
+  <table class="table table-striped">
+    <caption>Registered User Session</caption>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>User</th>
+        <th>Host</th>
+        <th>Last Registered Idle Time</th>
+        <th>Created</th>
+        <th>Update</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @idleuser.empty? then %>
+        <tr>
+          <td colspan="6">No users yet</td>
+        <tr>
+      <% else %>
+        <% @idleuser.each do |thisU| %>
+          <tr>
+            <td><%= thisU.id %></td>
+            <td><%= thisU.user %></td>
+            <td><%= thisU.hostname %></td>
+            <td><%= (thisU.updated_at - (thisU.idle.to_i/1000).seconds).localtime %></td>
+            <td><%= thisU.created_at.localtime %></td>
+            <td><%= thisU.updated_at.localtime %></td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>
