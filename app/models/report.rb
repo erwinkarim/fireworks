@@ -8,7 +8,7 @@ class Report < ActiveRecord::Base
     csv_string << CSV.generate do |csv|
       csv << ['Report between ' + self.start_date.strftime('%B %d, %Y') + 
         ' and ' + self.end_date.strftime('%B %d, %Y')  ]
-      csv << ['License Server', 'Hours', 'Feature', 'License Count', 'Total_Utilization %' ]
+      csv << ['License Server', 'Tags', 'Hours', 'Feature', 'License Count', 'Total_Utilization %' ]
     end
     body = YAML::load(self.body)
     body.each do |key,element|
@@ -16,13 +16,15 @@ class Report < ActiveRecord::Base
       element.each do |ek,ee|
         #for each office hours and 24-hours utilization
         ee.each do |stats|
+          licserver = Licserver.find(key.to_s)
           csv_string << CSV.generate do |csv|
             csv << ( Array.new << 
-              Licserver.find(key.to_s).attributes.values_at("port", "server").join('@') << 
+              licserver.attributes.values_at("port", "server").join('@') << 
+              licserver.tags.map{ |x| x.title }.join(',') <<
               ek.to_s << 
               stats[0] << 
               stats[1] <<
-              (stats[2].to_f/stats[3]).round(4)*100
+              (stats[2].nil? ? 0 : (stats[2].to_f/stats[3]).round(4)*100)
             )
           end
         end
