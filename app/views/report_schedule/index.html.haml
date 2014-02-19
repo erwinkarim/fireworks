@@ -1,0 +1,16 @@
+.page-header
+  %h1 Report Schedule
+
+.row
+  .span10
+    .accordion#schedule-accordion
+      - @schedules.each do |schedule|
+        .accordion-group
+          .accordion-heading
+            = link_to schedule.title, '#schedule' + schedule.id.to_s, :data => { :toggle => 'collapse', 
+              :parent => '#schedule-accordion' }, :class => 'accordion-toggle'
+          %div{ :id => 'schedule' + schedule.id.to_s, :class => 'accordion-body collapse', :data => { :id => schedule.id } }
+            .accordion-inner
+.row
+  .span10
+    %button.btn.btn-large.btn-primary( type:button )New Schedule

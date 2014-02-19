@@ -1,8 +1,5 @@
 Fireworks::Application.routes.draw do
 
-
-
-
   resources :licservers do
     resources :features, :constraints => { :id => /[^\/]+(?=\.html\z|\.json\z|\.xml\z)|[^\/]+/ } do
       get "monthly"
@@ -25,22 +22,23 @@ Fireworks::Application.routes.draw do
 
   resources :tags
 
-  controller :reports do
-    match '/reports/schedule/configure' => :schedule_configure, :via => :get, :as => 'schedule_configure'
-    match '/reports/schedule' => :schedule, :via => :get, :as => 'reports_schedules'
-    match '/reports/schedule/:schedule_id' => :reports_schedule, :via => :get, :as => 'reports_schedule'
-    match '/reports/schedule/:schedule_id/reports' => :reports_schedule_detail, 
-      :via => :get, :as => 'reports_schedule_detail'
-    match '/reports/configure/new' => :schedule_new, :via => :get, :as => 'reports_schedule_new'
-    match '/reports/configure/new' => :schedule_create, :via => :post, :as => 'reports_schedule_create'
-    match '/reports/configure/:schedule_id/edit' => :schedule_edit, :via => :get, :as => 'reports_schedule_edit'
-    match '/reports/configure/:schedule_id' => :schedule_update, :via => :put, :as => 'reports_schedule_update'
-    match '/reports/configure/:schedule_id' => :schedule_delete, :via => :delete, :as => 'reports_schedule_delete'
-  end
+  #controller :reports do
+  #  match '/reports/schedule/configure' => :schedule_configure, :via => :get, :as => 'schedule_configure'
+  #  match '/reports/schedule' => :schedule, :via => :get, :as => 'reports_schedules'
+  #  match '/reports/schedule/:schedule_id' => :reports_schedule, :via => :get, :as => 'reports_schedule'
+  #  match '/reports/schedule/:schedule_id/reports' => :reports_schedule_detail, 
+  #    :via => :get, :as => 'reports_schedule_detail'
+  #  match '/reports/configure/new' => :schedule_new, :via => :get, :as => 'reports_schedule_new'
+  #  match '/reports/configure/new' => :schedule_create, :via => :post, :as => 'reports_schedule_create'
+  #  match '/reports/configure/:schedule_id/edit' => :schedule_edit, :via => :get, :as => 'reports_schedule_edit'
+  #  match '/reports/configure/:schedule_id' => :schedule_update, :via => :put, :as => 'reports_schedule_update'
+  #  match '/reports/configure/:schedule_id' => :schedule_delete, :via => :delete, :as => 'reports_schedule_delete'
+  #end
 
-  resources :reports do
+  resources :report_schedule do
+    resources :reports do
+    end
   end
-  
 
   get "welcome/index"
   get "welcome/about"

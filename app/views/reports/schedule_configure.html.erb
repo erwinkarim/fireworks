@@ -21,8 +21,9 @@
               <td><%= link_to schedule.title, reports_schedule_path(schedule.id) %></td>
               <td><%= schedule.schedule %></td>
               <td><%= 
-                Licserver.find( YAML::load(schedule.monitored_obj).keys.map{|x| x.to_s }).
-                  map{ |x| link_to x.port.to_s+'@'+x.server, licserver_path(x.id) }.join(',').html_safe
+                Licserver.find( 
+                  YAML::load(schedule.monitored_obj).keys.map{|x| x.to_s }
+                ).map{ |x| link_to x.port.to_s+'@'+x.server, licserver_path(x.id) }.join(',').html_safe
               %></td>
             </tr>
           <% end %>

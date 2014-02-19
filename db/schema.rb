@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131114072825) do
+ActiveRecord::Schema.define(:version => 20140219074206) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :precision => 38, :scale => 0, :default => 0
@@ -70,10 +70,11 @@ ActiveRecord::Schema.define(:version => 20131114072825) do
     t.string   "title"
     t.text     "body"
     t.integer  "report_schedule_id", :precision => 38, :scale => 0
-    t.datetime "created_at",                                        :null => false
-    t.datetime "updated_at",                                        :null => false
+    t.datetime "created_at",                                                       :null => false
+    t.datetime "updated_at",                                                       :null => false
     t.datetime "start_date"
     t.datetime "end_date"
+    t.integer  "status",             :precision => 38, :scale => 0, :default => 0
   end
 
   add_index "reports", ["report_schedule_id"], :name => "i_reports_report_schedule_id"

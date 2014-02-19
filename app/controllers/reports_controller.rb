@@ -1,12 +1,15 @@
 class ReportsController < ApplicationController
   # GET /reports
-  # GET /reports.json
+  # GET /reports.json 
+  #  GET    /report_schedule/:report_schedule_id/reports
   def index
     @reports = Report.all
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @reports }
+      format.json { render json: @reports.map{ |x| {:created_at => x.created_at, :id =>  x.id, 
+         :schedule_id => ( params.has_key?(:report_schedule_id) ? params[:report_schedule_id] : nil) } } 
+      }
     end
   end
 
@@ -41,13 +44,15 @@ class ReportsController < ApplicationController
 
   # POST /reports
   # POST /reports.json
+  #  POST   /report_schedule/:report_schedule_id/reports(.:format)
   def create
-    @report = Report.new(params[:report])
+    @report = ReportSchedule.find(params[:report_schedule_id]).reports.new
 
     respond_to do |format|
       if @report.save
         format.html { redirect_to @report, notice: 'Report was successfully created.' }
-        format.json { render json: @report, status: :created, location: @report }
+        format.json { render json: @report, status: :created, 
+          location: report_schedule_report_path(params[:report_schedule_id], @report) }
       else
         format.html { render action: "new" }
         format.json { render json: @report.errors, status: :unprocessable_entity }

@@ -54,10 +54,12 @@ gem 'squeel'
 
 gem 'delayed_job_active_record'
 gem 'daemons'
+gem 'paloma'
 
 gem 'snmp'
 
 gem 'foreman'
+gem 'haml'
 
 #to excel
 #
