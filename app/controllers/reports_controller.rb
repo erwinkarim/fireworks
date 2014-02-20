@@ -1,14 +1,13 @@
 class ReportsController < ApplicationController
-  # GET /reports
-  # GET /reports.json 
   #  GET    /report_schedule/:report_schedule_id/reports
   def index
-    @reports = Report.all
+    @reports = ReportSchedule.find(params[:report_schedule_id]).reports
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @reports.map{ |x| {:created_at => x.created_at, :id =>  x.id, 
-         :schedule_id => ( params.has_key?(:report_schedule_id) ? params[:report_schedule_id] : nil) } } 
+      format.json { render json: @reports.order(:id).map{ |x| {:created_at => x.created_at, :id =>  x.id, 
+        :schedule_id => ( params.has_key?(:report_schedule_id) ? params[:report_schedule_id] : nil), 
+        :status => x.status } } 
       }
     end
   end
@@ -46,17 +45,13 @@ class ReportsController < ApplicationController
   # POST /reports.json
   #  POST   /report_schedule/:report_schedule_id/reports(.:format)
   def create
-    @report = ReportSchedule.find(params[:report_schedule_id]).reports.new
+    @report_schedule = ReportSchedule.find(params[:report_schedule_id])
+    #@report = @report_schedule.reports.new
+    @job = @report_schedule.delay.generate_report
 
     respond_to do |format|
-      if @report.save
-        format.html { redirect_to @report, notice: 'Report was successfully created.' }
-        format.json { render json: @report, status: :created, 
-          location: report_schedule_report_path(params[:report_schedule_id], @report) }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @report.errors, status: :unprocessable_entity }
-      end
+      format.html { redirect_to @report, notice: 'Report was successfully created.' }
+      format.json { render json: @job, status: :created }
     end
   end
 

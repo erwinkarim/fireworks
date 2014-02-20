@@ -9,8 +9,37 @@
           .accordion-heading
             = link_to schedule.title, '#schedule' + schedule.id.to_s, :data => { :toggle => 'collapse', 
               :parent => '#schedule-accordion' }, :class => 'accordion-toggle'
-          %div{ :id => 'schedule' + schedule.id.to_s, :class => 'accordion-body collapse', :data => { :id => schedule.id } }
+          .accordion-body.collapse{ :id => 'schedule' + schedule.id.to_s, :data => { :id => schedule.id } }
             .accordion-inner
+              .tabbable
+                %ul.nav.nav-tabs
+                  %li.active
+                    %a{ :data => { :toggle => 'tab' }, :href => '#reports' + schedule.id.to_s }Reports
+                  %li
+                    %a{ :data => { :toggle => 'tab', :target => '#settings' + schedule.id.to_s }, 
+                      :href => '#settings' + schedule.id.to_s }Settings
+                .tab-content
+                  .tab-pane.active{ :id => 'reports' + schedule.id.to_s }
+                  .tab-pane.setting{ :id => 'settings' + schedule.id.to_s , :data => { :id => schedule.id } }
+                    = form_for schedule, :html => {:class => 'form-horizontal' }  do |f|
+                      .control-group
+                        %label.control-label Title
+                        .controls
+                          %input{:type => 'text', :value => 'test'}  
+                      .control-group
+                        %label.control-label Scope
+                        .controls
+                          = select_tag 'scope', options_for_select(['test', 'test2'])
+                      .control-group
+                        %label.control-label Monitored Object
+                        .controls
+                          %input{:type => 'text', :value => 'test'}  
+                      .control-group
+                        %label.control-label Schedule
+                        .controls
+                          = select_tag 'scope', options_for_select(['schedule', 'schedule'])
+                      .form-actions
+                        %button.btn.btn-primary{ :type => 'button' }Update
 .row
   .span10
     %button.btn.btn-large.btn-primary( type:button )New Schedule

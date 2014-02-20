@@ -11,7 +11,6 @@ class ReportScheduleController < ApplicationController
   #GET    /report_schedule/:id(.:format)
   # get report schedule
   def show
-    @schedule
-
+    @schedule = ReportSchedule.find(params[:id])
   end
 end

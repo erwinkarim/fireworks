@@ -4,7 +4,7 @@ class ReportSchedule < ActiveRecord::Base
   has_many :reports, :dependent => :destroy
 
   #generate a new report based on :monitored_obj, and :time_scope
-  def generate_report
+  def generate_report report_id = nil
     if self.time_scope == 'Yesterday' then
         date_range = 1.day.ago.at_beginning_of_day..DateTime.now.at_beginning_of_day
     elsif self.time_scope == 'Last Week' then
@@ -53,10 +53,22 @@ class ReportSchedule < ActiveRecord::Base
     end
 
     #build the actual reports
-    new_report = self.reports.new( :title => self.title,
-      :body => report_text,
-      :start_date => date_range.first, :end_date => date_range.last
-    )
+    if report_id.nil? then 
+      new_report = self.reports.new( :title => self.title,
+        :body => report_text,
+        :start_date => date_range.first, :end_date => date_range.last
+      )
+    else
+      #for some insane reason, generating a new report works, but updating a current report doesn't
+      new_report = self.reports.find(report_id)
+      new_report.update_attribute(:body ,nil)
+      new_report.save!
+      new_report.update_attribute(:body ,report_text)
+      new_report.save!
+      new_report.update_attributes( :title => self.title,
+        :start_date => date_range.first, :end_date => date_range.last
+      )
+    end
 
     new_report.save!
 
