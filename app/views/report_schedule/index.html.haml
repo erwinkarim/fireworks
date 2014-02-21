@@ -25,21 +25,30 @@
                       .control-group
                         %label.control-label Title
                         .controls
-                          %input{:type => 'text', :value => 'test'}  
+                          %input{:type => 'text', :value => schedule.title}  
                       .control-group
                         %label.control-label Scope
                         .controls
-                          = select_tag 'scope', options_for_select(['test', 'test2'])
+                          = select_tag 'time_scope', 
+                            options_for_select(ReportSchedule::TIME_SCOPE.values, schedule.time_scope)
                       .control-group
                         %label.control-label Monitored Object
+                        - YAML::load(schedule.monitored_obj).each do |key,value|
+                          .controls{:style => 'padding:5px 0px;'}
+                            = select_tag 'monitored_licserver', 
+                              options_for_select(Licserver.all.map{ |x| [x.port.to_s + '@' + x.server, x.id] }, key)
+                            %button.btn.btn-danger{ :type => 'button'}
+                              %i.fa.fa-minus
+                            %br
                         .controls
-                          %input{:type => 'text', :value => 'test'}  
+                          %button.btn.btn-primary{ :type => 'button' }
+                            %i.fa.fa-plus
                       .control-group
                         %label.control-label Schedule
                         .controls
-                          = select_tag 'scope', options_for_select(['schedule', 'schedule'])
+                          %input{:type => 'text', :value => schedule.schedule}  
                       .form-actions
-                        %button.btn.btn-primary{ :type => 'button' }Update
+                        %button.btn.btn-primary{ :type => 'button' } Update
 .row
   .span10
     %button.btn.btn-large.btn-primary( type:button )New Schedule
