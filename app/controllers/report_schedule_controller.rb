@@ -13,4 +13,8 @@ class ReportScheduleController < ApplicationController
   def show
     @schedule = ReportSchedule.find(params[:id])
   end
+
+  # PUT    /report_schedule/:id(.:format)
+  def update
+  end
 end

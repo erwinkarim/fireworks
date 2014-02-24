@@ -21,7 +21,7 @@
                 .tab-content
                   .tab-pane.active{ :id => 'reports' + schedule.id.to_s }
                   .tab-pane.setting{ :id => 'settings' + schedule.id.to_s , :data => { :id => schedule.id } }
-                    = form_for schedule, :html => {:class => 'form-horizontal' }  do |f|
+                    = form_for schedule, :html => {:class => 'form-horizontal' }, :remote => true  do |f|
                       .control-group
                         %label.control-label Title
                         .controls
@@ -31,24 +31,30 @@
                         .controls
                           = select_tag 'time_scope', 
                             options_for_select(ReportSchedule::TIME_SCOPE.values, schedule.time_scope)
-                      .control-group
+                      .control-group{ :class => 'licserver-listing' }
                         %label.control-label Monitored Object
                         - YAML::load(schedule.monitored_obj).each do |key,value|
-                          .controls{:style => 'padding:5px 0px;'}
-                            = select_tag 'monitored_licserver', 
+                          .controls.licserver{:style => 'padding:5px 0px;' }
+                            = select_tag 'monitored_licserver[]', 
                               options_for_select(Licserver.all.map{ |x| [x.port.to_s + '@' + x.server, x.id] }, key)
-                            %button.btn.btn-danger{ :type => 'button'}
+                            %button.btn.btn-danger{ :class => 'delete-licserver', :type => 'button'}
                               %i.fa.fa-minus
                             %br
                         .controls
-                          %button.btn.btn-primary{ :type => 'button' }
+                          %button.btn.btn-primary{ :type => 'button', :class => 'add-licserver', 
+                            :data => { :id => schedule.id } }
                             %i.fa.fa-plus
                       .control-group
-                        %label.control-label Schedule
+                        %label.control-label 
+                          %a{ :data => { :title => 'If you set scheduled, the report will run automatically after the scope is done. Ie; Scheduled Report with scope of last month will run when the new month comes in'} , 
+                            :class => 'scheduled-tooltip' } Scheduled?
                         .controls
-                          %input{:type => 'text', :value => schedule.schedule}  
+                          = select_tag 'schedule_terms',
+                            options_for_select([['No - Ad Hoc Basis', true], ['Yes', false]])
                       .form-actions
-                        %button.btn.btn-primary{ :type => 'button' } Update
+                        %button.btn.btn-primary{ :type => 'submit' } Update
+                        %button.btn.btn-danger{ :type => 'button' } Delete Report
 .row
   .span10
-    %button.btn.btn-large.btn-primary( type:button )New Schedule
+    %button.btn.btn-large.btn-primary#new-schedule-btn( type:button )New Schedule
+    #new-schedule

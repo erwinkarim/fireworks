@@ -52,15 +52,32 @@
       );
     };
 
+    //in licserver to be monitored listing, delete the one that is being clicked.
+    //if there's only 1 left, disable delete button to prevent it from monitoring and empty list
+    var delete_licserver = function(handle){
+      var licserver_listing_handle = handle.closest('.licserver-listing');
+      $.when(handle.closest('.licserver').remove()).then( function(){
+        if(licserver_listing_handle.find('.licserver').length == 1){
+          licserver_listing_handle.find('.delete-licserver:first').attr('disabled', 'disabled');
+        }
+      });
+    };
+
     $(document).ready( function(){
       $('.accordion-body').each( function(index) {
         var rs_id = $(this).attr('data-id');
+
+
         $(this).on('show', function(){
           //if contents empty, reports
           //TODO: reappend using the correct data-id so when doing parallel request, doesn't mess up
+
+          //setup tooltip for
+          $(this).find('.scheduled-tooltip').tooltip();
           if( 
             $(this).find('#reports'  + rs_id).children().length == 0
           ){
+            //genearte the report listing
             $(this).find('.accordion-inner').append(
               $.parseHTML('<i class="fa fa-spinner fa-4x fa-spin"></i>')
             );
@@ -92,7 +109,7 @@
                 ).after(
                   $('<button/>', { text:'Generate', class:'btn btn-primary generate_report'}
                   ).on('click', function(){
-                    console.log('generate new report for schedule ' + $('.in:first').attr('data-id') );
+                    //console.log('generate new report for schedule ' + $('.in:first').attr('data-id') );
                     $('.in:first').find('table').find('tbody').append(
                       $('<tr/>', { class:'generating-report'} ).append(
                         $('<td/>', { colspan:3}).prepend(
@@ -101,7 +118,7 @@
                       )
                     );
 
-                    //submit a delayed jobs to churn out report
+                    //submit a deaayed jobs to churn out report
                     //$.ajax('generate report')
                     $.ajax( '/report_schedule/' + $('.in:first').attr('data-id') + '/reports', {
                       type:'POST', 
@@ -115,8 +132,30 @@
                       $('.in:first').find('table').find('.generating-report').remove();
                     });
                   }) // $('<button/>', { ... }).on('click', function(){
+                ).after(
+                  $.parseHTML(' ')
+                ).after(
+                  $('<button/>', { class:'btn btn-info refresh_report'}).click(function(){
+                    //refresh the report listing
+                    var accordion_handle = $(this).closest('.accordion-body');
+                    $(this).find('.fa-refresh').addClass('fa-spin');
+                    $.ajax(
+                      '/report_schedule/' + accordion_handle.attr('data-id') + '/reports', {
+                      dataType:'json'
+                    }).done(function (data,statusText, jqXHR){
+                      //clean and repopulate the table
+                      accordion_handle.find('tbody').empty();
+                      $.each(data, function(index,value){
+                        populate_report_listing_table( accordion_handle, value);
+                      });
+                    })
+                    $(this).find('.fa-refresh').removeClass('fa-spin');
+                  }).append(
+                    $('<i/>',{ class:'fa fa-refresh' })
+                  )
                 ) 
-              )
+              ) // $('.accordion-body[data-id=' + rs_id + ']').find('#reports' + rs_id).append(
+
               $.each(data, function(index, value){
                 populate_report_listing_table($('.in').find('#reports' + rs_id), value);
               });
@@ -127,6 +166,53 @@
         });
       }) // $('.accordion-body').each( function(index) {
 
+      //adding new licservers
+      $('.add-licserver').click(function(){
+        var handle = $(this).closest('.licserver-listing').find('.licserver:last');
+    
+        handle.after(
+          $('<div/>', { class:'controls licserver', style:'padding:5px 0px;' }).append(
+            $('<select/>', { name:'monitored_licserver[]' })
+          ).append(
+            $.parseHTML(' ')
+          ).append(
+            $('<button/>', { class:'btn btn-danger delete-licserver', type:'button' }).append(
+              $('<i/>', { class:'fa fa-minus' })
+            ).click( function(){
+              delete_licserver($(this) );
+            })
+          ).append(
+            $('<br/>')
+          )
+        );
+      
+        //get licserver listings and convert them into options tag
+        $.ajax('/licservers', {
+          dataType:'json'
+        }).done( function( data, textStatus, jqXHR){
+          $.each(data, function(index,element){
+            handle.next().find('select').append(
+              $('<option/>', { text:(element.port==null ? '' : element.port) + '@' + element.server, 
+                value:element.id })
+            );
+          });
+        }); //$.ajax('/licservers', { ... 
+
+        //check if there's disabled button and enable it back
+        if( handle.find('.delete-licserver:disabled').length > 0){
+          handle.find('.delete-licserver:disabled').removeAttr('disabled');
+        }
+      });
+
+      $('.delete-licserver').click( function(){
+        delete_licserver($(this) );
+      });
+
+
+      //adding new 
+      $('#new-schedule-btn').click( function(){
+        console.log('new schedule requested');
+      });
     }); // $(document).ready( function(){
   }; // Paloma.callbacks['report_schedule']['index'] = function(params){
 })();
