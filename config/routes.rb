@@ -35,7 +35,7 @@ Fireworks::Application.routes.draw do
   #  match '/reports/configure/:schedule_id' => :schedule_delete, :via => :delete, :as => 'reports_schedule_delete'
   #end
 
-  resources :report_schedule do
+  resources :report_schedules do
     resources :reports do
     end
   end

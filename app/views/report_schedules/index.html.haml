@@ -1,0 +1,14 @@
+.page-header
+  %h1 Report Schedule
+
+.row
+  .span10
+    .accordion#schedule-accordion
+      - @schedules.each do |schedule|
+        = render :partial => 'schedule-accordion-group', :locals => { :schedule => schedule}
+      = render :partial => 'schedule-accordion-group', :locals => { :schedule => ReportSchedule.new}
+
+.row
+  .span10
+    %button.btn.btn-large.btn-primary#new-schedule-btn( type:button )New Schedule
+    #new-schedule
