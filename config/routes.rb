@@ -36,6 +36,7 @@ Fireworks::Application.routes.draw do
   #end
 
   resources :report_schedules do
+    get 'accordion'
     resources :reports do
     end
   end

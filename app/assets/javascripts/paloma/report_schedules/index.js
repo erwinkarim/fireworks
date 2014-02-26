@@ -63,6 +63,10 @@
       });
     };
 
+    //setup the accordion body as it get loaded
+    var setup_accordion_body = function(ab_handle){
+    };
+
     $(document).ready( function(){
       $('.accordion-body').each( function(index) {
         var rs_id = $(this).attr('data-id');
@@ -231,12 +235,42 @@
           $(this).find('#schedule-title-group').addClass('error');
           return false;
         }
-      }).on('ajax:success', function(data, status, xhr){
-        console.log(data);
+      }).on('ajax:success', function(e, data, textStatus, jqXHR){
+        console.log(data.id);
+  
+        //if the new report schedule is open, close it
+        //reset the form and hide it
         $('#new_report_schedule')[0].reset();
         $('#new-schedule-group').hide();
         $('#new-schedule-btn').show();
-        //reset the form and hide it
+
+        //add alert banner
+        var alertmsg = $('<div/>', { class:'alert fade in', text:'Report Updated/Created' });
+        alertmsg.append( 
+          $('<button/>', { class:'close', 'data-dismiss':'alert'}).append(
+            $('<i/>', { class:'fa fa-times' })
+          )
+        );
+        $('.yield_div').prepend(alertmsg);
+
+        //update or recreate new accordion-group
+        if( $('.accordion-group[data-id=' + data.id + ']').length == 0){
+          //group does not exist, create a new one!
+          $.ajax('/report_schedules/' + data.id + '/accordion', {
+            dataType:'html'
+          }).done( function(data, statusText, jqXHR){
+            $('#new-schedule-group').before(
+              $.parseHTML(data)
+            );
+
+            //need to bind actions to each button that created
+          });
+        } else {
+          //group exists, update it
+          var accord_handle = $('.accordion-group[data-id=' + data.id + ']');
+          accord_handle.find('.accordion-toggle').text(data.title);
+        }
+
       }).on('ajax:error', function(xhr, status, error){
         //if got error (usually the title uniqueness) highlight the error and move on
       });

@@ -31,7 +31,7 @@ gem 'jquery-ui-rails'
 gem 'twitter-bootstrap-rails', '=2.2.7'
 gem 'font-awesome-rails'
 gem 'haml'
-gem 'psych'
+#gem 'psych'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

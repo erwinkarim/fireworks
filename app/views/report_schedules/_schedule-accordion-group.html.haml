@@ -1,4 +1,5 @@
-.accordion-group{ :id => schedule.title.nil? ? 'new-schedule-group' : '', :style => schedule.title.nil? ? 'display:none;' : '' }
+.accordion-group{ :id => schedule.title.nil? ? 'new-schedule-group' : false, 
+  :style => schedule.title.nil? ? 'display:none;' : '', :data => { :id => schedule.id } }
   .accordion-heading
     = link_to schedule.title.nil? ? 'New Schedule' : schedule.title, '#schedule' + schedule.id.to_s, 
       :data => { :toggle => 'collapse', :parent => '#schedule-accordion' }, :class => 'accordion-toggle'
@@ -16,12 +17,13 @@
           .tab-pane.active{ :id => 'reports' + schedule.id.to_s }
           .tab-pane.setting{ :id => 'settings' + schedule.id.to_s , :data => { :id => schedule.id }, 
             :class => schedule.title.nil? ? 'active' : '' }
-            = form_for schedule, :html => {:class => 'form-horizontal schedule-form', }, :remote => true, 
-              :'data-type' => 'json'  do |f|
+            = form_for schedule, :html => {:class => 'form-horizontal schedule-form', :'data-type' => 'json', 
+              :'data-id' => schedule.id }, :remote => true do |f|
               .control-group#schedule-title-group
                 %label.control-label Title
                 .controls
-                  %input#schedule-title-input{:type => 'text', :placeholder => 'Title', :value => schedule.title}  
+                  %input#schedule-title-input{:type => 'text', :placeholder => 'Title', :name => 'title', 
+                    :value => schedule.title}  
               .control-group
                 %label.control-label Scope
                 .controls
