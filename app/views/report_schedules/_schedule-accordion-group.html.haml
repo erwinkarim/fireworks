@@ -55,4 +55,4 @@
                 - else
                   %button.btn.btn-primary{ :type => 'submit' } Update
                   = link_to 'Delete Report', report_schedule_path(schedule), :method => :delete, :remote => true,
-                    :class => 'btn btn-danger'
+                    :class => 'btn btn-danger delete-report', :data => { :confirm => 'Really delete Schedule?' }

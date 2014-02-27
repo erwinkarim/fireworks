@@ -54,6 +54,12 @@ class ReportSchedulesController < ApplicationController
 
   # DELETE /report_schedules/:id
   def destroy
+    @rs = ReportSchedule.find(params[:id])
+    @rs.destroy
+  
+    respond_to do |format|
+      format.js
+    end
   end
 
   # GET    /report_schedules/:report_schedule_id/accordion
