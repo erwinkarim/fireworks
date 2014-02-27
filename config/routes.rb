@@ -46,6 +46,11 @@ Fireworks::Application.routes.draw do
   get "welcome/tech"
   get "welcome/download_client"
 
+  resources :users do
+    resources :machines do
+    end
+  end
+
   #update user idle time
   get "idle_user/report"
   get "idle_user/show"

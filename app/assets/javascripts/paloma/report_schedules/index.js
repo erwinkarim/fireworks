@@ -111,7 +111,6 @@
               ).after(
                 $('<button/>', { text:'Generate', class:'btn btn-primary generate_report', 'data-id':rs_id}
                 ).on('click', function(){
-                  //console.log('generate new report for schedule ' + $('.in:first').attr('data-id') );
                   $('#reports' + rs_id).find('table').find('tbody').append(
                     $('<tr/>', { class:'generating-report'} ).append(
                       $('<td/>', { colspan:4}).prepend(
@@ -214,7 +213,6 @@
           return false;
         }
       }).on('ajax:success', function(e, data, textStatus, jqXHR){
-        console.log(e);
   
         //if the new report schedule is open, close it
         //reset the form and hide it
@@ -233,8 +231,6 @@
             $('#new-schedule-group').before(
               $.parseHTML(data)
             ).ready( function(){
-              console.log( accordion_id );
-              console.log( $('.accordion-group[data-id=' + accordion_id + ']') );
               setup_accordion_body( $('.accordion-group[data-id=' + accordion_id + ']') );
             })
           });

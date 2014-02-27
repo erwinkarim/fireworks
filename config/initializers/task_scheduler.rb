@@ -27,3 +27,7 @@ scheduler.every("23m") do
     end
   end
 end
+
+#check if any reports needs to be generated
+scheduler.every("2m") do
+end

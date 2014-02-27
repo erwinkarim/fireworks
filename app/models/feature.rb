@@ -12,6 +12,8 @@ class Feature < ActiveRecord::Base
     output.each_line do |line|
       @licserver.features.create(:name => line.split[0].gsub(/\//, '-'),
          :current => line.split[1], :max => line.split[2])
+  
+      #generate user info here
     end
   end
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140219074206) do
+ActiveRecord::Schema.define(:version => 20140227061045) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :precision => 38, :scale => 0, :default => 0
@@ -57,6 +57,25 @@ ActiveRecord::Schema.define(:version => 20140219074206) do
     t.boolean  "to_delete",    :precision => 1,  :scale => 0
   end
 
+  create_table "machine_feature_data", :force => true do |t|
+    t.integer  "machine_id", :precision => 38, :scale => 0
+    t.integer  "feature_id", :precision => 38, :scale => 0
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
+  end
+
+  add_index "machine_feature_data", ["feature_id"], :name => "i_mac_fea_dat_fea_id"
+  add_index "machine_feature_data", ["machine_id"], :name => "i_mac_fea_dat_mac_id"
+
+  create_table "machines", :force => true do |t|
+    t.string   "name"
+    t.integer  "user_id",    :precision => 38, :scale => 0
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
+  end
+
+  add_index "machines", ["user_id"], :name => "index_machines_on_user_id"
+
   create_table "report_schedules", :force => true do |t|
     t.text     "schedule"
     t.text     "monitored_obj"
@@ -87,5 +106,11 @@ ActiveRecord::Schema.define(:version => 20140219074206) do
   end
 
   add_index "tags", ["licserver_id"], :name => "index_tags_on_licserver_id"
+
+  create_table "users", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
 end
