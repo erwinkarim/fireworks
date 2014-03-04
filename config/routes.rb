@@ -47,7 +47,9 @@ Fireworks::Application.routes.draw do
   get "welcome/download_client"
 
   resources :users do
-    resources :machines do
+    collection do
+      get 'get_more'
+      get 'search'
     end
   end
 

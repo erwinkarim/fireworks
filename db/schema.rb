@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140227061045) do
+ActiveRecord::Schema.define(:version => 20140304034709) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :precision => 38, :scale => 0, :default => 0
@@ -57,15 +57,15 @@ ActiveRecord::Schema.define(:version => 20140227061045) do
     t.boolean  "to_delete",    :precision => 1,  :scale => 0
   end
 
-  create_table "machine_feature_data", :force => true do |t|
+  create_table "machine_features", :force => true do |t|
     t.integer  "machine_id", :precision => 38, :scale => 0
     t.integer  "feature_id", :precision => 38, :scale => 0
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
   end
 
-  add_index "machine_feature_data", ["feature_id"], :name => "i_mac_fea_dat_fea_id"
-  add_index "machine_feature_data", ["machine_id"], :name => "i_mac_fea_dat_mac_id"
+  add_index "machine_features", ["feature_id"], :name => "i_machine_features_feature_id"
+  add_index "machine_features", ["machine_id"], :name => "i_machine_features_machine_id"
 
   create_table "machines", :force => true do |t|
     t.string   "name"
@@ -79,10 +79,11 @@ ActiveRecord::Schema.define(:version => 20140227061045) do
   create_table "report_schedules", :force => true do |t|
     t.text     "schedule"
     t.text     "monitored_obj"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
     t.string   "title"
     t.string   "time_scope"
+    t.boolean  "scheduled",     :precision => 1, :scale => 0
   end
 
   create_table "reports", :force => true do |t|

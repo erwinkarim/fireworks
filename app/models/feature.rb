@@ -1,6 +1,8 @@
 class Feature < ActiveRecord::Base
   belongs_to :licserver
   attr_accessible :current, :max, :name
+  has_many :machine_features
+  has_many :machines, :through => :machine_features
 
   #update features
   def self.update_features(licserver_id)
@@ -8,13 +10,35 @@ class Feature < ActiveRecord::Base
     @licserver = Licserver.find(licserver_id)
     @fullname = @licserver.port.to_s + '@' + @licserver.server
     #puts "update features for "+ @fullname
-    output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} | grep "Users of" | grep -vi "error" | gawk '{ print substr($3,0, length($3)-1), $11, $6}'`
-    output.each_line do |line|
-      @licserver.features.create(:name => line.split[0].gsub(/\//, '-'),
-         :current => line.split[1], :max => line.split[2])
+    #output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} | grep "Users of" | grep -vi "error" | gawk '{ print substr($3,0, length($3)-1), $11, $6}'`
+    #output.each_line do |line|
+    #  @licserver.features.create(:name => line.split[0].gsub(/\//, '-'),
+    #     :current => line.split[1], :max => line.split[2])
+    # 
+    #end
+    
+    #new way to generate features,users and machine  data 
+    output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} | grep -vi "error"`
+    header = /Users.*/
   
-      #generate user info here
+    #split the output into headers of "Users of <feature name>...."
+    sections = output.scan(/(?m)#{header}.*?(?=#{header})|\Z/)
+    sections.each do |section|
+      feature_line = section.lines.grep(/Users/).first
+      unless feature_line.nil? 
+        feature = @licserver.features.create( :name => feature_line.split(" ")[2].gsub(/:/, ''),
+          :current => feature_line.split[10], :max => feature_line.split[5]
+        )
+        feature.save!
+      end
+      user_lines = section.lines.grep(/start/)
+      unless user_lines.nil? || user_lines.empty?
+        user_lines.each do |user_line|
+          User.generate_features_data( user_line.split(" ")[0], user_line.split(" ")[1], feature.id)
+        end
+      end
     end
+    
   end
 
   #get list of current users

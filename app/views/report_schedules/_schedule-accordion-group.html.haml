@@ -47,7 +47,7 @@
                     :class => 'scheduled-tooltip' } Scheduled?
                 .controls
                   = select_tag 'schedule_terms',
-                    options_for_select([['No - Ad Hoc Basis', true], ['Yes', false]])
+                    options_for_select([['No - Ad Hoc Basis', false], ['Yes', true]], schedule.scheduled.to_s)
               .form-actions
                 - if schedule.title.nil? then
                   %button.btn.btn-primary{ :type => 'submit' } Create Report

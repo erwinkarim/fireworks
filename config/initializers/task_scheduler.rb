@@ -29,5 +29,25 @@ scheduler.every("23m") do
 end
 
 #check if any reports needs to be generated
-scheduler.every("2m") do
+scheduler.every("5m") do
+  ReportSchedule.all.each do |rs|
+    if rs.scheduled? then
+      if rs.reports.last.nil? then
+        rs.generate_report
+      else
+        case rs.time_scope
+        when 'Yesterday'
+          time_limit = 1.day.ago
+        when 'Last Week'
+          time_limit = 1.week.ago
+        else
+          #defaults to last month
+          time_limit = 1.month.ago
+        end
+        if rs.reports.last.created_at < time_limit then
+          rs.generate_report
+        end
+      end
+    end
+  end #each
 end

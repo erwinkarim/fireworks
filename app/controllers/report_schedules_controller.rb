@@ -23,7 +23,8 @@ class ReportSchedulesController < ApplicationController
     @rs.update_attributes(
       :title => params[:title], 
       :time_scope => params[:time_scope],
-      :monitored_obj => params[:monitored_licserver].uniq.inject({}){ |hash,e| hash.merge!( e.to_sym => :'_all') }.to_yaml 
+      :monitored_obj => params[:monitored_licserver].uniq.inject({}){ |hash,e| hash.merge!( e.to_sym => :'_all') }.to_yaml,
+      :scheduled => params[:schedule_terms] == 'true'
     )
 
     respond_to do |format|
@@ -41,7 +42,8 @@ class ReportSchedulesController < ApplicationController
     @rs = ReportSchedule.new(
       :title => params[:title],
       :time_scope => params[:time_scope],
-      :monitored_obj => params[:monitored_licserver].uniq.inject({}){ |hash,e| hash.merge!( e.to_sym => :'_all') }.to_yaml 
+      :monitored_obj => params[:monitored_licserver].uniq.inject({}){ |hash,e| hash.merge!( e.to_sym => :'_all') }.to_yaml,
+      :scheduled => params[:schedule_terms] == 'true'
     )
     @rs.save!
 
