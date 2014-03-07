@@ -1,6 +1,8 @@
 .row
-  .span10.offset1
+  .page-header.span10.offset1
     %h2 Users
+.row
+  .span10.offset1
     %form.form-search
       %input#search-users.input-block-level.search-query{ :placeholder =>'Search Users...'}
 .row
@@ -8,4 +10,4 @@
     .accordion#user-listings 
 .row
   .span10.offset1
-    %button.btn.btn-primary#load-more-users{ :type => 'button' } Load More Users
+    %button.btn.btn-primary#load-more-users{ :type => 'button',  :data => { :mode => 'default'}  } Load More Users

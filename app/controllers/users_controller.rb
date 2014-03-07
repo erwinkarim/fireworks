@@ -28,15 +28,13 @@ class UsersController < ApplicationController
   # GET    /users/search(.:format)                                          users#search
   #   returns user ids when you search
   # options =>
-  #   query   search terms query, mandatory, otherwise return nil
+  #   query     search terms query, mandatory, otherwise return nil
+  #   start_id  start searching from this id, otherwise start from User.last.id
   def search
     #query = params.has_key? :query ? ('%' + params[:query] + '%') : ""
-    if params.has_key? :query then
-      query = '%' + params[:query] + '%'
-    else
-      query = ''
-    end
-    @users = User.where{ name.matches query }.limit(30)   
+    query = (params.has_key? :query) ? query = '%' + params[:query] + '%' : ''
+    start_id = (params.has_key? :start_id) ? (params[:start_id].to_i - 1 ) : User.last.id
+    @users = User.where{ (name.matches query) & (id.lteq start_id) }.order('id desc').limit(20)   
 
     respond_to do |format|
       format.html { render :partial => 'accordion', :locals => { :users => @users } }
@@ -46,6 +44,16 @@ class UsersController < ApplicationController
         @users.each{ |x| init_hash[:options] << x.name }
         render :json => init_hash 
       }
+    end
+  end
+
+  # GET    /users/:id(.:format)
+  def show
+    @users = [] << User.find(params[:id])
+
+    respond_to do |format|
+      format.html
+      format.json { render :json => @users }
     end
   end
 end
