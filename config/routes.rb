@@ -51,6 +51,11 @@ Fireworks::Application.routes.draw do
       get 'get_more'
       get 'search'
     end
+    resources :machines do
+      member do
+        get 'gen_features'
+      end
+    end
   end
 
   #update user idle time

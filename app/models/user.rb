@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
 
   def self.generate_features_data username, machine_name, feature_id
     #check if users has been created. if new, create else hone on that
-    puts "username = #{username} " 
+    #puts "username = #{username} " 
     user = self.where(:name => username).first
     if user.nil? then
       user = self.create(:name => username)
