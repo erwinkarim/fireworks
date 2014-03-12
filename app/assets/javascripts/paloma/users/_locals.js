@@ -44,17 +44,24 @@
                       dataType:'json',
                       data:{ start_id:last_data_point}
                     }).done( function(data, textStatus, jqXHR) {
-                      console.log('chart loaded, lazyly add more data points from features.id ' + data['last_data_point']);
                       if( data['graph_data'].length != 0){
                         //load data from matched series, otherwise add new series to the graph
                         $.each( data['graph_data'], function( index, value){
+
+                          var new_series = true;
                           $.each( chart_handle.series, function( chart_index, serie){
                             if( serie.name == value['name']) {
+                              new_series = false;
                               $.each( value['data'], function( data_index, data_value ) {
                                 serie.addPoint( data_value , false, false);
                               });
                             }
                           });
+
+                          //if the it's a new series, create a new one and then add data points
+                          if(new_series){
+                            chart_handle.addSeries(value, true);
+                          }
                         });
                         chart_handle.redraw();
                       };

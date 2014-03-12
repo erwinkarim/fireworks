@@ -7,7 +7,8 @@
       .accordion-body.collapse{ :id => 'user' + user.id.to_s }
         .accordion-inner
           .links
-            = link_to fa_icon('link'), user_path(user)
+            = link_to fa_icon('link'), user_path(user), { :class => 'btn' }
+          %br
           %ul.nav.nav-tabs{ :id => 'user' + user.id.to_s + '-tabs' }
             - user.machines.each do |machine|
               %li
