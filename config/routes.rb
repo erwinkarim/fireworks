@@ -1,7 +1,13 @@
 Fireworks::Application.routes.draw do
 
   resources :licservers do
+    #for backwards compatability, show is retain. 
+    get 'show_template'
     resources :features, :constraints => { :id => /[^\/]+(?=\.html\z|\.json\z|\.xml\z)|[^\/]+/ } do
+      collection do
+        get 'list'
+      end
+      get 'get_data'
       get "monthly"
       get "kill"
     end
@@ -20,7 +26,12 @@ Fireworks::Application.routes.draw do
     match '/dash/report/:mode' => :report , :via => :get, :as => 'dash_report'
   end
 
-  resources :tags
+  resources :tags do
+    collection do
+      get 'gen_accordion'
+    end
+    get 'gen_licservers'
+  end
 
   #controller :reports do
   #  match '/reports/schedule/configure' => :schedule_configure, :via => :get, :as => 'schedule_configure'

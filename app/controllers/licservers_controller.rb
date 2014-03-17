@@ -32,6 +32,17 @@ class LicserversController < ApplicationController
     end
   end
 
+  # /licservers/:licserver_id/show_template
+  # display the template for tags/index page
+  def show_template
+      @licserver = Licserver.find(params[:licserver_id])
+
+      respond_to do |format|
+        format.html { render :partial => 'show_template', :locals => { :licserver => @licserver } }
+        format.json { render :json => @licserver }
+      end
+  end
+
   # GET /licservers/new
   # GET /licservers/new.json
   def new

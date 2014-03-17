@@ -1,0 +1,10 @@
+- features.each do |feature|
+  .accordion-group{ :data => { :'init-feature' => 'false', :licserver => licserver.id, :feature => feature[:name] } }
+    .accordion-heading
+      %a.accordion-toggle{ :data => { :toggle => 'collapse', :parent => '#licserver-' + licserver.id.to_s + '-features-listing' }, :href => '#licserver-' + licserver.id.to_s + '-features-' + feature[:name] }
+        = feature[:name]
+    .accordion-body.collapse{ :id => 'licserver-' + licserver.id.to_s + '-features-' + feature[:name] }
+      .accordion-inner
+        .features-info
+          = link_to fa_icon('link'), licserver_feature_path(licserver.id, feature[:name]), :class => 'btn' 
+        .features-graph

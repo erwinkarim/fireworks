@@ -98,7 +98,8 @@
         source: function(query, process){
           return $.get( '/users/search/', {
             query:query
-          }, function(data){
+          }, function(data, textStatus, jqXHR){
+            //load the results while you type here before returning the data 
             return process(data.options);
           }, 'json');
         }
