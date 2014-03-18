@@ -10,6 +10,7 @@ Fireworks::Application.routes.draw do
       get 'get_data'
       get "monthly"
       get "kill"
+      get 'users'
     end
     resources :tags
     post "update_settings"

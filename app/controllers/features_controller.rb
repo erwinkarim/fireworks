@@ -34,42 +34,15 @@ class FeaturesController < ApplicationController
 
   def show
     @licserver = Licserver.find(params[:licserver_id])
-    @users = Feature.current_users(params[:licserver_id], params[:id])
-
-    if params.has_key? :start_date then
-      @start_date = DateTime.parse(params[:start_date])
-    else
-      @start_date = 30.years.ago
-    end
-
-    if params.has_key? :end_date then
-      @end_date = DateTime.parse(params[:end_date])
-    else
-      @end_date = DateTime.now
-    end
+    #@users = Feature.current_users(params[:licserver_id], params[:id])
 
     respond_to do |format|
-      format.html { 
-        #@features = @licserver.features.where("name = ?", params[:id]).order(:created_at)
-        feature_name = params[:id]
-        @features = @licserver.features.where{ 
-          ( name.eq feature_name ) & ( created_at.in 6.month.ago..DateTime.now) 
-        }.order(:created_at)
-        @feature = @features.last
-        render :show 
-      } # show.html.erb
-      format.xml { 
-        @features = @licserver.features.where("name = ? and created_at > ? and created_at < ?", params[:id],
-          @start_date, @end_date)
-        render xml: @features 
-      }
-      format.json { 
-        @features = @licserver.features.where("name = ?", params[:id])
-        render json: @features 
-      }
+      format.html 
+      format.json
     end
   end
   
+  # GET    /licservers/:licserver_id/features/:feature_id/monthly(.:format)
   def monthly
     if params[:office_hours] == 'yes' then 
       office_hours_only = true
@@ -78,7 +51,7 @@ class FeaturesController < ApplicationController
     end
  
     @features = Feature.generate_monthly_stats( params[:licserver_id], 
-      params[:feature_id], office_hours_only).sort.map {|thisf| { :current => thisf[0], :current_conut => thisf[1] } } 
+      params[:feature_id], office_hours_only).sort.map {|thisf| [ thisf[0], thisf[1] ] } 
     
     respond_to do |format|
       format.xml { render xml: @features }
@@ -126,6 +99,19 @@ class FeaturesController < ApplicationController
 
     respond_to do |format|
       format.json { render :json => { :last_id => @features.empty? ? 0 : @features.min.id, :data => output  } }
+    end
+  end
+
+  #  GET    /licservers/:licserver_id/features/:feature_id/users(.:format)
+  # get a list of current users from params[:licserver_id] using features params[:feature_id] 
+  def users
+    @users = Feature.current_users(params[:licserver_id].to_i, params[:feature_id]) 
+
+    respond_to do |format|
+      format.json{ render :json => @users }
+      format.html{ render :partial => 'users', 
+        :locals => { :users => @users, :licserver => params[:licserver_id], :feature => params[:feature_id]  } 
+      }
     end
   end
 end

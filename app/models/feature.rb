@@ -48,7 +48,16 @@ class Feature < ActiveRecord::Base
 
     output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} -f #{features_id} | gawk '/start/ { print $1, $2, substr($5,2,length($5)) ,substr($6,1,length($6)-2),$9,gensub(/,/, "", "g", $10), $11 }'`
 
-    return output
+    users = [] 
+    output.each_line do |line|
+      splited = line.split
+      users << { :user => splited[0], :user_id => User.where(:name => splited[0]).map{|x| x.id }.first ,  :machine => splited[1],  
+        :host_id => splited[2].split('/')[0], 
+        :port_id => splited[2].split('/')[1], :handle => splited[3], 
+        :since => Time.parse(splited[4..5].reverse.join(" ")).to_datetime }
+    end
+
+    return users
   end
 
   #kill users at will

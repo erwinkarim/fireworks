@@ -1,0 +1,37 @@
+- stack = Array.new 
+- stack.push link_to "Fireworks", tags_path 
+- stack.push link_to "Servers", licservers_path 
+- stack.push link_to @licserver.port.to_s + '@' + @licserver.server, licserver_path(params[:licserver_id]) 
+- stack.push link_to "Features", licserver_features_path(params[:licserver_id]) 
+- stack.push params[:id] + ' Usage' 
+= generate_header(stack) 
+.page-header
+  %h2 
+    = params[:id]
+.row
+  .span10.offset1
+    %h3 Daily Usage
+    .daily-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
+    .daily-graph-controls
+      %button#load-older.btn{ :disabled => true }
+        %i.fa.fa-fast-backward 
+        Load Older Data
+.row
+  .span10.offset1
+    %h3 Monthly Frequency
+    .monthly-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
+.row
+  .span10.offset1
+    %table#user-listings.table.table-striped.table-hover{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
+      %caption
+        %strong User listings
+        %button#reload-users.btn.btn-info
+          %i.fa.fa-refresh
+      %thead
+        %tr
+          %th User Info
+          %th.pull-right Kill?
+      %tbody
+        %tr
+          %td.loading-users( colspan=2 )
+            %i.fa.fa-spinner.fa-spin.fa-4x
