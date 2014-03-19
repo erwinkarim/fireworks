@@ -148,15 +148,7 @@
       });
     };
 
-    // Do something here.
-    $(document).ready( function(){
-
-      Highcharts.setOptions({
-        global:{ 
-          useUTC: false
-        }
-      });
-
+    function init_load(){
       //load all them tags
       $.get( '/tags/gen_accordion', null,
         function(data, textStatus, jqXHR){
@@ -168,6 +160,50 @@
           }) 
         }, 'html'
       );
+
+    };
+
+    // Do something here.
+    $(document).ready( function(){
+
+      Highcharts.setOptions({
+        global:{ 
+          useUTC: false
+        }
+      });
+    
+      init_load();
+
+      //setup search query
+      $('#search-tags').typeahead({
+        source: function(query, process){
+          return $.get('/tags/search/', { query:query }, function(data, textStatus, jqXHR){
+            return process(data.options);
+          }, 'json'); 
+        } 
+      }).bind('keypress', function(e){
+        var code = e.keyCode || e.which;
+        if(code==13){ //Enter keycode
+          //prevent from reloading the page
+          e.preventDefault();
+
+          if( $(this).val().length != 0){
+            //clear everything and return the one's with 
+            $.get('/tags/search', { query:$(this).val() }, function(data, textStatus, jqXHR){
+              $('#tags-accordion').empty();
+              $('#tags-accordion').append(data).ready(function(){
+                $('.accordion-tag').each( function(index,value){
+                  setup_accordion( $(this) );
+                });
+              });
+            }, 'html' );
+          }else{
+            //reset the page
+            $('#tags-accordion').empty();
+            init_load();
+          };
+        };
+      });
     });
   }; // Paloma.callbacks['tags']['index'] = function(params){
 })();

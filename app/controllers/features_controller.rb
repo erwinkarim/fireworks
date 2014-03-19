@@ -102,6 +102,25 @@ class FeaturesController < ApplicationController
     end
   end
 
+  #  GET    /licservers/:licserver_id/features/:feature_id/data_dump
+  #  almost the same as get_data, but instead dump everything (can be expensive)
+  def data_dump
+    @licserver = Licserver.find(params[:licserver_id])
+    feature_name = params[:feature_id]
+
+    @features = @licserver.features.where{ (features.name.eq feature_name) }.order('features.created_at asc')
+    output = [ { :name => 'current' , :data => [] }, { :name => 'max', :data => [] } ]
+    @features.each do |x|
+      output[0][:data] << [x.created_at.to_i*1000, x.current]
+      output[1][:data] << [x.created_at.to_i*1000, x.max]
+    end
+
+    respond_to do |format|
+      format.json { render :json => { :last_id => @features.empty? ? 0 : @features.min.id, :data => output  } }
+    end
+  end
+
+
   #  GET    /licservers/:licserver_id/features/:feature_id/users(.:format)
   # get a list of current users from params[:licserver_id] using features params[:feature_id] 
   def users

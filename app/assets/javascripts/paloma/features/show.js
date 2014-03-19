@@ -162,12 +162,14 @@
           dataType:'json', 
           beforeSend: function(){
             $('#load-older').attr('disabled', 'disabled');
+            $('#dump-everything').attr('disabled', 'disabled');
             chart_handle.showLoading();
           },
           complete: function(){
             chart_handle.redraw();
             chart_handle.hideLoading();
             $('#load-older').removeAttr('disabled');
+            $('#dump-everything').removeAttr('disabled');
           }
         }).done( function(data, textStatus, jqXHR){
           for(i=0; i < data['data'][0]['data'].length; i++){
@@ -177,6 +179,30 @@
           $('.daily-graph').attr('data-last-point', data['last_id']);
         });
       
+      });
+
+      //dump eveyrthing into the graph (this can take a while)
+      $('#dump-everything').click( function(){
+        var data_load_path = '/licservers/' + $('.daily-graph').attr('data-licserver') + '/features/' + 
+          $('.daily-graph').attr('data-feature') + '/data_dump';
+        chart_handle = $('.daily-graph').highcharts();
+
+        $.ajax(data_load_path, {
+          dataType:'json',
+          beforeSend: function(){
+            $('#load-older').remove();
+            $('#dump-everything').attr('disabled', 'disabled');
+            chart_handle.showLoading();
+          },
+          complete: function(){
+            //chart_handle.redraw();
+            chart_handle.hideLoading();
+            $('#dump-everything').remove();
+          }
+        }).done( function(data, textStatus, jqXHR){
+          chart_handle.series[0].setData(data['data'][0]['data'], true);
+          chart_handle.series[1].setData(data['data'][1]['data'], true);
+        }); 
       });
 
     });

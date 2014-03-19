@@ -13,6 +13,9 @@
     %h3 Daily Usage
     .daily-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
     .daily-graph-controls
+      %button#dump-everything.btn
+        %i.fa.fa-download
+        Load all Data
       %button#load-older.btn{ :disabled => true }
         %i.fa.fa-fast-backward 
         Load Older Data

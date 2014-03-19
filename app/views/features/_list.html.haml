@@ -6,5 +6,5 @@
     .accordion-body.collapse{ :id => 'licserver-' + licserver.id.to_s + '-features-' + feature[:name] }
       .accordion-inner
         .features-info
-          = link_to fa_icon('link'), licserver_feature_path(licserver.id, feature[:name]), :class => 'btn' 
+          = link_to fa_icon('info', :text => 'More Info'), licserver_feature_path(licserver.id, feature[:name]), :class => 'btn' 
         .features-graph

@@ -11,6 +11,7 @@ Fireworks::Application.routes.draw do
       get "monthly"
       get "kill"
       get 'users'
+      get 'data_dump'
     end
     resources :tags
     post "update_settings"
@@ -30,6 +31,7 @@ Fireworks::Application.routes.draw do
   resources :tags do
     collection do
       get 'gen_accordion'
+      get 'search'
     end
     get 'gen_licservers'
   end

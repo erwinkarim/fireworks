@@ -52,4 +52,20 @@ class TagsController < ApplicationController
     end
   end
 
+
+  # GET    /tags/search(.:format)
+  # options =>
+  #   query   search term query
+  def search
+    query = (params.has_key? :query) ? query = '%' + params[:query] + '%' : ''
+    @tags = Tag.select('title').uniq.where{ (title.matches query) }.limit(20)
+    respond_to do |format|
+      format.html{ render :partial => 'display', :locals => { :tags => @tags } }
+      format.json {
+        init_hash = { :options => [] }
+        @tags.each{ |x| init_hash[:options] << x.title }
+        render :json => init_hash 
+      }
+    end
+  end
 end
