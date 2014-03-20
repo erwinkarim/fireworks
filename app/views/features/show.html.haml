@@ -13,12 +13,14 @@
     %h3 Daily Usage
     .daily-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
     .daily-graph-controls
-      %button#dump-everything.btn
-        %i.fa.fa-download
+      %button#dump-everything.btn{ :disabled => true }
+        %i.fa.fa-bar-chart-o
         Load all Data
       %button#load-older.btn{ :disabled => true }
         %i.fa.fa-fast-backward 
         Load Older Data
+      = link_to fa_icon('download', :text => 'Download XML Data'), 
+        licserver_feature_data_dump_path(@licserver.id, params[:id], :format => :xml) , :class => 'btn', :format => :xml
 .row
   .span10.offset1
     %h3 Monthly Frequency

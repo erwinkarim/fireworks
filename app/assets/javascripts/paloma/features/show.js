@@ -57,6 +57,7 @@
                     //for now it's slow and lock up the browser
                     //recursive_data_load(data['last_id']);
                     $('#load-older').removeAttr('disabled');
+                    $('#dump-everything').removeAttr('disabled');
                     $('.daily-graph').attr('data-last-point', data['last_id']);
                   });
                 };
