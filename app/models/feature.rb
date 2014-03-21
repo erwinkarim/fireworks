@@ -1,6 +1,7 @@
 class Feature < ActiveRecord::Base
   belongs_to :licserver
-  attr_accessible :current, :max, :name
+  belongs_to :feature_header
+  attr_accessible :current, :max, :name, :licserver_id
   has_many :machine_features
   has_many :machines, :through => :machine_features
 
@@ -26,8 +27,18 @@ class Feature < ActiveRecord::Base
     sections.each do |section|
       feature_line = section.lines.grep(/Users/).first
       unless feature_line.nil? 
-        feature = @licserver.features.create( :name => feature_line.split(" ")[2].gsub(/:/, ''),
-          :current => feature_line.split[10], :max => feature_line.split[5]
+        #create new headers where necessary
+        feature_name = feature_line.split(" ")[2].gsub(/:/, '')
+        if ( @licserver.feature_headers.where(:name => feature_name ).empty? ) then
+          @licserver.feature_headers.create( :name => feature_name ).save!
+        end
+        
+        #feature = @licserver.features.create( :name => feature_line.split(" ")[2].gsub(/:/, ''),
+        #  :current => feature_line.split[10], :max => feature_line.split[5]
+        #)
+        feature = @licserver.feature_headers.where(:name => feature_name).first.features.create( 
+          :name => feature_name, :current => feature_line.split[10], :max => feature_line.split[5],
+          :licserver_id => @licserver.id
         )
         feature.save!
       end
@@ -54,7 +65,8 @@ class Feature < ActiveRecord::Base
       users << { :user => splited[0], :user_id => User.where(:name => splited[0]).map{|x| x.id }.first ,  :machine => splited[1],  
         :host_id => splited[2].split('/')[0], 
         :port_id => splited[2].split('/')[1], :handle => splited[3], 
-        :since => Time.parse(splited[4..5].reverse.join(" ")).to_datetime }
+        :since => Time.parse(splited[4..5].reverse.join(" ")).to_datetime , 
+        :lic_count => splited[6] }
     end
 
     return users
@@ -82,6 +94,23 @@ class Feature < ActiveRecord::Base
           @fToDestory.destroy 
         end
       end 
+    end
+  end
+
+  #maintainces function
+  #build feature_headers line from features that don't have feature_header_id
+  def self.build_feature_headers
+    transaction do
+      Feature.where(:feature_header_id => nil).each do |f|
+        #find the feature header, otherwise, built a new one
+        fh = Licserver.find(f.licserver_id).feature_headers.where(:name => f.name).first
+        if fh.nil? then
+          fh = Licserver.find(f.licserver_id).feature_headers.new( :name => f.name)
+          fh.save!
+        end 
+
+        f.update_attribute(:feature_header_id, fh.id)
+      end
     end
   end
 

@@ -137,6 +137,10 @@
     $(document).ready( function(){
       console.log('features/show loaded');
 
+      Highcharts.setOptions({
+        global: { useUTC:false }
+      });
+
       //load the daily graph
       load_daily_graph( $('.daily-graph:first') );
       load_monthly_histogram( $('.monthly-graph:first') );

@@ -4,7 +4,8 @@ class Licserver < ActiveRecord::Base
   validates_uniqueness_of :server, :scope => :port 
   validates :port, :inclusion => 1..65535, :allow_nil => true 
   has_many :tags, :dependent => :destroy 
-  has_many :features, :dependent => :destroy
+  has_many :feature_headers, :dependent => :destroy
+  has_many :features, :through => :feature_headers
   after_initialize :init
 
   def init

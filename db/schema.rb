@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140304034709) do
+ActiveRecord::Schema.define(:version => 20140321040618) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :precision => 38, :scale => 0, :default => 0
@@ -29,15 +29,28 @@ ActiveRecord::Schema.define(:version => 20140304034709) do
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
-  create_table "features", :force => true do |t|
-    t.string   "name"
-    t.integer  "current",      :precision => 38, :scale => 0
-    t.integer  "max",          :precision => 38, :scale => 0
+  create_table "feature_headers", :force => true do |t|
     t.integer  "licserver_id", :precision => 38, :scale => 0
+    t.integer  "feature_id",   :precision => 38, :scale => 0
+    t.string   "name"
     t.datetime "created_at",                                  :null => false
     t.datetime "updated_at",                                  :null => false
   end
 
+  add_index "feature_headers", ["feature_id"], :name => "i_feature_headers_feature_id"
+  add_index "feature_headers", ["licserver_id"], :name => "i_feature_headers_licserver_id"
+
+  create_table "features", :force => true do |t|
+    t.string   "name"
+    t.integer  "current",           :precision => 38, :scale => 0
+    t.integer  "max",               :precision => 38, :scale => 0
+    t.integer  "licserver_id",      :precision => 38, :scale => 0
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
+    t.integer  "feature_header_id", :precision => 38, :scale => 0
+  end
+
+  add_index "features", ["feature_header_id"], :name => "i_features_feature_header_id"
   add_index "features", ["licserver_id"], :name => "index_features_on_licserver_id"
 
   create_table "idle_users", :force => true do |t|

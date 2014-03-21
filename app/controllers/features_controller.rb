@@ -24,7 +24,8 @@ class FeaturesController < ApplicationController
   def list
     #in the future, would retrive from FeaturesSummary table which detect features headers instead of raw data as current format
     @licserver = Licserver.find(params[:licserver_id])
-    @features = @licserver.features.order('created_at desc').limit(200).pluck(:name).uniq.map{ |item| {:name => item}}
+    #@features = @licserver.features.order('created_at desc').limit(200).pluck(:name).uniq.map{ |item| {:name => item}}
+    @features = @licserver.feature_headers.map{ |item| { :name => item.name } }
     
     respond_to do |format|
       format.html { render :partial => 'list', :locals => { :features => @features, :licserver => @licserver } }
@@ -32,6 +33,7 @@ class FeaturesController < ApplicationController
     end
   end
 
+  # GET    /licservers/:licserver_id/features/:id(.:format) 
   def show
     @licserver = Licserver.find(params[:licserver_id])
     #@users = Feature.current_users(params[:licserver_id], params[:id])
