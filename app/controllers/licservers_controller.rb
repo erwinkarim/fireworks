@@ -20,8 +20,9 @@ class LicserversController < ApplicationController
     @tags = @licserver.tags
     #@features = @licserver.features.where{ created_at.gt (@licserver.features.last.created_at - 1.minute)}
     #@features = @licserver.features.where{ created_at.gt (licserver.features.last.created_at - 1.minute )}
-    @features = @licserver.features.order('created_at desc').limit(200).pluck(:name).uniq.
-      map{ |item| {:name => item}}
+    #@features = @licserver.features.order('created_at desc').limit(200).pluck(:name).uniq.
+    #  map{ |item| {:name => item}}
+    @features = @licserver.feature_headers.map{ |item| {:name => item.name } }
     if @features.empty? then
       @features = nil
     end

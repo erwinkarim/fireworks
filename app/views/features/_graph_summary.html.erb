@@ -1,4 +1,4 @@
-<%= javascript_include_tag "application" %>
+<%= content_for :other_javascript do %>
 <script type="text/javascript" charset="utf-8">
     Highcharts.setOptions({
         global: { useUTC: false }
@@ -91,4 +91,5 @@
       
     });
 </script>
+<% end %>
 <div id="summary_usage" style="height: <%= @features.size * 100 %>px"></div>

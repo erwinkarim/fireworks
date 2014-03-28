@@ -2,7 +2,8 @@ class FeaturesController < ApplicationController
   def index
     @licserver = Licserver.find(params[:licserver_id])
     if @licserver.features.count > 0 then
-      @features = @licserver.features.where("created_at > ?", Licserver.find(params[:licserver_id]).features.last.created_at - 1.minute)
+      #@features = @licserver.features.where("created_at > ?", Licserver.find(params[:licserver_id]).features.last.created_at - 1.minute)
+      @features = @licserver.feature_headers
     else 
       @features = nil
     end
@@ -95,7 +96,7 @@ class FeaturesController < ApplicationController
       limit(2000).order('features.id desc')
     output = [ { :name => 'current' , :data => [] }, { :name => 'max', :data => [] } ]
     @features.each do |x|
-      output[0][:data] << [x.created_at.to_i*1000, x.current]
+      output[0][:data] << [x.created_at.to_i*1000, x.current, x.id]
       output[1][:data] << [x.created_at.to_i*1000, x.max]
     end
 
@@ -134,6 +135,30 @@ class FeaturesController < ApplicationController
       format.html{ render :partial => 'users', 
         :locals => { :users => @users, :licserver => params[:licserver_id], :feature => params[:feature_id]  } 
       }
+    end
+  end
+
+  # GET    /licservers/:licserver_id/features/:feature_id/historical_users
+  # get a list of users based on historical data (time value on the graph since can't get id value from point info)
+  # options:-
+  #   time_id   required. the time (x) value that you get from the graph when clicked on the point
+  def historical_users
+      selected_time = Time.at( params[:time_id].to_i / 1000  ) 
+      time_range = (selected_time - 5.minutes)..(selected_time + 5.minutes)
+      licserver = params[:licserver_id].to_i
+      feature = params[:feature_id] 
+      @users =  User.where{ 
+        id.in Machine.where{ 
+          id.in MachineFeature.where( 
+            :feature_id => Licserver.find(licserver).feature_headers.where(:name => feature).first.features.where{ 
+              created_at.in time_range 
+            }.first.id 
+          ).map{ |x| x.machine_id } 
+        }.map{ |x| x.user_id } 
+      }
+
+    respond_to do |format|
+      format.html{ render :partial => 'historical_users', :locals => { :users => @users } }
     end
   end
 end

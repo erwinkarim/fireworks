@@ -100,16 +100,19 @@ class Feature < ActiveRecord::Base
   #maintainces function
   #build feature_headers line from features that don't have feature_header_id
   def self.build_feature_headers
-    transaction do
-      Feature.where(:feature_header_id => nil).each do |f|
-        #find the feature header, otherwise, built a new one
-        fh = Licserver.find(f.licserver_id).feature_headers.where(:name => f.name).first
-        if fh.nil? then
-          fh = Licserver.find(f.licserver_id).feature_headers.new( :name => f.name)
-          fh.save!
-        end 
+    #rebuild 1000 at a time
+    while Feature.where(:feature_header_id => nil).count != 0
+      transaction do 
+        Feature.where(:feature_header_id => nil).order('id desc').limit(5000).each do |f|
+          #find the feature header, otherwise, built a new one
+          fh = Licserver.find(f.licserver_id).feature_headers.where(:name => f.name).first
+          if fh.nil? then
+            fh = Licserver.find(f.licserver_id).feature_headers.new( :name => f.name)
+            fh.save!
+          end 
 
-        f.update_attribute(:feature_header_id, fh.id)
+          f.update_attribute(:feature_header_id, fh.id)
+        end
       end
     end
   end

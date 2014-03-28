@@ -12,6 +12,7 @@ Fireworks::Application.routes.draw do
       get "kill"
       get 'users'
       get 'data_dump'
+      get 'historical_users'
     end
     resources :tags
     post "update_settings"

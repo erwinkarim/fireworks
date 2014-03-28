@@ -44,7 +44,13 @@
                     //add current data
                     //better wayt load 10000 data points at a time
                     for(i=0; i < data['data'][0]['data'].length; i++){
-                      chart_handle.series[0].addPoint( data['data'][0]['data'][i], false, false );
+                      //chart_handle.series[0].addPoint( data['data'][0]['data'][i], false, false );
+                      chart_handle.series[0].addPoint( {
+                         x: data['data'][0]['data'][i][0],
+                         y: data['data'][0]['data'][i][1],
+                         id: data['data'][0]['data'][i][2],
+                         name: data['data'][0]['data'][i][2]
+                        }, false, false );
                       chart_handle.series[1].addPoint( data['data'][1]['data'][i], false, false );
                     }
 
@@ -79,10 +85,29 @@
           ], selected : 2 // all
         } ,
         series:[
-          { name:'current', data:[ ] },
+          { name:'current', data:[ ] , turboThreshold: 0 },
           { name:'max' , data:[ ]}
         ],
         plotOptions: {
+          series:{
+            allowPointSelect: true,
+            events:{
+              click:function(e){
+                console.log(e.point.x);
+              
+                //load new users when historical user listing is active 
+                if( $('#historical-users').hasClass('active')  ){
+                  $('#historical-user-listings').find('tbody').empty();
+                  load_path = '/licservers/' + $('.daily-graph').attr('data-licserver') +  '/features/' + 
+                    $('.daily-graph').attr('data-feature') + '/historical_users';
+                  $.get( load_path, { time_id:e.point.x } , function(data,textStatus,jqXHR){
+                    $('#historical-user-listings').find('tbody').append(data).ready( function(){
+                    });
+                  }, 'html' );
+                }
+              }
+            }
+          }
         }
       }); // handle.highcharts('StockChart', {
     };

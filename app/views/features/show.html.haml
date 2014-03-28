@@ -27,16 +27,34 @@
     .monthly-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
 .row
   .span10.offset1
-    %table#user-listings.table.table-striped.table-hover{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
-      %caption
-        %strong User listings
-        %button#reload-users.btn.btn-info
-          %i.fa.fa-refresh
-      %thead
-        %tr
-          %th User Info
-          %th.pull-right Kill?
-      %tbody
-        %tr
-          %td.loading-users( colspan=2 )
-            %i.fa.fa-spinner.fa-spin.fa-4x
+    %ul.nav.nav-tabs#user-tabs
+      %li.active
+        %a{ :href => '#current-users', :data => { :toggle => 'tab' } } Current
+      %li
+        %a{ :href => '#historical-users' , :data => { :toggle => 'tab' } } Historical
+    .tab-content
+      .tab-pane.active#current-users
+        %table#user-listings.table.table-striped.table-hover{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
+          %caption
+            %strong User listings
+            %button#reload-users.btn.btn-info
+              %i.fa.fa-refresh
+          %thead
+            %tr
+              %th User Info
+              %th.pull-right Kill?
+          %tbody
+            %tr
+              %td.loading-users( colspan=2 )
+                %i.fa.fa-spinner.fa-spin.fa-4x
+      .tab-pane#historical-users
+        %table#historical-user-listings.table.table-striped.table-hover{ :data => { :licserver => @licserver.id, 
+          :feature => params[:id] } }
+          %caption
+            %strong Historical User Listing
+          %thead
+            %tr
+              %th User Info
+          %tbody
+            %tr
+              %td.historical-users-list( colspan=2 ) Click on the graph to get historical user listings
