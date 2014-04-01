@@ -145,20 +145,20 @@ class FeaturesController < ApplicationController
   def historical_users
       selected_time = Time.at( params[:time_id].to_i / 1000  ) 
       time_range = (selected_time - 5.minutes)..(selected_time + 5.minutes)
-      licserver = params[:licserver_id].to_i
-      feature = params[:feature_id] 
-      @users =  User.where{ 
-        id.in Machine.where{ 
-          id.in MachineFeature.where( 
-            :feature_id => Licserver.find(licserver).feature_headers.where(:name => feature).first.features.where{ 
-              created_at.in time_range 
-            }.first.id 
-          ).map{ |x| x.machine_id } 
-        }.map{ |x| x.user_id } 
-      }
+      licserver = Licserver.find(params[:licserver_id])
+      #feature = params[:feature_id] 
+      feature = licserver.feature_headers.where(:name => params[:feature_id]).first.features.where{
+        created_at.in time_range
+      }.first
+      @users =  
+        Machine.where{ 
+          id.in MachineFeature.where( :feature_id => feature.id ).map{ |x| x.machine_id } 
+        }.joins{ user }.select{ 'users.id as user_id, users.name as username, machines.name as machinename' }.map{
+          |x| { :user_id => x.user_id, :username => x.username, :machinename => x.machinename }
+        }
 
     respond_to do |format|
-      format.html{ render :partial => 'historical_users', :locals => { :users => @users } }
+      format.html{ render :partial => 'historical_users', :locals => { :users => @users, :feature => feature } }
     end
   end
 end

@@ -10,6 +10,10 @@
     = params[:id]
 .row
   .span10.offset1
+    %h3 Monthly Frequency
+    .monthly-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
+.row
+  .span10.offset1
     %h3 Daily Usage
     .daily-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
     .daily-graph-controls
@@ -21,10 +25,7 @@
         Load Older Data
       = link_to fa_icon('download', :text => 'Download XML Data'), 
         licserver_feature_data_dump_path(@licserver.id, params[:id], :format => :xml) , :class => 'btn', :format => :xml
-.row
-  .span10.offset1
-    %h3 Monthly Frequency
-    .monthly-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
+    %br
 .row
   .span10.offset1
     %ul.nav.nav-tabs#user-tabs

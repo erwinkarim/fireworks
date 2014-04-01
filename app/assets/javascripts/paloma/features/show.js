@@ -97,11 +97,11 @@
               
                 //load new users when historical user listing is active 
                 if( $('#historical-users').hasClass('active')  ){
-                  $('#historical-user-listings').find('tbody').empty();
+                  $('#historical-user-listings').empty();
                   load_path = '/licservers/' + $('.daily-graph').attr('data-licserver') +  '/features/' + 
                     $('.daily-graph').attr('data-feature') + '/historical_users';
                   $.get( load_path, { time_id:e.point.x } , function(data,textStatus,jqXHR){
-                    $('#historical-user-listings').find('tbody').append(data).ready( function(){
+                    $('#historical-user-listings').append(data).ready( function(){
                     });
                   }, 'html' );
                 }
