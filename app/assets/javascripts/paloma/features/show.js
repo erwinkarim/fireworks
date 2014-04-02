@@ -23,7 +23,7 @@
         chart: {
           events:{
             load: function(){
-              console.log('lazy load daily data');
+              //console.log('lazy load daily data');
               var chart_handle = this;
               var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 
                 handle.attr('data-feature') + '/get_data';
@@ -39,7 +39,7 @@
                   $.ajax( data_load_path, {
                     dataType:'json', data:data_header
                   }).done( function(data, textStatus, jqXHR){
-                    console.log('load data into the graph upto id ' + data['last_id'] )
+                    //console.log('load data into the graph upto id ' + data['last_id'] )
               
                     //add current data
                     //better wayt load 10000 data points at a time
@@ -93,7 +93,7 @@
             allowPointSelect: true,
             events:{
               click:function(e){
-                console.log(e.point.x);
+                //console.log(e.point.x);
               
                 //load new users when historical user listing is active 
                 if( $('#historical-users').hasClass('active')  ){
@@ -119,7 +119,7 @@
         chart: {
           events:{
             load: function(){
-              console.log('lazy load monthly chart');
+              //console.log('lazy load monthly chart');
               var chart_handle = this;
               load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + handle.attr('data-feature') +
                 '/monthly';
@@ -160,7 +160,7 @@
 
     // Do something here.
     $(document).ready( function(){
-      console.log('features/show loaded');
+      //console.log('features/show loaded');
 
       Highcharts.setOptions({
         global: { useUTC:false }

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140321040618) do
+ActiveRecord::Schema.define(:version => 20140402064524) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :precision => 38, :scale => 0, :default => 0
@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(:version => 20140321040618) do
     t.string   "name"
     t.datetime "created_at",                                  :null => false
     t.datetime "updated_at",                                  :null => false
+    t.datetime "last_seen"
   end
 
   add_index "feature_headers", ["feature_id"], :name => "i_feature_headers_feature_id"

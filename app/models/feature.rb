@@ -30,7 +30,7 @@ class Feature < ActiveRecord::Base
         #create new headers where necessary
         feature_name = feature_line.split(" ")[2].gsub(/:/, '')
         if ( @licserver.feature_headers.where(:name => feature_name ).empty? ) then
-          @licserver.feature_headers.create( :name => feature_name ).save!
+          @licserver.feature_headers.create( :name => feature_name, :last_seen => DateTime.now ).save!
         end
         
         #feature = @licserver.features.create( :name => feature_line.split(" ")[2].gsub(/:/, ''),
@@ -40,6 +40,7 @@ class Feature < ActiveRecord::Base
           :name => feature_name, :current => feature_line.split[10], :max => feature_line.split[5],
           :licserver_id => @licserver.id
         )
+        @licserver.feature_headers.where(:name => feature_name).first.update_attribute(:last_seen, DateTime.now)
         feature.save!
       end
       user_lines = section.lines.grep(/start/)

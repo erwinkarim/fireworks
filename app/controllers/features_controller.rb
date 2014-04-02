@@ -3,7 +3,7 @@ class FeaturesController < ApplicationController
     @licserver = Licserver.find(params[:licserver_id])
     if @licserver.features.count > 0 then
       #@features = @licserver.features.where("created_at > ?", Licserver.find(params[:licserver_id]).features.last.created_at - 1.minute)
-      @features = @licserver.feature_headers
+      @features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }
     else 
       @features = nil
     end
@@ -26,7 +26,7 @@ class FeaturesController < ApplicationController
     #in the future, would retrive from FeaturesSummary table which detect features headers instead of raw data as current format
     @licserver = Licserver.find(params[:licserver_id])
     #@features = @licserver.features.order('created_at desc').limit(200).pluck(:name).uniq.map{ |item| {:name => item}}
-    @features = @licserver.feature_headers.map{ |item| { :name => item.name } }
+    @features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| { :name => item.name } }
     
     respond_to do |format|
       format.html { render :partial => 'list', :locals => { :features => @features, :licserver => @licserver } }
@@ -150,12 +150,16 @@ class FeaturesController < ApplicationController
       feature = licserver.feature_headers.where(:name => params[:feature_id]).first.features.where{
         created_at.in time_range
       }.first
-      @users =  
-        Machine.where{ 
-          id.in MachineFeature.where( :feature_id => feature.id ).map{ |x| x.machine_id } 
-        }.joins{ user }.select{ 'users.id as user_id, users.name as username, machines.name as machinename' }.map{
-          |x| { :user_id => x.user_id, :username => x.username, :machinename => x.machinename }
-        }
+      if feature.nil? then
+        @users = []
+      else
+        @users =  
+          Machine.where{ 
+            id.in MachineFeature.where( :feature_id => feature.id ).map{ |x| x.machine_id } 
+          }.joins{ user }.select{ 'users.id as user_id, users.name as username, machines.name as machinename' }.map{
+            |x| { :user_id => x.user_id, :username => x.username, :machinename => x.machinename }
+          }
+      end
 
     respond_to do |format|
       format.html{ render :partial => 'historical_users', :locals => { :users => @users, :feature => feature } }

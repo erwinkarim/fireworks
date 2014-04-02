@@ -1,8 +1,12 @@
-- users.each do |user|
+- if users.empty? then 
   %tr
-    %td
-      = link_to(user[:user], user[:user_id].nil? ? '#' : user_path(user[:user_id]) )  + '@' + user[:machine] + ' since ' + user[:since].to_s + ( user[:lic_count].nil? ? '' : ( ' (' + user[:lic_count] + ' licenses)' ) )
-    %td
-      = link_to "X", licserver_feature_kill_path( licserver, feature , :handle => user[:handle], :host_id => user[:host_id], 
-        :port_id => user[:port_id]), :class => 'close'  
+    %td(colspan=2) No Users detected
+- else
+  - users.each do |user|
+    %tr
+      %td
+        = link_to(user[:user], user[:user_id].nil? ? '#' : user_path(user[:user_id]) )  + '@' + user[:machine] + ' since ' + user[:since].to_s + ( user[:lic_count].nil? ? '' : ( ' (' + user[:lic_count] + ' licenses)' ) )
+      %td
+        = link_to "X", licserver_feature_kill_path( licserver, feature , :handle => user[:handle], :host_id => user[:host_id], 
+          :port_id => user[:port_id]), :class => 'close'  
 
