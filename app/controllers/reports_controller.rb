@@ -1,10 +1,11 @@
 class ReportsController < ApplicationController
   #  GET    /report_schedule/:report_schedule_id/reports
   def index
-    @reports = ReportSchedule.find(params[:report_schedule_id]).reports
+    @reports = ReportSchedule.find(params[:report_schedule_id]).reports.order(:id)
 
     respond_to do |format|
-      format.html # index.html.erb
+      #format.html # index.html.erb
+      format.html { render :partial => 'list', :locals => { :reports => @reports } }
       format.json { render json: @reports.order(:id).map{ |x| {:created_at => x.created_at, :id =>  x.id, 
         :schedule_id => ( params.has_key?(:report_schedule_id) ? params[:report_schedule_id] : nil), 
         :status => x.status } } 

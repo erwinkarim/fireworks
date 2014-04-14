@@ -155,6 +155,9 @@
       $.get( load_path, null, function( data, textStatus, jqXHR) {
         handle.find('tbody').empty();
         handle.find('tbody').append(data);
+        $('#user-list-last-update').empty().append(
+          $.parseHTML('Updated: ' + (new Date( $.now()).toLocaleString() ) )
+        );
       }, 'html' ); 
     };
 
