@@ -32,6 +32,24 @@
       });
     };
 
+    var add_licserver_listings = function(handle){
+    };
+
+    //handle changes in monitored object dropdown selection. handle changes when the category changes
+    var setup_monitored_obj_dropdown = function(handle){
+      //the handle is the category object
+      handle.bind('change',  function(){
+        //update the licserver listing nearest to this object
+        $.get( '/tags/' + $(this).val() + '/gen_licservers', 
+          null,
+          function(data, textStatus, jqXHR){
+            handle.parent().find('#monitored_licserver_:first').empty().append(data); 
+          },
+          'html' 
+        );
+      });
+    };
+
     //setup the accordion body as it get loaded
     // ab_handle must be class .accordion-body created by _schedule_accordion_group template
     var setup_accordion_body = function(ab_handle){
@@ -116,42 +134,36 @@
         };
       }); // ab_handle.on('show', function(){
 
+      //bind change action on monotired object category dropdown
+      ab_handle.find('.monitored_cat').each( function(index) {
+        //$(this).bind('change', setup_monitored_obj_dropdown($(this)) );  
+        setup_monitored_obj_dropdown( $(this) );
+      });
+
       //bind adding new licservers button
       ab_handle.find('.add-licserver').click(function(){
         var handle = $(this).closest('.licserver-listing').find('.licserver:last');
     
-        handle.after(
-          $('<div/>', { class:'controls licserver', style:'padding:5px 0px;' }).append(
-            $('<select/>', { name:'monitored_licserver[]' })
-          ).append(
-            $.parseHTML(' ')
-          ).append(
-            $('<button/>', { class:'btn btn-danger delete-licserver', type:'button' }).append(
-              $('<i/>', { class:'fa fa-minus' })
-            ).click( function(){
-              delete_licserver($(this) );
-            })
-          ).append(
-            $('<br/>')
-          )
-        );
-      
-        //get licserver listings and convert them into options tag
-        $.ajax('/licservers', {
-          dataType:'json'
-        }).done( function( data, textStatus, jqXHR){
-          $.each(data, function(index,element){
-            handle.next().find('select').append(
-              $('<option/>', { text:(element.port==null ? '' : element.port) + '@' + element.server, 
-                value:element.id })
-            );
-          });
-        }); //$.ajax('/licservers', { ... 
+        //generate new listings from website
+        $.get( '/report_schedules/gen_monitored_obj_listings', function(data){
+            handle.after(data).ready( function(){
+              //ensure that all minus is enabled and works
+              handle.closest('.licserver-listing').find('.licserver').each(function(index, e){
+                $(this).find('.delete-licserver').removeAttr('disabled');
+              });
 
-        //check if there's disabled button and enable it back
-        if( handle.find('.delete-licserver:disabled').length > 0){
-          handle.find('.delete-licserver:disabled').removeAttr('disabled');
-        }
+              $(this).find('.delete-licserver').click( function(){
+                delete_licserver($(this));
+              });
+
+              //ensure that the dropdown action of the category works
+              $(this).find('.monitored_cat').bind('change', function(){
+                setup_monitored_obj_dropdown( $(this) );
+              });
+            })
+          }, null, 
+          'html'
+        ); // $.get( '/report_schedules/gen_monitored_obj_listings', function(data){
       }); // ab_handle.find('.add-licserver').click(function(){
 
       //when submiting the form, do sanity checks

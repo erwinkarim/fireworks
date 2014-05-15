@@ -68,4 +68,16 @@ class TagsController < ApplicationController
       }
     end
   end
+
+  # GET    /tags/:tag_id/gen_licservers(.:format)
+  def gen_licservers
+    @licservers = Licserver.where(
+      :id => Tag.where(:title => params[:tag_id]).pluck(:licserver_id) 
+    )
+
+    respond_to do |format|
+      format.html{ render :partial => 'licservers_options_tags', :locals => { :licservers => @licservers } }
+      format.json{ render :json => @licservers } 
+    end
+  end
 end

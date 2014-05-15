@@ -52,6 +52,9 @@ Fireworks::Application.routes.draw do
 
   resources :report_schedules do
     get 'accordion'
+    collection do 
+      get 'gen_monitored_obj_listings'
+    end
     resources :reports do
     end
   end

@@ -1,0 +1,7 @@
+.controls.licserver{:style => 'padding:5px 0px;' }
+  = select_tag 'monitored_type[]',
+    options_for_select(Tag.all.map{ |x| x.title }.uniq.sort), { :class => 'monitored_cat' }
+  = select_tag 'monitored_licserver[]', 
+    options_for_select(Licserver.where(:id => Tag.where(:title => Tag.all.map{ |x| x.title}.uniq.sort.first).pluck(:licserver_id)  ).map{ |x| [x.port.to_s + '@' + x.server, x.id] } )
+  %button.btn.btn-danger{ :class => 'delete-licserver', :type => 'button', :disabled => (schedule.monitored_obj.nil? || YAML::load(schedule.monitored_obj).count == 1) }
+    %i.fa.fa-minus

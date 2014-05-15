@@ -39,10 +39,12 @@
                     options_for_select(ReportSchedule::TIME_SCOPE.values, schedule.time_scope)
               .control-group{ :class => 'licserver-listing' }
                 %label.control-label Monitored Object
-                - (schedule.monitored_obj.nil? ? { :'0' => '_all'} : YAML::load(schedule.monitored_obj)).each do |key,value|
+                - (schedule.monitored_obj.nil? ? { :'0' => Tag.first.title } : YAML::load(schedule.monitored_obj)).each do |key,value|
                   .controls.licserver{:style => 'padding:5px 0px;' }
+                    = select_tag 'monitored_type[]',
+                      options_for_select(Tag.all.map{ |x| x.title }.uniq.sort, value ), { :class => 'monitored_cat' }
                     = select_tag 'monitored_licserver[]', 
-                      options_for_select(Licserver.all.map{ |x| [x.port.to_s + '@' + x.server, x.id] }, key)
+                      options_for_select(Licserver.joins{tags}.where{ tags.title.eq value.to_s }.map{ |x| [x.port.to_s + '@' + x.server, x.id] }, key)
                     %button.btn.btn-danger{ :class => 'delete-licserver', :type => 'button', :disabled => (schedule.monitored_obj.nil? || YAML::load(schedule.monitored_obj).count == 1) }
                       %i.fa.fa-minus
                 .controls

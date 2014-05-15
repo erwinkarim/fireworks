@@ -73,4 +73,18 @@ class ReportSchedulesController < ApplicationController
       format.html { render :partial => 'schedule-accordion-group', :locals => { :schedule => @rs } }
     end
   end
+
+  #  GET /report_schedules/:report_schedule_id/gen_monitored_obj_listings(.:format)
+  def gen_monitored_obj_listings
+
+    if params[:report_schedule_id] = 0 then
+      @schedule = ReportSchedule.new
+    else 
+      @schedule = ReportSchedule.find(params[:report_schedule_id]) 
+    end
+
+    respond_to do |format|
+      format.html{ render :partial => 'monitored_obj_listings', :locals => { :schedule => @schedule}  }
+    end
+  end
 end
