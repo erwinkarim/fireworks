@@ -15,15 +15,19 @@ class ReportSchedulesController < ApplicationController
   end
 
   # PUT    /report_schedule/:id(.:format)
-  # extra parameters : {"utf8"=>"â "authenticity_token"=>"xuLCmTu/pISlBs0LtCK+xP/Fv/NbZiTahoh8VLstkws=", "
-  #   "title"=>"test", "time_scope"=>"Last Month", "monitored_licserver"=>["16", "18"], "schedule_terms"=>"true", "id"=>"10020"}
+  # extra parameters : {"utf8"=>"â "authenticity_token"=>"xPqgE9sM9Fa5ZNkDQKMY9gL1qLxcffcvDHMdy/sdBSE=", "
+  #   title"=>"petrel", "time_scope"=>"Last Week", "monitored_type"=>["petrel", "petrel"], "monitored_licserver"=>["1", "5"], 
+  #   "schedule_terms"=>"true", "id"=>"10080"}
   def update
     @rs = ReportSchedule.find(params[:id])
 
     @rs.update_attributes(
       :title => params[:title], 
       :time_scope => params[:time_scope],
-      :monitored_obj => params[:monitored_licserver].uniq.inject({}){ |hash,e| hash.merge!( e.to_sym => :'_all') }.to_yaml,
+      #:monitored_obj => params[:monitored_licserver].uniq.inject({}){ |hash,e| hash.merge!( e.to_sym => :'_all') }.to_yaml,
+      :monitored_obj => (0..params[:monitored_licserver].count-1).each.inject({}){ 
+        |m,b| m =m.merge( { params[:monitored_licserver][b] => params[:monitored_type][b] } ) 
+      }.to_yaml,
       :scheduled => params[:schedule_terms] == 'true'
     )
 
@@ -42,7 +46,10 @@ class ReportSchedulesController < ApplicationController
     @rs = ReportSchedule.new(
       :title => params[:title],
       :time_scope => params[:time_scope],
-      :monitored_obj => params[:monitored_licserver].uniq.inject({}){ |hash,e| hash.merge!( e.to_sym => :'_all') }.to_yaml,
+      #:monitored_obj => params[:monitored_licserver].uniq.inject({}){ |hash,e| hash.merge!( e.to_sym => :'_all') }.to_yaml,
+      :monitored_obj => (0..params[:monitored_licserver].count-1).each.inject({}){ 
+        |m,b| m =m.merge( { params[:monitored_licserver][b] => params[:monitored_type][b] } ) 
+      }.to_yaml,
       :scheduled => params[:schedule_terms] == 'true'
     )
     @rs.save!
