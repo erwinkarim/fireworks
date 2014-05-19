@@ -8,3 +8,4 @@
 //= require ./machines/_manifest.js
 //= require ./tags/_manifest.js
 //= require ./features/_manifest.js
+//= require ./licservers/_manifest.js
