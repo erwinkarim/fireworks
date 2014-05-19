@@ -121,6 +121,7 @@ class FeaturesController < ApplicationController
     respond_to do |format|
       format.json { render :json => { :last_id => @features.empty? ? 0 : @features.min.id, :data => output  } }
       format.xml { send_data @features.to_xml, :filename => params[:feature_id].to_s + '.xml' }
+      format.csv { }
     end
   end
 

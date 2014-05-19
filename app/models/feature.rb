@@ -193,4 +193,10 @@ class Feature < ActiveRecord::Base
 
     return features
   end
+
+  # generate csv from features of licserver_id bearing the feature_name
+  def self.to_csv(licserver_id, feature_name)
+    csv_string = String.new
+  
+  end
 end
