@@ -2,7 +2,7 @@
   %h1
     = @report.title
     %small 
-      = 'between' + @report.start_date.strftime('%B %d, %Y') + ' and ' + @report.end_date.strftime('%B %d, %Y') 
+      = 'between ' + @report.start_date.strftime('%B %d, %Y') + ' and ' + @report.end_date.strftime('%B %d, %Y') 
 
 - YAML::load(@report.body).each do |key,element| 
   .row

@@ -28,7 +28,7 @@ class TagsController < ApplicationController
         if @licservers.empty? then
           render status: :not_found
         else 
-          if params[:mode] = 'list' then
+          if params[:mode] == 'list' then
             render :partial => 'list_licservers' , :locals => { :licservers => @licservers, :tag => params[:id] } 
           else
             render :partial => 'display_licservers' , :locals => { :licservers => @licservers, :tag => params[:id] } 
