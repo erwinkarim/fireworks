@@ -22,12 +22,12 @@
     $(document).ready(function(){
       console.log('licserver show loaded');
 
-      $('.tags').popover({
+      $('.tags').click( function(e){ e.preventDefault(); }).popover({
         title:'Licservers',
         content:function(){
           //get the list of licsevers and display the list
           var handle = $(this);
-          $.get('/tags/' + $(this).attr('data-title'), { mode:'list' },  function(data){ 
+          $.get('/tags/' + $(this).attr('data-tag-title'), { mode:'list' },  function(data){ 
             handle.parent().find('.popover-content').empty().append(data);
           }, 'html');
         }

@@ -9,3 +9,7 @@
     %td
       = link_to 'xml', report_schedule_report_path(report.report_schedule_id, report.id, :format => :xml), :class => 'btn btn-mini'
       = link_to 'csv', report_schedule_report_path(report.report_schedule_id, report.id, :format => :csv), :class => 'btn btn-mini'
+- pendings.each do |pending|
+  %tr
+    %td{ :colspan => 4 } 
+      = 'Pending job submited at ' + pending.created_at.localtime.to_s 

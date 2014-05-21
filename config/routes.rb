@@ -63,6 +63,7 @@ Fireworks::Application.routes.draw do
   get "welcome/about"
   get "welcome/tech"
   get "welcome/download_client"
+  get 'welcome/notice'
 
   resources :users do
     collection do

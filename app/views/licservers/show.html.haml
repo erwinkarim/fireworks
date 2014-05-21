@@ -38,7 +38,7 @@
       %span.label.label-warning No Tags
     - else
       - @tags.each do |tag|
-        = link_to tag.title, '#', :class => 'btn btn-mini tags', :data => { :id => tag.id, :title => tag.title, :toggle => 'popover' }
+        = link_to tag.title, '#', :class => 'btn btn-mini tags', :data => { :id => tag.id, :'tag-title' => tag.title, }
         = link_to 'X', tag_path(tag.id), :method => :delete, :confirm => 'Are You sure?'
   .row
     .span12

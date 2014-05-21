@@ -163,7 +163,7 @@ class FeaturesController < ApplicationController
       end
 
     respond_to do |format|
-      format.html{ render :partial => 'historical_users', :locals => { :users => @users, :feature => feature } }
+      format.html{ render :partial => 'historical_users', :locals => { :users => @users, :feature => feature, :selected_time => (feature.nil? ? selected_time : feature.created_at) } }
     end
   end
 end

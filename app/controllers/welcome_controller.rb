@@ -27,4 +27,8 @@ class WelcomeController < ApplicationController
 
   def tech
   end
+
+  def notice
+    render :partial => 'notice', :locals => { :msg => params[:msg] }
+  end
 end
