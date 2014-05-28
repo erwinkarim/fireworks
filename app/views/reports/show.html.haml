@@ -20,7 +20,7 @@
                   %tr
                     %th Feature
                     %th Seat Count
-                    %th{ :data => { :defaultsort => 'desc' } }Usage
+                    %th{ :data => { :defaultsort => 'desc' } }Usage (%)
                 %tbody
                   - ee.each do |stats|
                     %tr
@@ -29,4 +29,4 @@
                       %td
                         = link_to stats[1]
                       %td
-                        = stats[2].nil? ? 0 : number_to_percentage(stats[2].to_f*100 / stats[3], format: '%n %')
+                        = stats[2].nil? ? 0 : number_with_precision(stats[2].to_f*100 / stats[3], { :precision => 2 } )
