@@ -66,3 +66,7 @@ gem 'foreman'
 #to excel
 #
 gem 'spreadsheet'
+
+#user authentication
+gem 'devise'
+gem 'devise_ldap_authenticatable'
