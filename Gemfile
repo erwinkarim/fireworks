@@ -8,10 +8,10 @@ ruby '1.9.3'
 
 gem 'sqlite3'
 gem 'yaml_db'
-gem 'mysql2'
+#gem 'mysql2'
 gem 'ruby-oci8', '~> 2.1.0'
 gem 'activerecord-oracle_enhanced-adapter', '~> 1.4.0'
-gem 'activerecord-mysql2-adapter'
+#gem 'activerecord-mysql2-adapter'
 
 
 # Gems used only for assets and not required

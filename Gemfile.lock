@@ -22,8 +22,6 @@ GEM
       activesupport (= 3.2.8)
       arel (~> 3.0.2)
       tzinfo (~> 0.3.29)
-    activerecord-mysql2-adapter (0.0.3)
-      mysql2
     activerecord-oracle_enhanced-adapter (1.4.2)
     activeresource (3.2.8)
       activemodel (= 3.2.8)
@@ -90,7 +88,6 @@ GEM
       treetop (~> 1.4.8)
     mime-types (1.19)
     multi_json (1.8.4)
-    mysql2 (0.3.11)
     net-ldap (0.5.1)
     orm_adapter (0.5.0)
     paloma (2.0.6)
@@ -177,7 +174,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activerecord-mysql2-adapter
   activerecord-oracle_enhanced-adapter (~> 1.4.0)
   coffee-rails (~> 3.2.1)
   daemons
@@ -191,7 +187,6 @@ DEPENDENCIES
   jquery-ui-rails
   less-rails
   libv8
-  mysql2
   paloma
   rails (= 3.2.8)
   ruby-oci8 (~> 2.1.0)

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140805023828) do
+ActiveRecord::Schema.define(:version => 20140402064524) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :precision => 38, :scale => 0, :default => 0
@@ -71,6 +71,16 @@ ActiveRecord::Schema.define(:version => 20140805023828) do
     t.boolean  "to_delete",    :precision => 1,  :scale => 0
   end
 
+  create_table "machine_feature_data", :force => true do |t|
+    t.integer  "machine_id", :precision => 38, :scale => 0
+    t.integer  "feature_id", :precision => 38, :scale => 0
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
+  end
+
+  add_index "machine_feature_data", ["feature_id"], :name => "i_mac_fea_dat_fea_id"
+  add_index "machine_feature_data", ["machine_id"], :name => "i_mac_fea_dat_mac_id"
+
   create_table "machine_features", :force => true do |t|
     t.integer  "machine_id", :precision => 38, :scale => 0
     t.integer  "feature_id", :precision => 38, :scale => 0
@@ -124,21 +134,8 @@ ActiveRecord::Schema.define(:version => 20140805023828) do
 
   create_table "users", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",                                                            :null => false
-    t.datetime "updated_at",                                                            :null => false
-    t.string   "email",                                                 :default => "", :null => false
-    t.string   "encrypted_password",                                    :default => "", :null => false
-    t.string   "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          :precision => 38, :scale => 0, :default => 0,  :null => false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip"
-    t.string   "last_sign_in_ip"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
-
-  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
-  add_index "users", ["reset_password_token"], :name => "i_users_reset_password_token", :unique => true
 
 end

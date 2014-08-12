@@ -1,6 +1,6 @@
 Fireworks::Application.routes.draw do
 
-  devise_for :users
+  #devise_for :users
 
   resources :licservers do
     #for backwards compatability, show is retain. 

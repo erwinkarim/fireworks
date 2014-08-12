@@ -3,7 +3,7 @@
 # You can also just copy and paste the tree (do not include the "authorizations") to each
 # environment if you need something different per enviornment.
 authorizations: &AUTHORIZATIONS
-  group_base: ou=groups,dc=test,dc=com
+  group_base: ou=groups,dc=petronas,dc=com,dc=my
   ## Requires config.ldap_check_group_membership in devise.rb be true
   # Can have multiple values, must match all to be authorized
   required_groups:
@@ -24,9 +24,9 @@ development:
   host: localhost
   port: 389
   attribute: cn
-  base: ou=people,dc=test,dc=com
-  admin_user: cn=admin,dc=test,dc=com
-  admin_password: admin_password
+  base: ou=people,dc=petronas,dc=com,dc=my
+  #admin_user: cn=admin,dc=test,dc=com
+  #admin_password: admin_password
   ssl: false
   # <<: *AUTHORIZATIONS
 

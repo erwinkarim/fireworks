@@ -1,11 +1,11 @@
 class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :ldap_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable
+  #devise :ldap_authenticatable, :registerable,
+  #       :recoverable, :rememberable, :trackable, :validatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me
+  #attr_accessible :email, :password, :password_confirmation, :remember_me
   attr_accessible :name
   validates :name, :uniqueness => true, :presence => true
   has_many :machines, :dependent => :destroy
@@ -30,4 +30,12 @@ class User < ActiveRecord::Base
     machine.machine_features.create(:feature_id => feature_id).save! 
 
   end
+	
+	def email_required?
+		false
+	end
+
+	def password_required?
+		false
+	end
 end
