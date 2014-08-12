@@ -20,3 +20,6 @@
 
 #ignore cache
 /public/carrierwave_cache/*
+
+#ignore ldap config
+/config/ldap.yml
