@@ -5,7 +5,12 @@ Fireworks::Application.routes.draw do
   #devise_for :users
 
   resources :licservers do
+		collection do
+			get 'get_more'
+		end
+    post 'update_settings'
     #for backwards compatability, show is retain. 
+		get 'info'
     get 'show_template'
     resources :features, :constraints => { :id => /[^\/]+(?=\.html\z|\.json\z|\.xml\z)|[^\/]+/ } do
       collection do
@@ -19,9 +24,8 @@ Fireworks::Application.routes.draw do
       get 'historical_users'
     end
     resources :tags
-    post "update_settings"
   end
-  
+
   controller :licservers do
     match '/licserver/treding' => :trending, :via => :get , :as => 'licserver_trendy'
     match '/licserver/:licserver_id/analysis' => :analysis, :via => :get, :as => 'licserver_analysis'

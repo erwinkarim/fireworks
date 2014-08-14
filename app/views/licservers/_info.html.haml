@@ -1,0 +1,28 @@
+%h3 General Info
+.links
+	= link_to fa_icon('link', :text => 'Permalink' ), licserver_path(licserver), { :class => 'btn' }
+%dl.dl-horizontal
+	%dt Created
+	%dd 
+		= licserver.created_at.localtime
+	%dt Last Update
+	%dd
+		= licserver.updated_at.localtime
+%h3 Features
+%p
+	= link_to fa_icon('info',{:text => 'More Info'}), licserver_features_path(licserver.id), :class => 'btn'
+	= link_to fa_icon('bar-chart-o', { :text => 'Analysis' }), licserver_analysis_path(licserver.id), :class => 'btn'
+.well.well-large
+	- if features.nil? then
+		%p No Features
+	- else
+		%p
+			- features.each do |feat|
+				= link_to feat[:name], licserver_feature_path(licserver.id, feat[:name]), :class => 'btn btn-large' 
+%h3 Tags
+.well
+	- if licserver.tags.size == 0 then
+		%span.label.label-warning No Tags
+	- else
+		- licserver.tags.each do |tag|
+			= link_to tag.title, '#', :class => 'btn btn-mini tags', :data => { :id => tag.id, :'tag-title' => tag.title, }

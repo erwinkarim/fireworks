@@ -157,4 +157,33 @@ class LicserversController < ApplicationController
       map{ |x| [ x.name, x.total_current, x.total_max, x.max_count ]  }
   end
 
+	# GET    /licservers/get_more
+	# options 
+	#		last_id		start from last_id and above
+	def get_more
+		if params.has_key? :last_id then
+			last_id = params[:last_id]
+		else
+			last_id = 0
+		end
+
+		@licservers = Licserver.where{ id.gt last_id }.limit(10)
+
+		respond_to do |format|
+			format.html { render :partial => 'accordion', :locals => { :licservers => @licservers }  } 
+			format.json { render :json => @licservers }
+		end
+	end
+
+	# GET /licservers/:licserver_id/info
+	# return info template when queried
+	def info
+		@licserver = Licserver.find(params[:licserver_id])
+    @features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| {:name => item.name } }
+
+		respond_to do |format|
+			format.html { render :partial => 'info', :locals => { :licserver => @licserver , :features => @features}  } 
+			format.json { render :json => @licserver }
+		end
+	end
 end

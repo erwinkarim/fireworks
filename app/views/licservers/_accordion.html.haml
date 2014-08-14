@@ -1,0 +1,9 @@
+- unless licservers.empty? || licservers.nil?
+	- licservers.each do |licserver|
+		.accordion-group{ :data => { :id => licserver.id, :init => 'false' } }
+			.accordion-heading
+				%a.accordion-toggle{ :data => { :toggle => 'collapse', :parent => '#licserver-listings' }, :href => '#licserver' + licserver.id.to_s } 
+					= licserver.port.to_s + '@' + licserver.server
+			.accordion-body.collapse{ :id => 'licserver' + licserver.id.to_s }
+				.accordion-inner
+					.info

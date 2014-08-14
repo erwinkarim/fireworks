@@ -59,7 +59,7 @@ GEM
     erubis (2.7.0)
     execjs (1.4.0)
       multi_json (~> 1.0)
-    font-awesome-rails (4.0.1.0)
+    font-awesome-rails (4.1.0.0)
       railties (>= 3.2, < 5.0)
     foreman (0.63.0)
       dotenv (>= 0.7)
@@ -180,7 +180,7 @@ DEPENDENCIES
   delayed_job_active_record
   devise
   devise_ldap_authenticatable
-  font-awesome-rails
+  font-awesome-rails (= 4.1.0)
   foreman
   haml
   jquery-rails
