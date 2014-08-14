@@ -22,7 +22,7 @@
     $(document).ready( function(){
 
 			//load more servers
-			load_more_servers = function(target){
+			load_more_servers = function(target, mode){
 				var last_id = null; 
 				if($(target).children().length == 0){
 					last_id = null;
@@ -30,11 +30,18 @@
 					last_id = { last_id:$(target).attr('last') }; 
 				}
 
+				var load_path = '';
+				if(mode == 'search'){
+					load_path = '/licservers/search';
+				} else {
+					load_path = '/licservers/get_more';
+				}
+
 				//load the spinner in the target
 				$(target).append(
 					$.parseHTML('<div class="spin"><i class="fa fa-cog fa-spin fa-4x"></i></div>')
 				);
-				$.get('/licservers/get_more', last_id, function( data, textStatus, jqXHR){
+				$.get(load_path, last_id, function( data, textStatus, jqXHR){
 					$(target).append(
 						$.parseHTML(data)
 					).ready( function(){
@@ -78,17 +85,60 @@
 				handle.attr('data-init', 'true');
 				
 			};
-
-			console.log('loaded licserver/index.js');
-
-			//load the init batch of servers
-			load_more_servers('#server-listings');
 			
 			//action when 'Load More servers clicked'
 			$('#load-more-servers').click( function(){
 				console.log( 'load more servers'); 
 				load_more_servers('#server-listings');
 			});
-		});
+
+      //search users
+      $('#search-servers').typeahead({
+        source: function(query, process){
+          return $.get( '/licservers/search', {
+            query:query
+          }, function(data, textStatus, jqXHR){
+            //load the results while you type here before returning the data 
+            return process(data.options);
+          }, 'json');
+        }
+      }).bind('keypress', function(e){
+        var code = e.keyCode || e.which;
+        if(code==13){ //Enter keycode
+          //prevent from reloading the page
+          e.preventDefault();
+
+          if($(this).val().length != 0){
+            //reload the accordion and put the revelent people
+            $.ajax( '/licservers/search', {
+              data: { query:$(this).val() },
+              dataType:'html'
+            }).done( function(data,textStatus, jqXHR){
+              $('#server-listings').empty();
+              $('#server-listings').append(
+                $.parseHTML(data)
+              ).ready( function(){
+                $('.accordion-group[data-init="false"]').each( function(index) {
+									setup_accordion($(this));
+                });
+              });
+
+							//adjust the load more to search or normal mode
+              $('#load-more-servers').attr('data-mode', 'search');
+            }); // $.ajax( '/licserver/serach', {
+          } else {
+            $('#load-more-servers').attr('data-mode', 'default');
+            $('#server-listings').empty();
+						load_more_servers('#server-listings', $('#load-more-servers').attr('data-mode') );
+          } // if($(this).val().length != 0){
+        }
+      });
+
+			//#########################################################
+			//# do the work starts here
+			//#########################################################
+			//load the init batch of servers
+			load_more_servers('#server-listings', $('#load-more-servers').attr('data-mode') );
+		}); // $(document).ready( function(){
   }; // Paloma.callbacks['licservers']['index'] = function(params){
 })();
