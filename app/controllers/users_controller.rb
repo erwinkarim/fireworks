@@ -39,7 +39,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html { render :partial => 'accordion', :locals => { :users => @users } }
       format.json { 
-        #to give back in typeahead format
+				#to give back in typeahead format
         init_hash = { :options => [] }
         @users.each{ |x| init_hash[:options] << x.name }
         render :json => init_hash 

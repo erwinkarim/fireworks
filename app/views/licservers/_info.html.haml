@@ -13,8 +13,8 @@
 	= link_to fa_icon('info',{:text => 'More Info'}), licserver_features_path(licserver.id), :class => 'btn'
 	= link_to fa_icon('bar-chart-o', { :text => 'Analysis' }), licserver_analysis_path(licserver.id), :class => 'btn'
 .well.well-large
-	- if features.nil? then
-		%p No Features
+	- if features.nil? || features.empty? then
+		%p No Features Found
 	- else
 		%p
 			- features.each do |feat|

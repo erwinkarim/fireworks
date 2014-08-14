@@ -186,4 +186,23 @@ class LicserversController < ApplicationController
 			format.json { render :json => @licserver }
 		end
 	end
+
+	# GET    /licservers/search
+	#	search for licservers based on query
+	#	optiosn
+	#		query		the search query
+	def search
+		query = (params.has_key? :query) ? query = '%' + params[:query] + '%' : ''
+		@licservers = Licserver.where{ (server.matches query) || (port.matches query) }.limit(20)
+
+    respond_to do |format|
+      format.html { render :partial => 'accordion', :locals => { :licservers => @licservers } }
+      format.json { 
+        #to give back in typeahead format
+        init_hash = { :options => [] }
+        @licservers.each{ |x| init_hash[:options] << (x.port.to_s + '@' + x.server) }
+        render :json => init_hash 
+      }
+		end
+	end
 end

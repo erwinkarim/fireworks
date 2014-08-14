@@ -64,7 +64,7 @@
 						);
 
 						//load server info
-						$.get('/licservers/1/info', null, function(data, textStatus, jqXHR){
+						$.get('/licservers/' + handle.attr('data-id') + '/info', null, function(data, textStatus, jqXHR){
 							handle.find('.info').append(data);
 
 							//remove spinner

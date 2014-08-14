@@ -7,6 +7,7 @@ Fireworks::Application.routes.draw do
   resources :licservers do
 		collection do
 			get 'get_more'
+			get 'search'
 		end
     post 'update_settings'
     #for backwards compatability, show is retain. 
