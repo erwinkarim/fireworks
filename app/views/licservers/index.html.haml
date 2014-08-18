@@ -1,13 +1,13 @@
 .row
-  .page-header.span10.offset1
-    %h2 Servers
+	.page-header.span10.offset1
+	%h2 Servers
 .row
-  .span10.offset1
-    %form.form-search
-      %input#search-servers.input-block-level.search-query{ :placeholder =>'Search Servers...'}
+	.span10.offset1
+		%form.form-search
+			%input#search-servers.input-block-level.search-query{ :placeholder =>'Search Servers...'}
 .row
-  .span10.offset1
-    .accordion#server-listings{ :last => 0 } 
+	.span10.offset1
+		.accordion#server-listings{ :last => 0 } 
 .row
-  .span10.offset1
-    %button.btn.btn-primary#load-more-servers{ :type => 'button',  :data => { :mode => 'default'}  } Load More Servers
+	.span10.offset1
+		= link_to 'New Server', new_licserver_path, { :class => 'btn btn-primary' }

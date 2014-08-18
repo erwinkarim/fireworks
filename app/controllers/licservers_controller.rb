@@ -167,7 +167,7 @@ class LicserversController < ApplicationController
 			last_id = 0
 		end
 
-		@licservers = Licserver.where{ id.gt last_id }.limit(10)
+		@licservers = Licserver.where{ id.gt last_id }
 
 		respond_to do |format|
 			format.html { render :partial => 'accordion', :locals => { :licservers => @licservers }  } 
@@ -192,8 +192,11 @@ class LicserversController < ApplicationController
 	#	optiosn
 	#		query		the search query
 	def search
-		query = (params.has_key? :query) ? query = '%' + params[:query] + '%' : ''
-		@licservers = Licserver.where{ (server.matches query) || (port.matches query) }.limit(20)
+		#query = (params.has_key? :query) ? query = '%' + params[:query] + '%' : ''
+		query = (params.has_key? :query) ? params[:query] : ''
+		# need to handle case of port@server search term
+		@licservers = (Licserver.where{ server.matches query }.limit(20) + 
+			Licserver.where{ port.matches query }.limit(20) ).uniq
 
     respond_to do |format|
       format.html { render :partial => 'accordion', :locals => { :licservers => @licservers } }

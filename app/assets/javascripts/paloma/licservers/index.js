@@ -62,7 +62,6 @@
 
 			//setup accordion
 			var setup_accordion = function(handle){
-				console.log(handle);
 				handle.on('shown', function(){
 					if(handle.find('.info').children().length == 0){	
 						//add spinner
@@ -86,13 +85,7 @@
 				
 			};
 			
-			//action when 'Load More servers clicked'
-			$('#load-more-servers').click( function(){
-				console.log( 'load more servers'); 
-				load_more_servers('#server-listings');
-			});
-
-      //search users
+      //search servers
       $('#search-servers').typeahead({
         source: function(query, process){
           return $.get( '/licservers/search', {
@@ -123,8 +116,6 @@
                 });
               });
 
-							//adjust the load more to search or normal mode
-              $('#load-more-servers').attr('data-mode', 'search');
             }); // $.ajax( '/licserver/serach', {
           } else {
             $('#load-more-servers').attr('data-mode', 'default');
@@ -137,7 +128,7 @@
 			//#########################################################
 			//# do the work starts here
 			//#########################################################
-			//load the init batch of servers
+			//load the servers
 			load_more_servers('#server-listings', $('#load-more-servers').attr('data-mode') );
 		}); // $(document).ready( function(){
   }; // Paloma.callbacks['licservers']['index'] = function(params){
