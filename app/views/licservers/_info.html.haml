@@ -26,3 +26,10 @@
 	- else
 		- licserver.tags.each do |tag|
 			= link_to tag.title, '#', :class => 'btn btn-mini tags', :data => { :id => tag.id, :'tag-title' => tag.title, }
+%h3 Action
+%button.btn.btn-primary
+	= fa_icon('edit')
+	Modify
+%button.btn.btn-danger
+	= fa_icon('ban')
+	Delete
