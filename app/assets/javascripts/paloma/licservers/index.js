@@ -71,19 +71,62 @@
 
 						//load server info
 						$.get('/licservers/' + handle.attr('data-id') + '/info', null, function(data, textStatus, jqXHR){
-							handle.find('.info').append(data);
+							handle.find('.info').append(data).ready( function(){
+								//when the licserver modal has been clicked
+								$('.update-licserver').click(function(){
+									var handle = $('#licserver-modal-' + $(this).attr('data-id') );
+
+									console.log('update-licserver clicked');
+
+									//check if this is new or editing a current one
+									if(handle.find('#server_id').val() == "0"){
+										//new server
+									} else {
+										//update of a current server
+										var input_port;
+										var input_server;
+										if( handle.find('#server_info').val().indexOf('@') == -1){
+											input_port = '';
+											input_server = handle.find('#server_info').val();	
+										} else {
+											input_port = handle.find('#server_info').val().split('@')[0]
+											input_server = handle.find('#server_info').val().split('@')[1]
+										}
+
+										$.ajax( '/licservers/' + handle.find('#server_id').val(), {
+											data: { licserver:{ port:input_port, server:input_server } },
+											type:'PUT',
+											dataType: 'json'
+										}).done( function(data, textStatus, jqXHR){
+											console.log( handle.find('#server_info').val() + ' updated');
+
+											//update the accordion
+											var accordion_handle = $('.accordion-group[data-id="' + handle.find('#server_id').val() + '"]');
+											console.log(accordion_handle);
+											accordion_handle.find('.accordion-toggle').text( handle.find('#server_info').val() );
+											$.get('/licservers/' + handle.find('#server_id').val() + '/info', null, function(data, textStatus, jqXHR){ 
+												accordion_handle.find('.info').replaceWith(data);
+											}, 'html');
+
+											//dismiss the modal
+											handle.modal('hide');
+										}); // $.ajax( '/licservers/' + handle.find('#server_id').val(), 
+									}
+
+									//hide the modal
+								}); // $('.update-licserver').click(function(){
+							});
 
 							//remove spinner
 							handle.find('.spin').remove();
-						}, 'html').done(
-						);	
+						}, 'html');	
 
 					}
 
 				});
 				handle.attr('data-init', 'true');
 				
-			};
+			}; // var setup_accordion = function(handle){
 			
       //search servers
       $('#search-servers').typeahead({
@@ -125,11 +168,19 @@
         }
       });
 
+
+			//action when modal has been shown
+			$('#licserver-modal').on('show', function(){
+				var handle = $('#licserver-modal')
+			});
 			//#########################################################
 			//# do the work starts here
 			//#########################################################
 			//load the servers
 			load_more_servers('#server-listings', $('#load-more-servers').attr('data-mode') );
+
+
+			
 		}); // $(document).ready( function(){
   }; // Paloma.callbacks['licservers']['index'] = function(params){
 })();

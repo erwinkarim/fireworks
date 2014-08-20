@@ -1,0 +1,4 @@
+= hidden_field_tag 'server_id', licserver.nil? ? 0 : licserver.id 
+= text_field_tag 'server_info', 
+	licserver.nil? ? '' : licserver.port.to_s + '@' + licserver.server, :placeholder => 'Format: port@server or @server',
+	:class => 'input-block-level'

@@ -50,7 +50,7 @@ class LicserversController < ApplicationController
     @licserver = Licserver.new
 
     respond_to do |format|
-      format.html # new.html.erb
+      format.html { render :partial => 'form', :locals => { :licserver => nil } }
       format.json { render json: @licserver }
     end
   end
@@ -58,6 +58,10 @@ class LicserversController < ApplicationController
   # GET /licservers/1/edit
   def edit
     @licserver = Licserver.find(params[:id])
+		
+		respond_to do |format|
+			format.html { render :partial => 'form', :locals => { :licserver => @licserver } }
+		end
   end
 
   # POST /licservers
@@ -91,11 +95,9 @@ class LicserversController < ApplicationController
 
     respond_to do |format|
       if @licserver.update_attributes(params[:licserver])
-        format.html { redirect_to @licserver, notice: 'Licserver was successfully updated.' }
+        format.html { render :partial => 'form', :locals => { :licserver => @licserver } }
         format.json { head :no_content }
-      else
-        format.html { render action: "edit" }
-        format.json { render json: @licserver.errors, status: :unprocessable_entity }
+				format.js
       end
     end
   end
