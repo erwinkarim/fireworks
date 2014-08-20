@@ -10,13 +10,14 @@
 		.accordion#server-listings{ :last => 0 } 
 .row
 	.span10.offset1
-		= link_to 'New Server', new_licserver_path, { :class => 'btn btn-primary' }
-#licserver-modal.modal.hide.fade{ :role => 'dialog' }
+		%button.btn.btn-primary{ :data => { :toggle => 'modal', :target => '#new-licserver-modal' , :remote => '/licservers/new'} }
+			New Licserver
+#new-licserver-modal.modal.hide.fade{ :role => 'dialog' }
 	.modal-header
 		%button.close{ :type => 'button', :data => { :dismiss => 'modal' } }
 			x
 		%h3
-			Update Licserver
+			New Licserver
 	.modal-body
 	.modal-footer
 		%button.btn{ :data => { :dismiss => 'modal' } }
