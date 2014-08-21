@@ -9,8 +9,8 @@ class Licserver < ActiveRecord::Base
   after_initialize :init
 
   def init
-    #self.monitor_idle ||= false
-    #self.to_delete ||= false
+    self.monitor_idle ||= false
+    self.to_delete ||= false
   end
 
   #get features listing, version, seat count expiration date

@@ -171,6 +171,37 @@
         }
       });
 
+			//clear the dialog box
+			$('#new-licserver-modal').on('shown', function(){
+				console.log('new licserver-modal shown');
+				$(this).find('#server_info').val('');
+			});
+
+			//create new licserver 
+			$('#new-licserver-btn').click( function(){
+				var handle = $('#new-licserver-modal');
+				console.log('new licserver: ' + handle.find('#server_info').val() );
+
+				handle.find('.status').empty().append(
+					$.parseHTML('<i class="fa fa-cog fa-spin"></i> Adding server...')
+				);
+				
+				$.post('/licservers', { lic:handle.find('#server_info').val() }, function(data, textStatus, jqXHR){
+					//create a new accordion and append the info
+					$('#server-listings').append(data).ready( function(){
+						//setup the accordion so it'd will dynamically load the server info when shown
+						$('#server-listings').find('.accordion-group[data-init="false"]').each( function(index, value){
+							setup_accordion($(this));
+						});
+						handle.modal('hide');
+					});
+				}, 'html').fail( function(){
+					handle.find('.status').empty().append(
+						$.parseHTML('Error adding server')
+					);
+				});
+			});
+
 			//#########################################################
 			//# do the work starts here
 			//#########################################################

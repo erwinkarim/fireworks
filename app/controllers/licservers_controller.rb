@@ -28,6 +28,7 @@ class LicserversController < ApplicationController
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @licserver }
+			format.template { render :partial => 'show', :locals => { :licserver => @licserver } }
     end
   end
 
@@ -74,13 +75,13 @@ class LicserversController < ApplicationController
 
     respond_to do |format|
       if @licserver.save
-        format.html { redirect_to @licserver, notice: 'Licserver was successfully created.' }
-        format.json { render json: @licserver, status: :created, location: @licserver }
-  
-        #populate features
         Feature.update_features(@licserver.id)
+				@features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| {:name => item.name } }
+        #format.html { redirect_to @licserver, notice: 'Licserver was successfully created.' }
+        format.html { render :partial => 'accordion', :locals => { :licservers => [@licserver] } }
+        format.json { render json: @licserver, status: :created, location: @licserver }
       else
-        format.html { render action: "new" }
+        format.html { render status: :unporcessable_entity }
         format.json { render json: @licserver.errors, status: :unprocessable_entity }
       end
     end
@@ -167,7 +168,7 @@ class LicserversController < ApplicationController
 			last_id = 0
 		end
 
-		@licservers = Licserver.where{ (id.gt last_id) & (to_delete.eq false) }
+		@licservers = Licserver.where{ (id.gt last_id) & (to_delete.eq false) }.order(:id)
 
 		respond_to do |format|
 			format.html { render :partial => 'accordion', :locals => { :licservers => @licservers }  } 
