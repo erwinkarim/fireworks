@@ -70,8 +70,10 @@
 						);
 
 						//load server info
+						// and setup the buttons
 						$.get('/licservers/' + handle.attr('data-id') + '/info', null, function(data, textStatus, jqXHR){
 							handle.find('.info').append(data).ready( function(){
+
 								//when the licserver modal has been clicked
 								$('.update-licserver').click(function(){
 									var handle = $('#licserver-modal-' + $(this).attr('data-id') );
@@ -79,51 +81,52 @@
 									console.log('update-licserver clicked');
 
 									//check if this is new or editing a current one
-									if(handle.find('#server_id').val() == "0"){
-										//new server
+									//update of a current server
+									var input_port;
+									var input_server;
+									if( handle.find('#server_info').val().indexOf('@') == -1){
+										input_port = '';
+										input_server = handle.find('#server_info').val();	
 									} else {
-										//update of a current server
-										var input_port;
-										var input_server;
-										if( handle.find('#server_info').val().indexOf('@') == -1){
-											input_port = '';
-											input_server = handle.find('#server_info').val();	
-										} else {
-											input_port = handle.find('#server_info').val().split('@')[0]
-											input_server = handle.find('#server_info').val().split('@')[1]
-										}
-
-										$.ajax( '/licservers/' + handle.find('#server_id').val(), {
-											data: { licserver:{ port:input_port, server:input_server } },
-											type:'PUT',
-											dataType: 'json'
-										}).done( function(data, textStatus, jqXHR){
-											console.log( handle.find('#server_info').val() + ' updated');
-
-											//update the accordion
-											var accordion_handle = $('.accordion-group[data-id="' + handle.find('#server_id').val() + '"]');
-											console.log(accordion_handle);
-											accordion_handle.find('.accordion-toggle').text( handle.find('#server_info').val() );
-											$.get('/licservers/' + handle.find('#server_id').val() + '/info', null, function(data, textStatus, jqXHR){ 
-												accordion_handle.find('.info').replaceWith(data);
-											}, 'html');
-
-											//dismiss the modal
-											handle.modal('hide');
-										}); // $.ajax( '/licservers/' + handle.find('#server_id').val(), 
+										input_port = handle.find('#server_info').val().split('@')[0]
+										input_server = handle.find('#server_info').val().split('@')[1]
 									}
 
-									//hide the modal
+									$.ajax( '/licservers/' + handle.find('#server_id').val(), {
+										data: { licserver:{ port:input_port, server:input_server } },
+										type:'PUT',
+										dataType: 'json'
+									}).done( function(data, textStatus, jqXHR){
+										console.log( handle.find('#server_info').val() + ' updated');
+
+										//update the accordion
+										var accordion_handle = $('.accordion-group[data-id="' + handle.find('#server_id').val() + '"]');
+										console.log(accordion_handle);
+										accordion_handle.find('.accordion-toggle').text( handle.find('#server_info').val() );
+										$.get('/licservers/' + handle.find('#server_id').val() + '/info', null, function(data, textStatus, jqXHR){ 
+											accordion_handle.find('.info').replaceWith(data);
+										}, 'html');
+
+										//dismiss the modal
+										handle.modal('hide');
+									}); // $.ajax( '/licservers/' + handle.find('#server_id').val(), 
 								}); // $('.update-licserver').click(function(){
 							});
 
 							//remove spinner
 							handle.find('.spin').remove();
-						}, 'html');	
+
+						}, 'html').fail( function(){
+							//error handling
+							handle.find('.info').append( $.parseHTML('<div>Opss... something when wrong</div>') );
+							handle.find('.spin').remove();
+						});	
+						// $.get('/licservers/' + handle.attr('data-id') + '/info', null, function(data, textStatus, jqXHR){
 
 					}
 
 				});
+
 				handle.attr('data-init', 'true');
 				
 			}; // var setup_accordion = function(handle){
@@ -168,11 +171,6 @@
         }
       });
 
-
-			//action when modal has been shown
-			$('#licserver-modal').on('show', function(){
-				var handle = $('#licserver-modal')
-			});
 			//#########################################################
 			//# do the work starts here
 			//#########################################################

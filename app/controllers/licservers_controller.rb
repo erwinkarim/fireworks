@@ -3,12 +3,10 @@ class LicserversController < ApplicationController
   # GET /licservers
   # GET /licservers.json
   def index
-    @licservers = Licserver.all
+    #@licservers = Licserver.where(:to_delete => false)
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @licservers }
-      format.xml { render xml: @licservers }
     end
   end
 
@@ -169,7 +167,7 @@ class LicserversController < ApplicationController
 			last_id = 0
 		end
 
-		@licservers = Licserver.where{ id.gt last_id }
+		@licservers = Licserver.where{ (id.gt last_id) & (to_delete.eq false) }
 
 		respond_to do |format|
 			format.html { render :partial => 'accordion', :locals => { :licservers => @licservers }  } 
