@@ -18,7 +18,6 @@
 
 
   Paloma.callbacks['licservers']['index'] = function(params){
-    // Do something here.
     $(document).ready( function(){
 
 			//load more servers
@@ -62,6 +61,7 @@
 
 			//setup accordion
 			var setup_accordion = function(handle){
+				//load server info when accordion is clicked
 				handle.on('shown', function(){
 					if(handle.find('.info').children().length == 0){	
 						//add spinner
@@ -69,8 +69,7 @@
 							$.parseHTML('<div class="spin"><i class="fa fa-cog fa-spin fa-2x"></i></div>')
 						);
 
-						//load server info
-						// and setup the buttons
+						//load server info and setup the buttons
 						$.get('/licservers/' + handle.attr('data-id') + '/info', null, function(data, textStatus, jqXHR){
 							handle.find('.info').append(data).ready( function(){
 
@@ -78,7 +77,6 @@
 								$('.update-licserver').click(function(){
 									var handle = $('#licserver-modal-' + $(this).attr('data-id') );
 
-									console.log('update-licserver clicked');
 
 									//check if this is new or editing a current one
 									//update of a current server
@@ -97,11 +95,9 @@
 										type:'PUT',
 										dataType: 'json'
 									}).done( function(data, textStatus, jqXHR){
-										console.log( handle.find('#server_info').val() + ' updated');
 
 										//update the accordion
 										var accordion_handle = $('.accordion-group[data-id="' + handle.find('#server_id').val() + '"]');
-										console.log(accordion_handle);
 										accordion_handle.find('.accordion-toggle').text( handle.find('#server_info').val() );
 										$.get('/licservers/' + handle.find('#server_id').val() + '/info', null, function(data, textStatus, jqXHR){ 
 											accordion_handle.find('.info').replaceWith(data);
@@ -125,13 +121,13 @@
 
 					}
 
-				});
+				}); // handle.on('shown', function(){
 
 				handle.attr('data-init', 'true');
 				
 			}; // var setup_accordion = function(handle){
 			
-      //search servers
+      //search servers as you type
       $('#search-servers').typeahead({
         source: function(query, process){
           return $.get( '/licservers/search', {
@@ -173,14 +169,13 @@
 
 			//clear the dialog box
 			$('#new-licserver-modal').on('shown', function(){
-				console.log('new licserver-modal shown');
 				$(this).find('#server_info').val('');
+				$(this).find('.status').empty();
 			});
 
 			//create new licserver 
 			$('#new-licserver-btn').click( function(){
 				var handle = $('#new-licserver-modal');
-				console.log('new licserver: ' + handle.find('#server_info').val() );
 
 				handle.find('.status').empty().append(
 					$.parseHTML('<i class="fa fa-cog fa-spin"></i> Adding server...')
@@ -207,8 +202,6 @@
 			//#########################################################
 			//load the servers
 			load_more_servers('#server-listings', $('#load-more-servers').attr('data-mode') );
-
-
 			
 		}); // $(document).ready( function(){
   }; // Paloma.callbacks['licservers']['index'] = function(params){

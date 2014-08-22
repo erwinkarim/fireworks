@@ -31,9 +31,7 @@
 	:target => '#licserver-modal-' + licserver.id.to_s, :remote => edit_licserver_path(licserver.id) } } 
 	= fa_icon('edit')
 	Edit
-%button.btn.btn-danger
-	= fa_icon('ban')
-	Delete
+= link_to fa_icon('ban', :text => 'Delete'), licserver, :class => 'btn btn-danger', :method => :delete, :data => { :remote => true, :confirm => 'Really delete?' }
 .modal.hide.fade{ :role => 'dialog', :id => 'licserver-modal-' + licserver.id.to_s }
 	.modal-header
 		%button.close{ :type => 'button', :data => { :dismiss => 'modal' } }
