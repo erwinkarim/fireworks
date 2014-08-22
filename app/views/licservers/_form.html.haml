@@ -1,6 +1,16 @@
 .form
 	= hidden_field_tag 'server_id', licserver.nil? ? 0 : licserver.id 
+	%label
+		Server port and IP
 	= text_field_tag 'server_info', 
 		licserver.nil? ? '' : licserver.port.to_s + '@' + licserver.server, :placeholder => 'Format: port@server or @server',
 		:class => 'input-block-level'
+	%label
+		Tags
+	= text_field_tag 'tags', 
+		licserver.nil? ? '' : licserver.tags.map{|x| x.title }.join(' '), 
+		:placeholder => 'Seperate tags by spaces; ie "Openworks Geoprobe"', :class => 'input-block-level' 
+	%label
+		Monitor Idle Users
+	= check_box_tag 'monitor_idle', 'monitor_idle', licserver.monitor_idle?
 .status
