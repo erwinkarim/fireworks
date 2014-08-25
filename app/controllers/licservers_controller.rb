@@ -91,7 +91,9 @@ class LicserversController < ApplicationController
   # PUT /licservers/1.json
   def update
     @licserver = Licserver.find(params[:id])
-
+	
+		#update taggings
+		
     respond_to do |format|
       if @licserver.update_attributes(params[:licserver])
         format.html { render :partial => 'form', :locals => { :licserver => @licserver } }

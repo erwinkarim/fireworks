@@ -12,5 +12,6 @@
 		:placeholder => 'Seperate tags by spaces; ie "Openworks Geoprobe"', :class => 'input-block-level' 
 	%label
 		Monitor Idle Users
-	= check_box_tag 'monitor_idle', 'monitor_idle', licserver.monitor_idle?
+	= (check_box_tag 'monitor_idle', 'monitor_idle', licserver.monitor_idle?)  + ' Monitor this server for user activity'
+	
 .status

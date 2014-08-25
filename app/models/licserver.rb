@@ -1,5 +1,5 @@
 class Licserver < ActiveRecord::Base
-  attr_accessible :port, :server, :to_delete
+  attr_accessible :port, :server, :to_delete, :monitor_idle
   validates :server, :presence => true
   validates_uniqueness_of :server, :scope => :port 
   validates :port, :inclusion => 1..65535, :allow_nil => true 

@@ -91,7 +91,11 @@
 									}
 
 									$.ajax( '/licservers/' + handle.find('#server_id').val(), {
-										data: { licserver:{ port:input_port, server:input_server } },
+										data: { 
+											licserver:{ port:input_port, server:input_server, 
+												monitor_idle:handle.find('#monitor_idle').attr('checked')=='checked' },
+											tags:handle.find('#tags').val()
+										},
 										type:'PUT',
 										dataType: 'json'
 									}).done( function(data, textStatus, jqXHR){
