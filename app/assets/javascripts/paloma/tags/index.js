@@ -96,7 +96,7 @@
     function setup_tab(handle){
       handle.on('shown', function(e){
         //when the licserver is clicked, show licserver info and detected features
-        $.get('/licservers/' + e.target.attributes['data-licserver'].value + '/show_template', null, 
+        $.get('/licservers/' + e.target.attributes['data-licserver'].value + '.template', null, 
           function(data, textStatus, jqXHR){
             if(
               $(
