@@ -19,7 +19,7 @@ end
 
 # check and kill idle/unregistered users (if setted)
 scheduler.every("23m") do
-  @licserver = Licserver.hwere{ to_delete.eq false }
+  @licserver = Licserver.where{ to_delete.eq false }
   @licserver.each do |lic|
     if lic.monitor_idle then
       #go through every feature and kill users

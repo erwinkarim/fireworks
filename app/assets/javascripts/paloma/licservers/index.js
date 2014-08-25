@@ -59,6 +59,16 @@
 				}, 'html');
 			};
 
+			//licserver modal sanity checks
+			licserver_modal_sanity_check = function(handle){
+				if(handle.find('#server_info').val() == ''){
+					handle.find('.server_info-control').addClass('error');
+					return false;
+				}
+
+				return true;
+			};
+
 			//setup accordion
 			var setup_accordion = function(handle){
 				//load server info when accordion is clicked
@@ -77,8 +87,11 @@
 								$('.update-licserver').click(function(){
 									var handle = $('#licserver-modal-' + $(this).attr('data-id') );
 
+									//sanity checks before updating
+									if(licserver_modal_sanity_check(handle)==false){
+										return;
+									}
 
-									//check if this is new or editing a current one
 									//update of a current server
 									var input_port;
 									var input_server;
@@ -181,11 +194,19 @@
 			$('#new-licserver-btn').click( function(){
 				var handle = $('#new-licserver-modal');
 
+				//sanity checks before posting
+				if(licserver_modal_sanity_check(handle) == false){
+					return;
+				}
+
 				handle.find('.status').empty().append(
 					$.parseHTML('<i class="fa fa-cog fa-spin"></i> Adding server...')
 				);
 				
-				$.post('/licservers', { lic:handle.find('#server_info').val() }, function(data, textStatus, jqXHR){
+				$.post('/licservers', { 
+						lic:handle.find('#server_info').val(), tags:handle.find('#tags'),  
+						monitor_idle:handle.find('#monitor_idle').attr('checked')=='checked'
+					}, function(data, textStatus, jqXHR){
 					//create a new accordion and append the info
 					$('#server-listings').append(data).ready( function(){
 						//setup the accordion so it'd will dynamically load the server info when shown
