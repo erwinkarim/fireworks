@@ -204,7 +204,7 @@
 				);
 				
 				$.post('/licservers', { 
-						lic:handle.find('#server_info').val(), tags:handle.find('#tags'),  
+						lic:handle.find('#server_info').val(), tags:handle.find('#tags').val(),  
 						monitor_idle:handle.find('#monitor_idle').attr('checked')=='checked'
 					}, function(data, textStatus, jqXHR){
 					//create a new accordion and append the info

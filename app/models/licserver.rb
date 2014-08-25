@@ -75,4 +75,17 @@ class Licserver < ActiveRecord::Base
     return trends
   end
 
+	#to update tags listings, add new one, remove old one, retains that doesn't change value
+	#arguments:-
+	# new_tag_listings		a list of tags seperated by space	
+	def update_tag_list new_tag_listings
+		new_tags = new_tag_listings.split(' ')
+		#drop tags that is not in the new list
+		dropped_tags = self.tags.map{ |x| x.title } - new_tags
+		self.tags.where{ title.in dropped_tags }.destroy_all
+
+		#add tags that is in the new list
+		(new_tags - self.tags.map{|x| x.title } ).each{ |x| self.tags.create( :title => x ) }
+	end
+
 end

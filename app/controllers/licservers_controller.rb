@@ -77,6 +77,7 @@ class LicserversController < ApplicationController
       if @licserver.save
         Feature.update_features(@licserver.id)
 				@features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| {:name => item.name } }
+				@licserver.update_tag_list( params[:tags] )
         #format.html { redirect_to @licserver, notice: 'Licserver was successfully created.' }
         format.html { render :partial => 'accordion', :locals => { :licservers => [@licserver] } }
         format.json { render json: @licserver, status: :created, location: @licserver }
@@ -96,6 +97,7 @@ class LicserversController < ApplicationController
 		
     respond_to do |format|
       if @licserver.update_attributes(params[:licserver])
+				@licserver.update_tag_list(params[:tags])
         format.html { render :partial => 'form', :locals => { :licserver => @licserver } }
         format.json { head :no_content }
 				format.js
@@ -122,6 +124,7 @@ class LicserversController < ApplicationController
     end
   end
 
+	# POST   /licservers/:licserver_id/update_settings(.:format) 
   def update_settings
     @lic = Licserver.find(params[:licserver_id])
 
