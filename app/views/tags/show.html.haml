@@ -1,0 +1,13 @@
+.page-header
+	%h2
+		= @tag 
+.row.span10.offset1
+	%ul.nav.nav-tabs{ :id => @tag }
+		- @licservers.each do |licserver|
+			%li
+				%a{ :href => '#' + @tag + '-' + licserver.id.to_s, :data => { :toggle => 'tab', :licserver => licserver.id, 
+					:init => 'false', :tag => @tag } }
+					= licserver.port.to_s + '@' + licserver.server
+	.tab-content
+		- @licservers.each do |licserver|
+			.tab-pane{ :id => @tag + '-' + licserver.id.to_s }
