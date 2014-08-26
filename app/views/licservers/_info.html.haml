@@ -8,6 +8,9 @@
 	%dt Last Update
 	%dd
 		= licserver.updated_at.localtime
+	%dt Monitor Idle Users
+	%dd
+		= licserver.monitor_idle
 %h3 Features
 %p
 	= link_to fa_icon('info',{:text => 'More Info'}), licserver_features_path(licserver.id), :class => 'btn'
@@ -25,7 +28,7 @@
 		%span.label.label-warning No Tags
 	- else
 		- licserver.tags.each do |tag|
-			= link_to tag.title, '#', :class => 'btn btn-mini tags', :data => { :id => tag.id, :'tag-title' => tag.title, }
+			= link_to tag.title, tag_path(tag.title), :class => 'btn btn-mini tags', :data => { :id => tag.id, :'tag-title' => tag.title, }
 %h3 Action
 %button.btn.btn-primary#edit-licserver{ :data => { :id => licserver.id, :toggle => 'modal', 
 	:target => '#licserver-modal-' + licserver.id.to_s, :remote => edit_licserver_path(licserver.id) } } 
