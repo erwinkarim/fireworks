@@ -120,7 +120,13 @@
 
 
                     });
-                  }, 'html' );
+                  }, 'html' ).fail( function(){
+										console.log('fail to load server');
+                    $('#licserver-' + e.target.attributes['data-licserver'].value + '-features').find('.fa-spinner').remove();
+                    $('#licserver-' + e.target.attributes['data-licserver'].value + '-features-listing').append(
+											$.parseHTML('Opss, something went wrong. Failed to load feature listings')
+										);
+									}); //$.get('/licservers/' + e.target.attributes['data-licserver'].value + '/features/list', null, 
               });
             };
           }, 'html' );
@@ -134,7 +140,7 @@
       //when the accordion is shown, load the licserver
       handle.on('shown', function(){
         if(handle.find('.accordion-inner').children().length == 0 ) {
-          $.get('/tags/' + $(this).attr('data-title'), null, function(data, textStatus, jqXHR){
+          $.get('/tags/' + $(this).attr('data-title') + '.template' , null, function(data, textStatus, jqXHR){
             handle.find('.accordion-inner').append(data).ready( function(){
               //when the licserver is clicked, show licserver info and detected features
               $('a[data-toggle="tab"][data-init="false"]').each( function(index, value){

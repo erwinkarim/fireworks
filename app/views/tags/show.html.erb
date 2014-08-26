@@ -3,7 +3,7 @@
 <% stack.push params[:id] %>
 <%= generate_header(stack) %>
 <div class="well well-large">
-  <% @licserver.each do |lic| %>
+  <% @licservers.each do |lic| %>
     <%= link_to lic.server,licserver_path(lic.id),:class=>'btn btn-large' %>
   <% end %>
 </div>

@@ -1,7 +1,7 @@
 - tags.each do |tag|
-  .accordion-group.accordion-tag{ :data => {:title => tag.title } }
-    .accordion-heading
-      %a.accordion-toggle{ :data => {:toggle => 'collapse', :parent => '#tags-accordion' } , :href => '#tags-' + tag.title }
-        = tag.title
-    .accordion-body.collapse{ :id => 'tags-' + tag.title }
-      .accordion-inner
+	.accordion-group.accordion-tag{ :data => {:title => tag.title } }
+		.accordion-heading
+			%a.accordion-toggle{ :data => {:toggle => 'collapse', :parent => '#tags-accordion' } , :href => '#tags-' + tag.title }
+				= tag.title
+		.accordion-body.collapse{ :id => 'tags-' + tag.title }
+			.accordion-inner

@@ -19,23 +19,26 @@ class TagsController < ApplicationController
     #    :select=>'licserver_id', 
     #    :conditions => 'title = "'+params[:id] +'"').map(&:licserver_id)
     #  )  
+    @tag = params[:id]
     @licservers = Licserver.find(
       Tag.where(:title => params[:id] ).pluck(:licserver_id)
     )
 
     respond_to do |format|
-      format.html { 
-        if @licservers.empty? then
-          render status: :not_found
-        else 
-          if params[:mode] == 'list' then
-            render :partial => 'list_licservers' , :locals => { :licservers => @licservers, :tag => params[:id] } 
-          else
-            render :partial => 'display_licservers' , :locals => { :licservers => @licservers, :tag => params[:id] } 
-          end
-        end
-      } 
+      #format.html { 
+      #  if @licservers.empty? then
+      #    render status: :not_found
+      #  else 
+      #    if params[:mode] == 'list' then
+      #      render :partial => 'list_licservers' , :locals => { :licservers => @licservers, :tag => params[:id] } 
+      #    else
+      #      render :partial => 'display_licservers' , :locals => { :licservers => @licservers, :tag => params[:id] } 
+      #    end
+      #  end
+      #} 
+      format.html
       format.json { render json: @licservers }
+			format.template
     end
   end
 
