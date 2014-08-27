@@ -7,7 +7,7 @@ development:
   adapter: oracle_enhanced
   host: 10.1.14.232
   port: 1521
-  database: fwdev
+  database: fw02dev
   username: fireworks
   password: fireworks
   #adapter: oracle_enhanced
