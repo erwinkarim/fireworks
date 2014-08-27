@@ -1,6 +1,12 @@
 .page-header
-	%h2
+	%h1
 		= @tag 
+	%ul.breadcrumb
+		%li
+			%a{ :href => tags_path } Tags
+			%span.divider /
+		%li.active
+			= @tag
 .row.span10.offset1
 	%ul.nav.nav-tabs{ :id => @tag }
 		- @licservers.each do |licserver|

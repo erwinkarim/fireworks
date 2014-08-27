@@ -44,7 +44,7 @@ production:
   adapter: oracle_enhanced
   host: 10.1.14.232
   port: 1521
-  database: fwprod
+  database: fw02prod
   username: fireworks
   password: fireworks
   #adapter: mysql2
