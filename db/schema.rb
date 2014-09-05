@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140812075212) do
+ActiveRecord::Schema.define(:version => 20140828051549) do
 
   create_table "ads_users", :force => true do |t|
     t.string   "name"
@@ -27,9 +27,11 @@ ActiveRecord::Schema.define(:version => 20140812075212) do
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
     t.string   "login",                                                 :default => "", :null => false
+    t.string   "username"
   end
 
   add_index "ads_users", ["reset_password_token"], :name => "i_ads_use_res_pas_tok", :unique => true
+  add_index "ads_users", ["username"], :name => "index_ads_users_on_username"
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :precision => 38, :scale => 0, :default => 0
