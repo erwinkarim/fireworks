@@ -1,0 +1,104 @@
+!!!
+%html{ :lang => 'en' }
+	%head
+		%meta{ :charset => 'utf-8' }
+		%meta{ :http => { :equiv => "X-UA-Compatible" }, :content => "IE=Edge,chrome=1"  }
+		%meta{ :name => "viewport" , :content => "width=device-width, initial-scale=1.0"}
+		%title
+			= content_for?(:title) ? yield(:title) : "Fireworks" 
+
+		/ javascript include tag here -->
+		= csrf_meta_tags 
+		= stylesheet_link_tag "application", :media => "all" 
+
+		/ For third-generation iPad with high-resolution Retina display: -->
+		/ Size should be 144 x 144 pixels -->
+		= favicon_link_tag 'images/apple-touch-icon-144x144-precomposed.png', :rel => 'apple-touch-icon-precomposed', 
+			:type => 'image/png', :sizes => '144x144' 
+
+		<!-- For iPhone with high-resolution Retina display: -->
+		<!-- Size should be 114 x 114 pixels -->
+		= favicon_link_tag 'images/apple-touch-icon-114x114-precomposed.png', :rel => 'apple-touch-icon-precomposed', 
+			:type => 'image/png', :sizes => '114x114' 
+
+		<!-- For first- and second-generation iPad: -->
+		<!-- Size should be 72 x 72 pixels -->
+		= favicon_link_tag 'images/apple-touch-icon-72x72-precomposed.png', :rel => 'apple-touch-icon-precomposed', 
+			:type => 'image/png', :sizes => '72x72' 
+
+		<!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
+		<!-- Size should be 57 x 57 pixels -->
+		= favicon_link_tag 'images/apple-touch-icon-precomposed.png', :rel => 'apple-touch-icon-precomposed', 
+			:type => 'image/png' 
+
+		<!-- For all other devices -->
+		<!-- Size should be 32 x 32 pixels -->
+		= favicon_link_tag 'images/favicon.ico', :rel => 'shortcut icon' 
+	%body
+
+		.navbar.navbar-fixed-top
+			.navbar-inner
+				.container
+					%a{ :class => 'btn btn-navbar', :data => { :target => 'nav-collapse', :toggle => 'collapse' } }
+						%span.icon-bar
+						%span.icon-bar
+						%span.icon-bar
+					%a.brand{ :href => root_path }
+						Fireworks
+					.container.nav-collapse
+						%ul.nav
+							%li
+								= link_to 'Tags', tags_path
+							%li
+								= link_to 'Servers', licservers_path
+							%li
+								= link_to 'Users', users_path
+							%li.dropdown
+								%a.dropdown-toggle{ :href => '#', :data => { :toggle => 'dropdown' } }
+									Idle Client
+									%b.caret
+								%ul.dropdown-menu{ :role => 'menu' }
+									%li
+										= link_to 'Download Client', welcome_download_client_path 
+									%li.divider
+									%li
+										= link_to 'List Idle Clients', idle_user_show_path
+							%li
+								= link_to 'Reports', report_schedules_path
+						%ul.nav.pull-right
+							%li
+								%a.dropdown-toggle{ :href => '#', :data => { :toggle => 'dropdown' } }
+									Help
+									%b.caret
+								%ul.dropdown-menu{ :role => 'menu' }
+									%li
+										= link_to 'Fireworks Help', welcome_tech_path
+									%li.divider
+									%li
+										= link_to 'About', welcome_about_path
+									%li
+										= link_to 'Settings', '#'
+							%li
+								- if ads_user_signed_in? then
+									= link_to 'Sign Out', destroy_ads_user_session_path, :method => :delete
+								- else
+									= link_to 'Sign In', ads_user_session_path
+		%br
+		%br
+		%br
+		.container.yield_div
+			= bootstrap_flash
+			= yield
+
+		.container
+			%footer
+				%p
+					&copy; Fireworks 2012-2014
+
+		/ Javascripts
+		/ ================================================== -
+		/ Placed at the end of the document so the pages load faster 
+		= javascript_include_tag "application" 
+		= yield :other_javascript 
+		:javascript
+			$('.dropdown-toggle').dropdown();
