@@ -22,15 +22,19 @@ authorizations: &AUTHORIZATIONS
 
 development:
   host: CEN-INF-5.PETRONAS.PETRONET.DIR
+  #host: localhost
   #port: 389
   port: 636
   #attribute: cn
   attribute: sAMAccountName
-  base: ou=Users,dc=petronet,dc=dir
+  #attribute: nil
+  #base: dc=petronas,dc=petronet,dc=dir
+  base: DC=PETRONAS,DC=PETRONET,DC=DIR
+  #base: nil
   #admin_user: cn=admin,dc=petronas,dc=com,dc=my
   #admin_password: admin_password
-  #ssl: false
-  ssl: true
+  # ssl: false
+  ssl: simple_tls
   # <<: *AUTHORIZATIONS
 
 test:

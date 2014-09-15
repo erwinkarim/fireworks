@@ -70,6 +70,13 @@
                   <li><%= link_to 'Settings', '#' %></li>
                 </ul>
               </li>
+							<li>
+								<% if ads_user_signed_in? then %>
+									<%= link_to 'Sign Out', destroy_ads_user_session_path, :method => :delete %>
+								<% else %>
+									<%= link_to 'Sign In', ads_user_session_path %>
+								<% end %>
+							</li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>

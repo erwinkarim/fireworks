@@ -11,13 +11,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140828051549) do
+ActiveRecord::Schema.define(:version => 20140915040328) do
 
   create_table "ads_users", :force => true do |t|
     t.string   "name"
     t.datetime "created_at",                                                            :null => false
     t.datetime "updated_at",                                                            :null => false
-    t.string   "encrypted_password",                                    :default => "", :null => false
+    t.string   "encrypted_password",                                    :default => ""
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(:version => 20140828051549) do
     t.string   "last_sign_in_ip"
     t.string   "login",                                                 :default => "", :null => false
     t.string   "username"
+    t.string   "email"
   end
 
   add_index "ads_users", ["reset_password_token"], :name => "i_ads_use_res_pas_tok", :unique => true
