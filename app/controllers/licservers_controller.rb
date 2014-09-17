@@ -1,4 +1,5 @@
 class LicserversController < ApplicationController
+	before_filter :authenticate_ads_user!, :only => [ :delete, :new, :create, :edit, :destroy ]
 
   # GET /licservers
   # GET /licservers.json

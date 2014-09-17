@@ -29,21 +29,23 @@
 	- else
 		- licserver.tags.each do |tag|
 			= link_to tag.title, tag_path(tag.title), :class => 'btn btn-mini tags', :data => { :id => tag.id, :'tag-title' => tag.title, }
-%h3 Action
-%button.btn.btn-primary#edit-licserver{ :data => { :id => licserver.id, :toggle => 'modal', 
-	:target => '#licserver-modal-' + licserver.id.to_s, :remote => edit_licserver_path(licserver.id) } } 
-	= fa_icon('edit')
-	Edit
-= link_to fa_icon('ban', :text => 'Delete'), licserver, :class => 'btn btn-danger', :method => :delete, :data => { :remote => true, :confirm => 'Really delete?' }
-.modal.hide.fade{ :role => 'dialog', :id => 'licserver-modal-' + licserver.id.to_s }
-	.modal-header
-		%button.close{ :type => 'button', :data => { :dismiss => 'modal' } }
-			x
-		%h3
-			Update Licserver
-	.modal-body
-	.modal-footer
-		%button.btn{ :data => { :dismiss => 'modal' } }
-			Close
-		%button.btn.btn-primary.update-licserver{ :data => { :id => licserver.id } }
-			Update
+- if ads_user_signed_in? then
+	%h3 Action
+	%button.btn.btn-primary#edit-licserver{ :data => { :id => licserver.id, :toggle => 'modal', 
+		:target => '#licserver-modal-' + licserver.id.to_s, :remote => edit_licserver_path(licserver.id) } } 
+		= fa_icon('edit')
+		Edit
+	= link_to fa_icon('ban', :text => 'Delete'), licserver, :class => 'btn btn-danger', :method => :delete, 
+		:data => { :remote => true, :confirm => 'Really delete?' }
+	.modal.hide.fade{ :role => 'dialog', :id => 'licserver-modal-' + licserver.id.to_s }
+		.modal-header
+			%button.close{ :type => 'button', :data => { :dismiss => 'modal' } }
+				x
+			%h3
+				Update Licserver
+		.modal-body
+		.modal-footer
+			%button.btn{ :data => { :dismiss => 'modal' } }
+				Close
+			%button.btn.btn-primary.update-licserver{ :data => { :id => licserver.id } }
+				Update

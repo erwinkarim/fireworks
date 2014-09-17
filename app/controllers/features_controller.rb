@@ -1,4 +1,6 @@
 class FeaturesController < ApplicationController
+	before_filter :authenticate_ads_user!, :only => [ :kill ]
+	
   def index
     @licserver = Licserver.find(params[:licserver_id])
     if @licserver.features.count > 0 then

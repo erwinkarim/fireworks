@@ -46,7 +46,7 @@
 					%a.brand{ :href => root_path }
 						Fireworks
 					.container.nav-collapse
-						%ul.nav
+						%ul.nav{ :role => 'navigation' }
 							%li
 								= link_to 'Tags', tags_path
 							%li
@@ -67,10 +67,10 @@
 								= link_to 'Reports', report_schedules_path
 						%ul.nav.pull-right
 							%li
-								%a.dropdown-toggle{ :href => '#', :data => { :toggle => 'dropdown' } }
+								%a.dropdown-toggle#drop-help{ :href => '#', :data => { :toggle => 'dropdown' } }
 									Help
 									%b.caret
-								%ul.dropdown-menu{ :role => 'menu' }
+								%ul.dropdown-menu{ :role => 'menu', :aria => { :labelledby => 'drop-help'}  }
 									%li
 										= link_to 'Fireworks Help', welcome_tech_path
 									%li.divider
@@ -80,7 +80,12 @@
 										= link_to 'Settings', '#'
 							%li
 								- if ads_user_signed_in? then
-									= link_to 'Sign Out', destroy_ads_user_session_path, :method => :delete
+									%a.dropdown-toggle#drop-ads-user{ :href => '#', :data => { :toggle => 'dropdown' } }
+										= current_ads_user.name 
+										%b.caret
+									%ul.dropdown-menu{ :role => 'menu', :aria => { :labelledby => 'drop-ads-user' } }
+										%li
+											= link_to 'Sign Out', destroy_ads_user_session_path, :method => :delete
 								- else
 									= link_to 'Sign In', ads_user_session_path
 		%br

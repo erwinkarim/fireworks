@@ -1,4 +1,6 @@
 class ReportSchedulesController < ApplicationController
+	before_filter :authenticate_ads_user!
+
   def index
     @schedules = ReportSchedule.all
 
