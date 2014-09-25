@@ -5,24 +5,30 @@ class AdsUser < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   # Setup accessible (or protected) attributes for your model
-  #attr_accessible :login, :password, :password_confirmation, :remember_me, :email
-  attr_accessible :login, :remember_me, :email
+  attr_accessible :login, :password, :password_confirmation, :remember_me, :email
+  #attr_accessible :login, :remember_me, :email
   attr_accessible :username
 
 	validates :username, presence: true, uniqueness: true
 
   before_validation :populate_fields
+	after_validation :check_for_groups
+
 	def populate_fields
 		#need to login first before searching
 		ldap = Devise::LDAP::Adapter.ldap_connect(self.username)
 		ldap.ldap.authenticate self.username,self.password
 		if (ldap.ldap.bind) then
 			results = ldap.ldap.search(:base => ldap.ldap.base, 
-				:filter => Net::LDAP::Filter.eq('samaccountname', self.username.split('\\').last) )
+				:filter => Net::LDAP::Filter.eq('userprincipalname', self.username) )
 			self.name = results.first[:displayname].first
 			self.email = results.first[:mail].first
-			self.login = self.username.split('\\').last
+			self.login = self.username.split('@').first
 		end
+	end
+
+	#check for if member for valid groups after creation
+	def check_for_group
 	end
 
   def get_ldap_email

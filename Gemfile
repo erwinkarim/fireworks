@@ -27,6 +27,11 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
+#for dev purpose only
+group :development do
+	gem 'debugger'
+end
+
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'twitter-bootstrap-rails', '=2.2.7'
@@ -57,7 +62,7 @@ gem 'squeel'
 
 gem 'delayed_job_active_record'
 gem 'daemons'
-gem 'paloma'
+gem 'paloma', '~> 2.0.6'
 
 gem 'snmp'
 
@@ -68,5 +73,6 @@ gem 'foreman'
 gem 'spreadsheet'
 
 #user authentication
-gem 'devise'
-gem 'devise_ldap_authenticatable'
+gem 'devise', '~> 3.0'
+#gem 'devise_ldap_authenticatable'
+gem 'devise_ldap_authenticatable', :git => "https://github.com/cschiewek/devise_ldap_authenticatable.git"

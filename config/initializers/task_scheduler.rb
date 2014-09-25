@@ -1,4 +1,4 @@
-scheduler = Rufus::Scheduler.start_new
+scheduler = Rufus::Scheduler.new
 
 scheduler.every("11m") do
   #in future send tasks to a task-manager

@@ -3,39 +3,55 @@
 # You can also just copy and paste the tree (do not include the "authorizations") to each
 # environment if you need something different per enviornment.
 authorizations: &AUTHORIZATIONS
-  group_base: ou=PCSB,dc=petronas,dc=petronas,dc=dir
+  #group_base: ou=PCSB,dc=petronas,dc=petronas,dc=dir
   ## Requires config.ldap_check_group_membership in devise.rb be true
   # Can have multiple values, must match all to be authorized
-  required_groups:
+ #required_groups:
     # If only a group name is given, membership will be checked against "uniqueMember"
     #- cn=admins,ou=groups,dc=petronas,dc=petronet,dc=dir
     #- cn=users,ou=groups,dc=petronas,dc=petronet,dc=dir
     # If an array is given, the first element will be the attribute to check against, the second the group name
     #- ["moreMembers", "cn=users,ou=groups,dc=petronas,dc=petronet,dc=dir"]
+    #- CN=GRDIR-PETRELMSTR.OPU.PCSB.PTT-351,OU=PTT-351-OPU,OU=PCSB,DC=PETRONAS,DC=PETRONET,DC=DIR
+ #   - CN=Domain Users,CN=Users,DC=PETRONAS,DC=PETRONET,DC=DIR
   ## Requires config.ldap_check_attributes in devise.rb to be true
   ## Can have multiple attributes and values, must match all to be authorized
-  require_attribute:
-    objectClass: inetOrgPerson
-    authorizationRole: postsAdmin
+  #require_attribute:
+  #  objectClass: inetOrgPerson
+  #  authorizationRole: postsAdmin
+    #- memberOf: CN=GRDIR-PETRELMSTR.OPU.PCSB.PTT-351,OU=PTT-351-OPU,OU=PCSB,DC=PETRONAS,DC=PETRONET,DC=DIR
+    #- memberOf: CN=Domain Users,CN=Users,DC=PETRONAS,DC=PETRONET,DC=DIR
 
 ## Environment
 
 development:
-  host: CEN-INF-5.PETRONAS.PETRONET.DIR
   #host: localhost
   #port: 389
+  host: CEN-INF-5.PETRONAS.PETRONET.DIR
   port: 636
-  #attribute: cn
-  attribute: sAMAccountName
-  #attribute: nil
+  attribute: userprincipalname
   #base: dc=petronas,dc=petronet,dc=dir
+  #admin_user: cn=admin,dc=test,dc=com
+  #admin_password: admin_password
+  admin_user: PETRONAS\malekerwin.karim
+  admin_password: PTAug14#
   base: DC=PETRONAS,DC=PETRONET,DC=DIR
   #base: nil
-  #admin_user: cn=admin,dc=petronas,dc=com,dc=my
-  #admin_password: admin_password
   # ssl: false
   ssl: simple_tls
-  # <<: *AUTHORIZATIONS
+  #check_group_membership: true
+  check_group_membership_without_admin: true
+  
+  require_attribute:
+    #- memberOf: CN={TD-PD-AW-DL},OU=PMU,OU=Distribution List,OU=Migration,DC=PETRONAS,DC=PETRONET,DC=DIR
+    - memberOf: CN={PET-ICT E&P CoE Subsurface},OU=PTT-361-RESOURCES,OU=PET-ICT,DC=PETRONAS,DC=PETRONET,DC=DIR
+  required_groups:
+    #- CN=Domain Users,CN=Users,DC=PETRONAS,DC=PETRONET,DC=DIR
+    #- CN=GRDIR-PETRELMSTR.OPU.PCSB.PTT-351,OU=PTT-351-OPU,OU=PCSB,DC=PETRONAS,DC=PETRONET,DC=DIR
+    - CN={TD-PD-AW-DL},OU=PMU,OU=Distribution List,OU=Migration,DC=PETRONAS,DC=PETRONET,DC=DIR
+    #- CN=GR-WEBUSERS.HCU.PMU.PTT-351,OU=PTT-351-HCU,OU=PMU,DC=PETRONAS,DC=PETRONET,DC=DIR
+    # - CN={PET-ICT E&P CoE Subsurface},OU=PTT-361-RESOURCES,OU=PET-ICT,DC=PETRONAS,DC=PETRONET,DC=DIR
+  #<<: *AUTHORIZATIONS
 
 test:
   host: localhost
