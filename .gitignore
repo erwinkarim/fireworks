@@ -22,7 +22,7 @@ public/uploads/*
 public/carrierwave_cache/*
 
 #ignore ldap config
-/config/ldap.yml
+config/ldap.yml
 
 *.gem
 *.rbc
