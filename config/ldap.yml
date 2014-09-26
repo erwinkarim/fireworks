@@ -9,7 +9,7 @@ authorizations: &AUTHORIZATIONS
   ## Requires config.ldap_check_group_membership in devise.rb be true
   # Can have multiple values, must match all to be authorized
   required_groups:
-    - CN={TD-PD-AW-DL},OU=PMU,OU=Distribution List,OU=Migration,DC=PETRONAS,DC=PETRONET,DC=DIR
+    - <%= ENV['devise_req_groups'] %>
     # If only a group name is given, membership will be checked against "uniqueMember"
     #- cn=admins,ou=groups,dc=petronas,dc=petronet,dc=dir
     #- cn=users,ou=groups,dc=petronas,dc=petronet,dc=dir
@@ -41,7 +41,7 @@ development:
   # ssl: false
   ssl: simple_tls
   #check_group_membership: true
-  check_group_membership_without_admin: true
+  check_group_membership_without_admin: <%= ENV['devise_check_group'] %>
   <<: *AUTHORIZATIONS
 
 test:
