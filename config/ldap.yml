@@ -3,6 +3,8 @@
 # You can also just copy and paste the tree (do not include the "authorizations") to each
 # environment if you need something different per enviornment.
 authorizations: &AUTHORIZATIONS
+  admin_user: <%= ENV['devise_ldap_admin'] %>
+  admin_password: <%= ENV['devise_ldap_admin_password'] %>
   #group_base: ou=PCSB,dc=petronas,dc=petronas,dc=dir
   ## Requires config.ldap_check_group_membership in devise.rb be true
   # Can have multiple values, must match all to be authorized
@@ -33,8 +35,6 @@ development:
   #base: dc=petronas,dc=petronet,dc=dir
   #admin_user: cn=admin,dc=test,dc=com
   #admin_password: admin_password
-  admin_user: PETRONAS\malekerwin.karim
-  admin_password: PTAug14#
   base: DC=PETRONAS,DC=PETRONET,DC=DIR
   #base: nil
   # ssl: false
@@ -48,10 +48,10 @@ development:
   required_groups:
     #- CN=Domain Users,CN=Users,DC=PETRONAS,DC=PETRONET,DC=DIR
     #- CN=GRDIR-PETRELMSTR.OPU.PCSB.PTT-351,OU=PTT-351-OPU,OU=PCSB,DC=PETRONAS,DC=PETRONET,DC=DIR
+    #- CN={PET-ICT E&P CoE Subsurface},OU=PTT-361-RESOURCES,OU=PET-ICT,DC=PETRONAS,DC=PETRONET,DC=DIR
     - CN={TD-PD-AW-DL},OU=PMU,OU=Distribution List,OU=Migration,DC=PETRONAS,DC=PETRONET,DC=DIR
     #- CN=GR-WEBUSERS.HCU.PMU.PTT-351,OU=PTT-351-HCU,OU=PMU,DC=PETRONAS,DC=PETRONET,DC=DIR
-    # - CN={PET-ICT E&P CoE Subsurface},OU=PTT-361-RESOURCES,OU=PET-ICT,DC=PETRONAS,DC=PETRONET,DC=DIR
-  #<<: *AUTHORIZATIONS
+  <<: *AUTHORIZATIONS
 
 test:
   host: localhost
