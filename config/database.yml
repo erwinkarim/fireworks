@@ -10,6 +10,7 @@ development:
   database: fw02dev
   username: fireworks
   password: fireworks
+  pool: 20
   #adapter: oracle_enhanced
   #host: pcsblinuxsv01
   #port: 1521

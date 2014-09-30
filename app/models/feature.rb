@@ -23,7 +23,8 @@ class Feature < ActiveRecord::Base
     header = /Users.*/
   
     #split the output into headers of "Users of <feature name>...."
-    sections = output.scan(/(?m)#{header}.*?(?=#{header})|\Z/)
+    #sections = output.scan(/(?m)#{header}.*?(?=#{header})|\Z/)
+    sections = output.force_encoding("ISO-8859-1").encode("utf-8", replace: nil).scan(/(?m)#{header}.*?(?=#{header})|\Z/)
     sections.each do |section|
       feature_line = section.lines.grep(/Users/).first
       unless feature_line.nil? 
