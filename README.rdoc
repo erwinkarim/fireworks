@@ -13,16 +13,22 @@ To install, follow these steps:-
 * git clone https://github.com/erwinkarim/fireworks.git
 * cd /path/to/fireworks
 * bundle install
-* rails server
+* rake db:migrate
+
+Create the an .env file at the application root path and add the following lines
+
+devise_ldap_host=<ldap_host>
+devise_ldap_domains={"domain" => "fqdn"}
+devise_ldap_base=<your ldap base>
+devise_req_groups=<your req group distinguished name. just one group only>
+devise_check_group=<true or false. true if you want to allow a certain group to access>
 
 Please note that this app uses an external program lmutil which is currently on run on linux_amd64. So it won't work on Mac/Windows yet or linux 32-bit
 
 ==Starting
-Remember to start the delayed_job deamond or else you won't be able to delete any license server entries
 
-Startup sequence is like this:-
-RAILS_ENV <environment> script/delayed_job start
-RAILS_ENV <environment> rails server
+cd /path/to/fireworks
+RAILS_ENV=<environment_name> PORT=<port> foreman start
 
 ==Rereq
 The following packages needed to be installed to ensure the lmutil program can run

@@ -6,10 +6,15 @@ class AdsUsers::SessionsController < Devise::SessionsController
   #   super
   # end
 
+	#creating a new session
 	#POST /resource/sign_in
 	def create
 		# process the domain names and combine the user name for authentication
 		params[:ads_user][:username] = params[:ads_user][:login] + "@" + params[:ads_user][:domain]
+
+		#set the admin login as the user who is logging in...
+		ENV['devise_ldap_admin'] = params[:ads_user][:username]
+		ENV['devise_ldap_admin_password'] = params[:ads_user][:password]
 		super
 	end
 
