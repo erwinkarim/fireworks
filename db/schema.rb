@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140915040328) do
+ActiveRecord::Schema.define(:version => 20141009035503) do
 
   create_table "ads_users", :force => true do |t|
     t.string   "name"
@@ -29,6 +29,7 @@ ActiveRecord::Schema.define(:version => 20140915040328) do
     t.string   "login",                                                 :default => "", :null => false
     t.string   "username"
     t.string   "email"
+    t.string   "domain"
   end
 
   add_index "ads_users", ["reset_password_token"], :name => "i_ads_use_res_pas_tok", :unique => true

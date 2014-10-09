@@ -1,7 +1,6 @@
 Fireworks::Application.routes.draw do
 
-  devise_for :ads_users
-
+  devise_for :ads_users, controllers: { sessions: "ads_users/sessions" }
   #devise_for :users
 
   resources :licservers do
