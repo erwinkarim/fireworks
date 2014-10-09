@@ -57,7 +57,7 @@ gem 'unicorn-rails'
 #
 
 gem 'rufus-scheduler'
-gem 'less-rails'
+gem 'less-rails', '=2.3.1'
 gem 'squeel'
 
 gem 'delayed_job_active_record'
