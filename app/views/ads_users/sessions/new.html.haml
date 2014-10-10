@@ -2,7 +2,7 @@
 	Sign In
 	- if ENV['devise_check_group'] then
 		%small
-			Only some shall pass
+			Only #{ENV['devise_req_groups'].split(',').first.split('=').last} group members shall pass
 
 = form_for(resource, as: resource_name, url: session_path(resource_name), :html => { :class => 'form-horizontal' } ) do |f| 
 	.control-group
@@ -12,13 +12,13 @@
 	.control-group
 		= f.label :login , :class => 'control-label'
 		.controls
-			= f.text_field :login, autofocus: true , :placeholder => "username@domain"
+			= f.text_field :login, autofocus: true , :placeholder => "Your Login"
 			
 
 	.control-group
 		= f.label :password , :class => 'control-label'
 		.controls
-			= f.password_field :password, autocomplete: "off", :placeholder => "password" 
+			= f.password_field :password, autocomplete: "off", :placeholder => "Your Password" 
 
 	.control-group
 		.controls
