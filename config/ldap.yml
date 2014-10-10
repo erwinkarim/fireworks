@@ -60,4 +60,5 @@ production:
   attribute: userprincipalname
   base: <%= ENV['devise_ldap_base'] %>
   ssl: simple_tls
-  # <<: *AUTHORIZATIONS
+  check_group_membership_without_admin: <%= ENV['devise_check_group'] %>
+   <<: *AUTHORIZATIONS
