@@ -61,4 +61,4 @@ production:
   base: <%= ENV['devise_ldap_base'] %>
   ssl: simple_tls
   check_group_membership_without_admin: <%= ENV['devise_check_group'] %>
-   <<: *AUTHORIZATIONS
+  <<: *AUTHORIZATIONS

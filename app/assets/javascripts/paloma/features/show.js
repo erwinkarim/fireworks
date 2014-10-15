@@ -154,7 +154,12 @@
         '/users';
       $.get( load_path, null, function( data, textStatus, jqXHR) {
         handle.find('tbody').empty();
-        handle.find('tbody').append(data);
+        handle.find('tbody').append(data).ready( function(){
+					//error handing w/
+					handle.find('.kill_user').bind('ajax:error', function(event , xhr, status, error){
+						alert('must sign in to kill');
+					});
+				});
         $('#user-list-last-update').empty().append(
           $.parseHTML('Updated: ' + (new Date( $.now()).toLocaleString() ) )
         );

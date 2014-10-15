@@ -74,6 +74,7 @@ class FeaturesController < ApplicationController
     respond_to do |format|
       format.html { redirect_to :back } 
       format.xml { render :text => 'successful' }
+			format.js
     end
   end
 
