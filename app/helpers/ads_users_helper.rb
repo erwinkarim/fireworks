@@ -1,0 +1,2 @@
+module AdsUsersHelper
+end

@@ -9,3 +9,5 @@
 //= require ./tags/_manifest.js
 //= require ./features/_manifest.js
 //= require ./licservers/_manifest.js
+//= require ./ads_user/_manifest.js
+//= require ./ads_users/_manifest.js

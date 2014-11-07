@@ -2,6 +2,11 @@ Fireworks::Application.routes.draw do
 
   devise_for :ads_users, controllers: { sessions: "ads_users/sessions" }
   #devise_for :users
+  
+	resources :ads_users, :id => /[^\/]+/ , only: [ :show ]  do
+		resources :watch_lists
+	end
+
 
   resources :licservers do
 		collection do

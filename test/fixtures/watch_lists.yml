@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  ads_user: 
+  model_type: MyString
+  model_id: 1
+  note: MyText
+
+two:
+  ads_user: 
+  model_type: MyString
+  model_id: 1
+  note: MyText

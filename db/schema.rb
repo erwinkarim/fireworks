@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141009035503) do
+ActiveRecord::Schema.define(:version => 20141107041830) do
 
   create_table "ads_users", :force => true do |t|
     t.string   "name"
@@ -159,5 +159,16 @@ ActiveRecord::Schema.define(:version => 20141009035503) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  create_table "watch_lists", :force => true do |t|
+    t.integer  "ads_user_id", :precision => 38, :scale => 0
+    t.string   "model_type"
+    t.integer  "model_id",    :precision => 38, :scale => 0
+    t.text     "note"
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
+  end
+
+  add_index "watch_lists", ["ads_user_id"], :name => "i_watch_lists_ads_user_id"
 
 end
