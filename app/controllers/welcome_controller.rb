@@ -31,4 +31,7 @@ class WelcomeController < ApplicationController
   def notice
     render :partial => 'notice', :locals => { :msg => params[:msg] }
   end
+
+	def disclaimer
+	end
 end

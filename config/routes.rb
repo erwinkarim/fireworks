@@ -4,6 +4,7 @@ Fireworks::Application.routes.draw do
   #devise_for :users
   
 	resources :ads_users, :id => /[^\/]+/ , only: [ :show ]  do
+    post 'toggle_watch'
 		resources :watch_lists
 	end
 
@@ -78,6 +79,7 @@ Fireworks::Application.routes.draw do
   get "welcome/download_client"
   get 'welcome/notice'
 	get 'welcome/login_test'
+	get 'welcome/disclaimer'
 
   resources :users do
     collection do

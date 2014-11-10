@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141107041830) do
+ActiveRecord::Schema.define(:version => 20141110080328) do
 
   create_table "ads_users", :force => true do |t|
     t.string   "name"
@@ -167,6 +167,7 @@ ActiveRecord::Schema.define(:version => 20141107041830) do
     t.text     "note"
     t.datetime "created_at",                                 :null => false
     t.datetime "updated_at",                                 :null => false
+    t.boolean  "active",      :precision => 1,  :scale => 0
   end
 
   add_index "watch_lists", ["ads_user_id"], :name => "i_watch_lists_ads_user_id"

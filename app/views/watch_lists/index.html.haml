@@ -1,3 +1,9 @@
-%h1 Listing watch_lists
+%h1 Your Watch List
 
-%p listing watch list for user X
+- if @watch_lists.nil? then
+  %p Didn't watch anything
+- else
+  %ul
+    - @watch_lists.each do |list|
+      %li #{list.model_type}:#{list.model_id}
+

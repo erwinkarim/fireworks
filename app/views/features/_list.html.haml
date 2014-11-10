@@ -1,10 +1,14 @@
 - features.each do |feature|
-  .accordion-group{ :data => { :'init-feature' => 'false', :licserver => licserver.id, :feature => feature[:name] } }
-    .accordion-heading
-      %a.accordion-toggle{ :data => { :toggle => 'collapse', :parent => '#licserver-' + licserver.id.to_s + '-features-listing' }, :href => '#licserver-' + licserver.id.to_s + '-features-' + feature[:name] }
-        = feature[:name]
-    .accordion-body.collapse{ :id => 'licserver-' + licserver.id.to_s + '-features-' + feature[:name] }
-      .accordion-inner
-        .features-info
-          = link_to fa_icon('info', :text => 'More Info'), licserver_feature_path(licserver.id, feature[:name]), :class => 'btn' 
-        .features-graph
+	.accordion-group{ :data => { :'init-feature' => 'false', :licserver => licserver.id, :feature => feature[:name] } }
+		.accordion-heading
+			%a.accordion-toggle{ :data => { :toggle => 'collapse', :parent => '#licserver-' + licserver.id.to_s + '-features-listing' }, :href => '#licserver-' + licserver.id.to_s + '-features-' + feature[:name] }
+				= feature[:name]
+		.accordion-body.collapse{ :id => 'licserver-' + licserver.id.to_s + '-features-' + feature[:name] }
+			.accordion-inner
+				.features-watch
+				.features-info
+					- if ads_user_signed_in? then
+						= link_to fa_icon('star-o', :text => 'Watch'), ads_user_watch_lists_path(current_ads_user.login), :method => :post , :class => 'btn',
+							:data => { :'loading-text' => 'Loading...', :'model-type' => 'FeatureHeader', :'model-id' => feature[:id] , :remote => true }
+					= link_to fa_icon('info', :text => 'More Info'), licserver_feature_path(licserver.id, feature[:name]), :class => 'btn' 
+				.features-graph

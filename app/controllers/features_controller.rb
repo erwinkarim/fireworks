@@ -29,7 +29,7 @@ class FeaturesController < ApplicationController
     @licserver = Licserver.find(params[:licserver_id])
     #@features = @licserver.features.order('created_at desc').limit(200).pluck(:name).uniq.map{ |item| {:name => item}}
     #@features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| { :name => item.name } }
-    @features = @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.map{ |item| { :name => item.name } }
+    @features = @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.map{ |item| { :name => item.name, :id => item.id } }
     
     respond_to do |format|
       format.html { render :partial => 'list', :locals => { :features => @features, :licserver => @licserver } }
@@ -40,6 +40,10 @@ class FeaturesController < ApplicationController
   # GET    /licservers/:licserver_id/features/:id(.:format) 
   def show
     @licserver = Licserver.find(params[:licserver_id])
+    @feature = @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.where(:name => params[:id]).first
+    if ads_user_signed_in? then
+      @watched = current_ads_user.watch_lists.where(:model_type => 'FeatureHeader', :model_id => @feature.id ).first
+    end
     #@users = Feature.current_users(params[:licserver_id], params[:id])
 
     respond_to do |format|

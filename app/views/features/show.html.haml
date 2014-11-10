@@ -5,15 +5,20 @@
 - stack.push link_to "Features", licserver_features_path(params[:licserver_id]) 
 - stack.push params[:id] + ' Usage' 
 = generate_header(stack) 
-.page-header
-  %h2 
-    = params[:id]
 .row
-  .span10.offset1
+  .page-header
+    %h2 
+      - if ads_user_signed_in? then
+        = link_to fa_icon(@watched.nil? || !@watched.active ? 'star-o' : 'star'), 
+          ads_user_toggle_watch_path(:ads_user_id => current_ads_user.login, :model_type => 'FeatureHeader', :model_id => @feature.id), 
+          :method => :post, :data => { :remote => true }, :id => 'watchlist'
+      = params[:id]
+.row
+  .span12
     %h3 Monthly Frequency
     .monthly-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
 .row
-  .span10.offset1
+  .span12
     %h3 Daily Usage
     .daily-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
     .daily-graph-controls
@@ -27,7 +32,7 @@
         licserver_feature_data_dump_path(@licserver.id, params[:id], :format => :xml) , :class => 'btn', :format => :xml
     %br
 .row
-  .span10.offset1
+  .span12
     %ul.nav.nav-tabs#user-tabs
       %li.active
         %a{ :href => '#current-users', :data => { :toggle => 'tab' } } Current
