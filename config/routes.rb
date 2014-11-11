@@ -1,12 +1,15 @@
 Fireworks::Application.routes.draw do
 
+  get "feature_headers/accordion_group"
+
   devise_for :ads_users, controllers: { sessions: "ads_users/sessions" }
   #devise_for :users
   
-	resources :ads_users, :id => /[^\/]+/ , only: [ :show ]  do
+	resources :ads_users, :ads_user_id => /[^\/]+/ , only: [ :show ]  do
     post 'toggle_watch'
-		resources :watch_lists
+		resources :watch_lists, only: [:index, :show]
 	end
+
 
 
   resources :licservers do
@@ -32,16 +35,18 @@ Fireworks::Application.routes.draw do
     resources :tags
   end
 
+  resources :feature_headers, only: [:accordion_group]
+
   controller :licservers do
     match '/licserver/treding' => :trending, :via => :get , :as => 'licserver_trendy'
     match '/licserver/:licserver_id/analysis' => :analysis, :via => :get, :as => 'licserver_analysis'
   end
 
-  controller :dash do
-    match '/dash/' => :index, :via => :get, :as => 'dash'
-    match '/dash/monthly/:mode' => :monthly_report, :via => :get, :as => 'dash_monthly_report'
-    match '/dash/report/:mode' => :report , :via => :get, :as => 'dash_report'
-  end
+  #controller :dash do
+  #  match '/dash/' => :index, :via => :get, :as => 'dash'
+  #  match '/dash/monthly/:mode' => :monthly_report, :via => :get, :as => 'dash_monthly_report'
+  #  match '/dash/report/:mode' => :report , :via => :get, :as => 'dash_report'
+  #end
 
   resources :tags do
     collection do

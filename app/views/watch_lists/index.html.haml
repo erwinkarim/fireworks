@@ -1,9 +1,7 @@
 %h1 Your Watch List
 
-- if @watch_lists.nil? then
-  %p Didn't watch anything
-- else
-  %ul
-    - @watch_lists.each do |list|
-      %li #{list.model_type}:#{list.model_id}
-
+.row
+  .span12
+    .accordion#watch-list
+      .loading
+        %i.fa.fa-spinner.fa-spin.fa-4x

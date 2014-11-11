@@ -39,6 +39,7 @@ class FeaturesController < ApplicationController
 
   # GET    /licservers/:licserver_id/features/:id(.:format) 
   def show
+
     @licserver = Licserver.find(params[:licserver_id])
     @feature = @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.where(:name => params[:id]).first
     if ads_user_signed_in? then

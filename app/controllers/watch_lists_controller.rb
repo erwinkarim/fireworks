@@ -5,14 +5,27 @@ class WatchListsController < ApplicationController
 
 	# GET    /ads_users/:ads_user_id/watch_lists(.:format)
   def index
-    @watch_lists = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists
-    respond_with(@watch_lists)
+    respond_to do |format|
+      format.html
+      format.template {
+        @watch_lists = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists
+      }
+    end
   end
 
 	# GET    /ads_users/:ads_user_id/watch_lists/:id(.:format) 
   def show
-    @watch_lists = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists
-    respond_with(@watch_list)
+    respond_to do |format|
+      format.js
+      format.template {
+        #if @watch_list.model_type == 'FeatureHeader' then
+        #  feature_header = FeatureHeader.find(@watch_list.model_id)
+        #  @licserver = Licserver.find(feature_header.licserver_id)
+        #  params[:id] = feature_header.name
+        #  render 'features/show'
+        #end
+      }
+    end
   end
 
 	# GET    /ads_users/:ads_user_id/watch_lists/new(.:format)

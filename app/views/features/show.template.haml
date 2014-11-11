@@ -1,0 +1,53 @@
+%p features/show.template
+.row
+  .span12
+    %h3 Monthly Frequency
+    .monthly-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
+.row
+  .span12
+    %h3 Daily Usage
+    .daily-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
+    .daily-graph-controls
+      %button#dump-everything.btn{ :disabled => true }
+        %i.fa.fa-bar-chart-o
+        Load all Data
+      %button#load-older.btn{ :disabled => true }
+        %i.fa.fa-fast-backward 
+        Load Older Data
+      = link_to fa_icon('download', :text => 'Download XML Data'), 
+        licserver_feature_data_dump_path(@licserver.id, params[:id], :format => :xml) , :class => 'btn', :format => :xml
+    %br
+.row
+  .span12
+    %ul.nav.nav-tabs#user-tabs
+      %li.active
+        %a{ :href => '#current-users', :data => { :toggle => 'tab' } } Current
+      %li
+        %a{ :href => '#historical-users' , :data => { :toggle => 'tab' } } Historical
+    .tab-content
+      .tab-pane.active#current-users
+        %table#user-listings.table.table-striped.table-hover{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
+          %caption
+            %strong User listings
+            %button#reload-users.btn.btn-info
+              %i.fa.fa-refresh
+            #user-list-last-update
+          %thead
+            %tr
+              %th User Info
+              %th.pull-right Kill?
+          %tbody
+            %tr
+              %td.loading-users( colspan=2 )
+                %i.fa.fa-spinner.fa-spin.fa-4x
+      .tab-pane#historical-users
+        %table#historical-user-listings.table.table-striped.table-hover{ :data => { :licserver => @licserver.id, 
+          :feature => params[:id] } }
+          %caption
+            %strong Historical User Listing
+          %thead
+            %tr
+              %th User Info
+          %tbody
+            %tr
+              %td.historical-users-list( colspan=2 ) Click on the graph to get historical user listings
