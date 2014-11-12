@@ -85,6 +85,9 @@
 										%b.caret
 									%ul.dropdown-menu{ :role => 'menu', :aria => { :labelledby => 'drop-ads-user' } }
 										%li
+											= link_to 'My Watch List', ads_user_watch_lists_path(current_ads_user.login)
+										%li.divider
+										%li
 											= link_to 'Sign Out', destroy_ads_user_session_path, :method => :delete
 								- else
 									= link_to 'Sign In', ads_user_session_path

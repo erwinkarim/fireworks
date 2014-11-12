@@ -27,16 +27,24 @@
           $('#watch-list').find('.accordion-body').each( function(index){
             $(this).on('shown', function(){
               if( $(this).attr('data-init') == 'false') {
-                //load the data from watchlist/watch_list.id/show.template and execute the appropiate javascript
-                var handle = $(this).find('.accordion-inner');
+                var handle = $(this);
                 $.get(document.location.pathname + '/' + $(this).attr('data-id') + '.template' , null, function(data,textStatus, jqXHR){
-                  handle.append(data);
+                  handle.find('.accordion-inner').append(data).ready(function(){
+										//load the data from watchlist/watch_list.id/show.template and execute the appropiate javascript
+										//kinda works, but because you might get multiple types, it only load for the first loaded item of the same type
+										if(handle.attr('data-model-type') == 'FeatureHeader'){
+											console.log('load FeatureHeader scripts');
+											Paloma.callbacks['features']['show']();
+										} else if (handle.attr('data-model-type') == 'Licserver'){
+											console.log('load Licserver scripts');
+										} else if (handle.attr('data-model-type') == 'User'){
+											console.log('load User scripts');
+										} else if (handle.attr('data-model-type') == 'Tag'){
+											console.log('load Tag scripts');
+											Paloma.callbacks['tags']['show']();
+										};
+									});
                 });
-                /*
-                $(this).find('.accordion-inner').append(
-                  $.parseHTML('load watch list item')
-                );
-                */
                 $(this).attr('data-init', 'true');
               }
             });

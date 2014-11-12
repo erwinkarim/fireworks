@@ -1,9 +1,8 @@
-%p features/show.template
-.row
+.row-fluid
   .span12
     %h3 Monthly Frequency
     .monthly-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
-.row
+.row-fluid
   .span12
     %h3 Daily Usage
     .daily-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
@@ -17,7 +16,7 @@
       = link_to fa_icon('download', :text => 'Download XML Data'), 
         licserver_feature_data_dump_path(@licserver.id, params[:id], :format => :xml) , :class => 'btn', :format => :xml
     %br
-.row
+.row-fluid
   .span12
     %ul.nav.nav-tabs#user-tabs
       %li.active

@@ -4,8 +4,8 @@
 	- @watch_lists.each do |watch_item|
 		.accordion-group
 			.accordion-heading
-				%a.accordion-toggle{ :data => { :id => watch_item.id, :toggle => 'collapse', :parent => 'false', 
-					:'model-type' => watch_item.model_type, :'model-id' => watch_item.id }, :href => '#watch-body-' + watch_item.id.to_s }
+				%a.accordion-toggle{ :data => { :id => watch_item.id, :toggle => 'collapse', :parent => 'false' }, :href => '#watch-body-' + watch_item.id.to_s }
 					#{watch_item.model_type}:#{watch_item.model_id}
-			.accordion-body.collapse{ :id => 'watch-body-' + watch_item.id.to_s , :data => { :id => watch_item.id,	:init => 'false' } }
+			.accordion-body.collapse{ :id => 'watch-body-' + watch_item.id.to_s , :data => { :id => watch_item.id,	:init => 'false', 
+				:'model-type' => watch_item.model_type, :'model-id' => watch_item.model_id } }
 				.accordion-inner
