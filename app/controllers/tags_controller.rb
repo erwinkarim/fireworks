@@ -20,6 +20,11 @@ class TagsController < ApplicationController
     #    :conditions => 'title = "'+params[:id] +'"').map(&:licserver_id)
     #  )  
     @tag = params[:id]
+		@tag_handle = Tag.where(:title => params[:id]).first
+    if ads_user_signed_in? then
+			#tags could be tricky. need to revisit this later
+      @watched = current_ads_user.watch_lists.where(:model_type => 'Tag', :model_id => @tag_handle.id ).first
+    end
     @licservers = Licserver.find(
       Tag.where(:title => params[:id] ).pluck(:licserver_id)
     )

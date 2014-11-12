@@ -8,7 +8,9 @@
 				.features-watch
 				.features-info
 					- if ads_user_signed_in? then
-						= link_to fa_icon('star-o', :text => 'Watch'), ads_user_watch_lists_path(current_ads_user.login), :method => :post , :class => 'btn',
-							:data => { :'loading-text' => 'Loading...', :'model-type' => 'FeatureHeader', :'model-id' => feature[:id] , :remote => true }
+						- watched = current_ads_user.watch_lists.where(:model_type => 'FeatureHeader', :model_id => feature[:id]).first
+						= link_to fa_icon(watched.nil? || !watched.active ? 'star-o' : 'star'), 
+							ads_user_toggle_watch_path(:ads_user_id => current_ads_user.login, :model_type => 'FeatureHeader', :model_id => feature[:id]), 
+							:method => :post, :data => { :remote => true }, :id => 'watchlist', :class => 'btn'
 					= link_to fa_icon('info', :text => 'More Info'), licserver_feature_path(licserver.id, feature[:name]), :class => 'btn' 
 				.features-graph

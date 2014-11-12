@@ -18,12 +18,30 @@ class WatchListsController < ApplicationController
     respond_to do |format|
       format.js
       format.template {
-        #if @watch_list.model_type == 'FeatureHeader' then
-        #  feature_header = FeatureHeader.find(@watch_list.model_id)
-        #  @licserver = Licserver.find(feature_header.licserver_id)
-        #  params[:id] = feature_header.name
-        #  render 'features/show'
-        #end
+        if @watch_list.model_type == 'FeatureHeader' then
+          feature_header = FeatureHeader.find(@watch_list.model_id)
+          @licserver = Licserver.find(feature_header.licserver_id)
+          params[:id] = feature_header.name
+          render 'features/show'
+				elsif @watch_list.model_type == 'Licserver' then
+					@licserver = Licserver.find(@watch_list.model_id)
+					@tags = @licserver.tags
+					render 'licservers/show'
+				elsif @watch_list.model_type == 'Tag' then
+          @tag_handle = Tag.find(@watch_list.model_id)
+          @tag = @tag_handle.title
+          if ads_user_signed_in? then
+            #tags could be tricky. need to revisit this later
+            @watched = current_ads_user.watch_lists.where(:model_type => 'Tag', :model_id => @tag_handle.id ).first
+          end
+          @licservers = Licserver.find(
+            Tag.where(:title => @tag_handle.title ).pluck(:licserver_id)
+          )
+          render 'tags/show'
+				elsif @watch_list.model_type == 'User' then
+					@user = User.find(@watch_list.model_id)
+					render 'users/show'
+        end
       }
     end
   end

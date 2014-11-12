@@ -1,5 +1,10 @@
 .info
-	%h3 General Info
+	%h3 
+		- if ads_user_signed_in? then
+			= link_to fa_icon(@watched.nil? || !@watched.active ? 'star-o' : 'star'), 
+				ads_user_toggle_watch_path(:ads_user_id => current_ads_user.login, :model_type => 'Tag', :model_id => @tag_handle.id ), 
+				:method => :post, :data => { :remote => true }, :id => 'watchlist'
+		#{@tag}
 	= link_to fa_icon('link', :text => 'Permalink'), tag_path(@tag), :class => 'btn'
 .server-listings
 	%h3 Listings

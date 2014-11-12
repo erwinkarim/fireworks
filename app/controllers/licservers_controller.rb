@@ -25,6 +25,9 @@ class LicserversController < ApplicationController
     if @features.empty? then
       @features = nil
     end
+    if ads_user_signed_in? then
+      @watched = current_ads_user.watch_lists.where(:model_type => 'Licserver', :model_id => @licserver.id ).first
+    end
 
     respond_to do |format|
       format.html # show.html.erb

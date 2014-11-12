@@ -1,11 +1,11 @@
 - if @watch_lists.nil? then
-  %p Watched Nothing
+	%p Watched Nothing
 - else
-  - @watch_lists.each do |watch_item|
-    .accordion-group
-      .accordion-heading
-        %a.accordion-toggle{ :data => { :id => watch_item.id, :toggle => 'collapse', :parent => 'false', 
-          :'model-type' => watch_item.model_type, :'model-id' => watch_item.id }, :href => '#watch-body-' + watch_item.id.to_s }
-          Watch List Item #{watch_item.id}
-      .accordion-body.collapse{ :id => 'watch-body-' + watch_item.id.to_s , :data => { :init => 'false' } }
-        .accordion-inner
+	- @watch_lists.each do |watch_item|
+		.accordion-group
+			.accordion-heading
+				%a.accordion-toggle{ :data => { :id => watch_item.id, :toggle => 'collapse', :parent => 'false', 
+					:'model-type' => watch_item.model_type, :'model-id' => watch_item.id }, :href => '#watch-body-' + watch_item.id.to_s }
+					#{watch_item.model_type}:#{watch_item.model_id}
+			.accordion-body.collapse{ :id => 'watch-body-' + watch_item.id.to_s , :data => { :id => watch_item.id,	:init => 'false' } }
+				.accordion-inner

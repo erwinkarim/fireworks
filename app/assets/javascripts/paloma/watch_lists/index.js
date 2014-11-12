@@ -28,9 +28,15 @@
             $(this).on('shown', function(){
               if( $(this).attr('data-init') == 'false') {
                 //load the data from watchlist/watch_list.id/show.template and execute the appropiate javascript
-                $.get(document.location.pathname + '/10002.template', null, function(data,textStatus, jqXHR){
-                  $(this).find('.accordion-inner').append(data);
+                var handle = $(this).find('.accordion-inner');
+                $.get(document.location.pathname + '/' + $(this).attr('data-id') + '.template' , null, function(data,textStatus, jqXHR){
+                  handle.append(data);
                 });
+                /*
+                $(this).find('.accordion-inner').append(
+                  $.parseHTML('load watch list item')
+                );
+                */
                 $(this).attr('data-init', 'true');
               }
             });

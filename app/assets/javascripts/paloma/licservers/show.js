@@ -22,6 +22,10 @@
     $(document).ready(function(){
       console.log('licserver show loaded');
 
+      $('#watchlist').on('ajax:success', function(data, status, xhr){
+        //toggle the star
+        $(this).find('.fa').toggleClass('fa-star-o').toggleClass('fa-star');
+			});
     });
   }; // Paloma.callbacks['licservers']['show'] = function(params){
 })();

@@ -1,21 +1,26 @@
 - unless @users.empty? || @users.nil? 
-  - @users.each do |user|
-    .accordion-group{ :data => { :init => 'false' , :id => user.id } }
-      .accordion-heading
-        %a.accordion-toggle{ :data => { :toggle => 'collapse', :parent => '#user-listings' }, :href => '#user' + user.id.to_s }
-          = user.name
-      .accordion-body.collapse{ :id => 'user' + user.id.to_s }
-        .accordion-inner
-          .links
-            = link_to fa_icon('link'), user_path(user), { :class => 'btn' }
-          %br
-          %ul.nav.nav-tabs{ :id => 'user' + user.id.to_s + '-tabs' }
-            - user.machines.each do |machine|
-              %li
-                %a{ :href => '#user' + user.id.to_s + '-' + 'machine' + machine.id.to_s, 
-                  :data => { :toggle => 'tab', :'user-id' => user.id, :'machine-id' => machine.id } }
-                  = machine.name
-          .tab-content
-            - user.machines.each do |machine|
-              .tab-pane{ :id => 'user' + user.id.to_s + '-' + 'machine' + machine.id.to_s, 
-                :data => { :'machine-id' => machine.id, :'user-id' => user.id } }
+	- @users.each do |user|
+		.accordion-group{ :data => { :init => 'false' , :id => user.id } }
+			.accordion-heading
+				%a.accordion-toggle{ :data => { :toggle => 'collapse', :parent => '#user-listings' }, :href => '#user' + user.id.to_s }
+					= user.name
+			.accordion-body.collapse{ :id => 'user' + user.id.to_s }
+				.accordion-inner
+					.links
+						- if ads_user_signed_in? then
+							- watched = current_ads_user.watch_lists.where(:model_type => 'User', :model_id => user.id).first	
+							= link_to fa_icon(watched.nil? || !watched.active ? 'star-o' : 'star'), 
+								ads_user_toggle_watch_path(:ads_user_id => current_ads_user.login, :model_type => 'User', :model_id => user.id), 
+								:method => :post, :data => { :remote => true }, :id => 'watchlist', :class => 'btn'
+						= link_to fa_icon('link'), user_path(user), { :class => 'btn' }
+					%br
+					%ul.nav.nav-tabs{ :id => 'user' + user.id.to_s + '-tabs' }
+						- user.machines.each do |machine|
+							%li
+								%a{ :href => '#user' + user.id.to_s + '-' + 'machine' + machine.id.to_s, 
+									:data => { :toggle => 'tab', :'user-id' => user.id, :'machine-id' => machine.id } }
+									= machine.name
+					.tab-content
+						- user.machines.each do |machine|
+							.tab-pane{ :id => 'user' + user.id.to_s + '-' + 'machine' + machine.id.to_s, 
+								:data => { :'machine-id' => machine.id, :'user-id' => user.id } }

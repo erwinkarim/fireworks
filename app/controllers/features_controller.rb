@@ -32,7 +32,7 @@ class FeaturesController < ApplicationController
     @features = @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.map{ |item| { :name => item.name, :id => item.id } }
     
     respond_to do |format|
-      format.html { render :partial => 'list', :locals => { :features => @features, :licserver => @licserver } }
+      format.html { render :partial => 'list', :locals => { :features => @features, :licserver => @licserver, :watched => @watched } }
       format.json{ render json: @features }
     end
   end
