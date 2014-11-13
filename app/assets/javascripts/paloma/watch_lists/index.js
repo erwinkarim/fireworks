@@ -34,7 +34,9 @@
 										//kinda works, but because you might get multiple types, it only load for the first loaded item of the same type
 										if(handle.attr('data-model-type') == 'FeatureHeader'){
 											console.log('load FeatureHeader scripts');
-											Paloma.callbacks['features']['show']();
+											_L.features.load_daily_graph( handle.find('.daily-graph') );
+											_L.features.load_monthly_histogram( handle.find('.monthly-graph') );
+											_L.features.load_users( handle.find('#user-listings') );
 										} else if (handle.attr('data-model-type') == 'Licserver'){
 											console.log('load Licserver scripts');
 										} else if (handle.attr('data-model-type') == 'User'){
