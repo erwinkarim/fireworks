@@ -1,4 +1,17 @@
-.row-fluid
+.row
 	.span12
-		.accordion#user-listings 
-			user graph here
+		.user-info
+			User info here
+.row
+	.span12
+		.user-machines
+			%ul.nav.nav-tabs{ :id => 'user' + @user.id.to_s + '-tabs' }
+				- @user.machines.each do |machine|
+					%li
+						%a{ :href => '#user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
+							:data => { :toggle => 'tab', :'user-id' => @user.id, :'machine-id' => machine.id } }
+							= machine.name
+			.tab-content
+				- @user.machines.each do |machine|
+					.tab-pane{ :id => 'user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
+						:data => { :'machine-id' => machine.id, :'user-id' => @user.id } }
