@@ -41,6 +41,7 @@
 											console.log('load Licserver scripts');
 										} else if (handle.attr('data-model-type') == 'User'){
 											console.log('load User scripts');
+											_L.users.setup_accordion_body( handle.find('.user-machines')  );
 										} else if (handle.attr('data-model-type') == 'Tag'){
 											console.log('load Tag scripts');
 											Paloma.callbacks['tags']['show']();

@@ -14,13 +14,4 @@
 								:method => :post, :data => { :remote => true }, :id => 'watchlist', :class => 'btn'
 						= link_to fa_icon('link'), user_path(user), { :class => 'btn' }
 					%br
-					%ul.nav.nav-tabs{ :id => 'user' + user.id.to_s + '-tabs' }
-						- user.machines.each do |machine|
-							%li
-								%a{ :href => '#user' + user.id.to_s + '-' + 'machine' + machine.id.to_s, 
-									:data => { :toggle => 'tab', :'user-id' => user.id, :'machine-id' => machine.id } }
-									= machine.name
-					.tab-content
-						- user.machines.each do |machine|
-							.tab-pane{ :id => 'user' + user.id.to_s + '-' + 'machine' + machine.id.to_s, 
-								:data => { :'machine-id' => machine.id, :'user-id' => user.id } }
+					= render :template => "users/show.template", :locals =>  { :@user => user }

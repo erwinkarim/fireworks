@@ -11,9 +11,37 @@
 
   
   // ~> Start local definitions here and remove this line.
-    //setup accordion body
+	/* setup the tabs
+	 * handles must have these stucture:-
+	 * <handle>
+			%ul.nav.nav-tabs{ :id => 'user' + @user.id.to_s + '-tabs' }
+				- @user.machines.each do |machine|
+					%li
+						%a{ :href => '#user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
+							:data => { :toggle => 'tab', :'user-id' => @user.id, :'machine-id' => machine.id } }
+							= machine.name
+			.tab-content
+				- @user.machines.each do |machine|
+					.tab-pane{ :id => 'user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
+						:data => { :'machine-id' => machine.id, :'user-id' => @user.id } }
+	 * 			
+	 *
+	*/ 	
+	//setup accordion body
   locals.setup_accordion_body = function( handle) {
     handle.find('a[data-toggle="tab"]').on('shown', function(e){
+			//don't load if the data has been loaded
+			/*
+			var anchor_handle = handle.find('.nav-tabs').find(
+				'a[data-machine-id="' + e.target.attributes['data-machine-id'] + '"][data-user-id="' + e.target.attributes['data-user-id'] + '"]'
+				); 
+			*/
+			var anchor_handle = handle.find('.nav-tabs').find( "a[data-machine-id='" + e.target.attributes['data-machine-id'].value + "']" );
+			if(anchor_handle.attr('data-init') != 'false' ){
+					console.log('data loaded, skip loading');
+					return;
+			};
+
       //when clicked, start gather features data
       $('.tab-pane[data-machine-id="' + e.target.attributes['data-machine-id'].value + 
         '"][data-user-id="' + e.target.attributes['data-user-id'].value + '"]').append(
@@ -25,12 +53,13 @@
       var data_load_path = '/users/' + e.target.attributes['data-user-id'].value + 
         '/machines/' + e.target.attributes['data-machine-id'].value + '/gen_features';
 
+			var tab_handle = handle.find('.tab-pane[data-machine-id="' + e.target.attributes['data-machine-id'].value + 
+          '"][data-user-id="' + e.target.attributes['data-user-id'].value + '"]');
       //load the chart
       $.ajax( data_load_path, {
         dataType:'json'
       }).done( function(data, textStatus, jqXHR){
-        $('.tab-pane[data-machine-id="' + e.target.attributes['data-machine-id'].value + 
-          '"][data-user-id="' + e.target.attributes['data-user-id'].value + '"]').highcharts('StockChart', {
+        tab_handle.highcharts('StockChart', {
           //setup the chart
           title: { text: 'Features usage by the user on machine' },
           chart: {
@@ -89,11 +118,17 @@
           }, 
           series: data['graph_data']
         });
-      }); // $.ajax( 
+      }).fail( function(jqXHR, textStatus, errorThrown){
+				tab_handle.empty().append(
+					'failed to load: ' + textStatus
+				);
+					
+			}); // $.ajax( 
 
       //remove the spinner
+			anchor_handle.attr('data-init', 'true' );
     }); // handle.find('a[data-toggle="tab"]').on('shown', function(e){
-    handle.removeAttr('data-init');
+    handle.attr('data-init', 'true');
   }; // setup_accordion_body = function( handle) {
 
 
