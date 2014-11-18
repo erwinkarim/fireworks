@@ -1,19 +1,14 @@
 .page-header
 	%h1
-		= @tag 
+		- if ads_user_signed_in? then
+			= link_to fa_icon(@watched.nil? || !@watched.active ? 'star-o' : 'star'), 
+				ads_user_toggle_watch_path(:ads_user_id => current_ads_user.login, :model_type => 'Tag', :model_id => @tag_handle.id ), 
+				:method => :post, :data => { :remote => true }, :id => 'watchlist'
+		#{@tag}
 	%ul.breadcrumb
 		%li
 			%a{ :href => tags_path } Tags
 			%span.divider /
 		%li.active
 			= @tag
-.row.span10.offset1
-	%ul.nav.nav-tabs{ :id => @tag }
-		- @licservers.each do |licserver|
-			%li
-				%a{ :href => '#' + @tag + '-' + licserver.id.to_s, :data => { :toggle => 'tab', :licserver => licserver.id, 
-					:init => 'false', :tag => @tag } }
-					= licserver.port.to_s + '@' + licserver.server
-	.tab-content
-		- @licservers.each do |licserver|
-			.tab-pane{ :id => @tag + '-' + licserver.id.to_s }
+= render :template => 'tags/show.template', :locals => { :@tag => @tag }

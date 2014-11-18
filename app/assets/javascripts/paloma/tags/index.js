@@ -23,7 +23,7 @@
     function setup_accordion( handle ){
       //when the accordion is shown, load the licserver
       handle.on('shown', function(){
-        if(handle.find('.accordion-inner').children().length == 0 ) {
+        if(handle.find('.accordion-inner').attr('data-init') == 'false' ) {
           $.get('/tags/' + $(this).attr('data-title') + '.template' , null, function(data, textStatus, jqXHR){
             handle.find('.accordion-inner').append(data).ready( function(){
               //when the licserver is clicked, show licserver info and detected features
@@ -34,7 +34,9 @@
 
               
             });
-          }, 'html' );
+          }, 'html' ).done( function(){
+						handle.find('.accordion-inner').attr('data-init', 'true');
+					});
         }
       });
     };
@@ -50,7 +52,7 @@
     
       //init_load();
       //load all them tags
-      $.get( '/tags/gen_accordion', null,
+      $.get( '/tags/gen_accordion.template', null,
         function(data, textStatus, jqXHR){
           $('#tags-accordion').empty().append(data).ready( function(){
             //process the accordion

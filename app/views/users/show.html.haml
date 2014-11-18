@@ -1,13 +1,12 @@
 .page-header
-  %h1
-    = @users.first.name
-  %ul.breadcrumb
-    %li
-      %a{ :href => users_path } Users
-      %span.divider /
-    %li.active
-      = @users.first.name
+	%h1
+		= @user.name
+	%ul.breadcrumb
+		%li
+			%a{ :href => users_path } Users
+			%span.divider /
+		%li.active
+			= @user.name
 .row
-  .span10.offset1
-    .accordion#user-listings 
-      = render 'accordion', :local => { :users => @users }
+	#user-info.span12
+		= render :template => 'users/show.template', :locals => { :@user => @user }

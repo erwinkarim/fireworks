@@ -80,7 +80,7 @@
 						);
 
 						//load server info and setup the buttons
-						$.get('/licservers/' + handle.attr('data-id') + '/info', null, function(data, textStatus, jqXHR){
+						$.get('/licservers/' + handle.attr('data-id') + '.template', null, function(data, textStatus, jqXHR){
 							handle.find('.info').append(data).ready( function(){
 
 								//when the licserver modal has been clicked

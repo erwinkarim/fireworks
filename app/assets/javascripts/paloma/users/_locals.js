@@ -61,7 +61,7 @@
       }).done( function(data, textStatus, jqXHR){
         tab_handle.highcharts('StockChart', {
           //setup the chart
-          title: { text: 'Features usage by the user on machine' },
+          title: { text: 'Features usage by ' + tab_handle.attr('data-user-name') + '@' + tab_handle.attr('data-machine-name') },
           chart: {
             events : {
               load: function(){

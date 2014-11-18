@@ -19,8 +19,9 @@
 
   Paloma.callbacks['users']['show'] = function(params){
     // Do something here.
-    $('.accordion-group').each( function(index) {
-      _l.setup_accordion_body($(this));
-    });
+		$(document).ready( function(){
+			_l.setup_accordion_body( $('#user-info') );
+			$('#user-info').find('a[data-toggle="tab"]:first').click();
+		});
   }; // Paloma.callbacks['users']['show'] = function(params){
 })();

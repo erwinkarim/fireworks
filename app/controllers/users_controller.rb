@@ -49,11 +49,11 @@ class UsersController < ApplicationController
 
   # GET    /users/:id(.:format)
   def show
-    @users = [] << User.find(params[:id])
+    @user = User.find(params[:id])
 
     respond_to do |format|
       format.html
-      format.json { render :json => @users }
+      format.json { render :json => @user }
     end
   end
 end

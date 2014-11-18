@@ -9,9 +9,10 @@
 				- @user.machines.each do |machine|
 					%li
 						%a{ :href => '#user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
-							:data => { :toggle => 'tab', :'user-id' => @user.id, :'machine-id' => machine.id, :init => "false" } }
+							:data => { :toggle => 'tab', :'user-id' => @user.id, :'user-name' => @user.name, :'machine-id' => machine.id, 
+								:init => "false", :'machine-name' => machine.name } }
 							= machine.name
 			.tab-content
 				- @user.machines.each do |machine|
 					.tab-pane{ :id => 'user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
-						:data => { :'machine-id' => machine.id, :'user-id' => @user.id } }
+						:data => { :'machine-id' => machine.id, :'user-id' => @user.id , :'user-name' => @user.name, :'machine-name' => machine.name} }

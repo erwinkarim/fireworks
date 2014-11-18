@@ -6,4 +6,11 @@
 					= licserver.port.to_s + '@' + licserver.server
 			.accordion-body.collapse{ :id => 'licserver' + licserver.id.to_s }
 				.accordion-inner
+					.links
+						- if ads_user_signed_in? then
+							- watched = current_ads_user.watch_lists.where(:model_type => 'Licserver', :model_id => licserver.id).first	
+							= link_to ( watched.nil? || !watched.active ? fa_icon('star-o', { :text => 'Watch' }) : fa_icon('star', { :text => 'Watched'}) ),
+								ads_user_toggle_watch_path(:ads_user_id => current_ads_user.login, :model_type => 'Licserver', :model_id => licserver.id), 
+								:method => :post, :data => { :remote => true }, :id => 'watchlist', :class => 'btn'
+						= link_to fa_icon('link', { :text => 'Permalink' } ), licserver_path(licserver), :class => 'btn'
 					.info

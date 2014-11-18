@@ -32,7 +32,7 @@ class LicserversController < ApplicationController
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @licserver }
-			format.template { render :partial => 'show', :locals => { :licserver => @licserver } }
+			format.template { render :template => 'licservers/show.template', :locals => { :licserver => @licserver } }
     end
   end
 
