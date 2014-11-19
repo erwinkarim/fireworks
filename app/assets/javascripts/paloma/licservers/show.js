@@ -21,6 +21,8 @@
     // Do something here.
     $(document).ready(function(){
       console.log('licserver show loaded');
+			
+			_l.load_licserver($('.info') );
 
       $('#watchlist').on('ajax:success', function(data, status, xhr){
         //toggle the star

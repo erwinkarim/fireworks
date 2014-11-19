@@ -39,6 +39,8 @@
 											_L.features.load_users( handle.find('#user-listings') );
 										} else if (handle.attr('data-model-type') == 'Licserver'){
 											console.log('load Licserver scripts');
+											handle.find('.accordion-inner').attr('data-licserver', handle.attr('data-model-id') );
+											_L.licservers.load_licserver( handle.find('.accordion-inner') );
 										} else if (handle.attr('data-model-type') == 'User'){
 											console.log('load User scripts');
 											_L.users.setup_accordion_body( handle.find('.user-machines')  );

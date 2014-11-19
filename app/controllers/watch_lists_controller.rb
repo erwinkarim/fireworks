@@ -24,13 +24,8 @@ class WatchListsController < ApplicationController
           params[:id] = feature_header.name
           render 'features/show'
 				elsif @watch_list.model_type == 'Licserver' then
-					@licserver = Licserver.find(@watch_list.model_id)
-					@tags = @licserver.tags
-					@features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| {:name => item.name } }
-					if @features.empty? then
-						@features = nil
-					end
-					render 'licservers/show'
+					# render nothing. licserver loading is handle at javascript level
+					render nothing: true
 				elsif @watch_list.model_type == 'Tag' then
           @tag_handle = Tag.find(@watch_list.model_id)
           @tag = @tag_handle.title

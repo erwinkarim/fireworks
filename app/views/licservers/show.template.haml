@@ -1,8 +1,6 @@
 .licserver-info
 	.page-header
 		%h4 Information
-	.links
-		= link_to fa_icon('link', :text => 'Permalink' ), licserver_path(licserver), { :class => 'btn' }
 	%ul.thumbnails
 		%li
 			%dl
@@ -12,7 +10,7 @@
 			%dt Last Update
 			%dd
 				= licserver.updated_at.localtime
-.features{ :id => 'licserver-' + licserver.id.to_s + '-features' }
+.features{ :data => { :licserver => licserver.id } , :id => 'licserver-' + licserver.id.to_s + '-features' }
 	.page-header
 		%h4 Features
 	.licserver-more-info
@@ -22,3 +20,33 @@
 	.feature-listings
 		%i.fa.fa-spinner.fa-spin.fa-4x
 		.accordion{ :id => 'licserver-' + licserver.id.to_s + '-features-listing' }
+.tags
+	.page-header
+		%h4 Tags
+	.well
+		- if licserver.tags.size == 0 then
+			%span.label.label-warning No Tags
+		- else
+			- licserver.tags.each do |tag|
+				= link_to tag.title, tag_path(tag.title), :class => 'btn btn-mini tags', :data => { :id => tag.id, :'tag-title' => tag.title, }
+.edit-server
+	.page-header
+		%h4 Action
+	%button.btn.btn-primary#edit-licserver{ :data => { :id => licserver.id, :toggle => 'modal', 
+		:target => '#licserver-modal-' + licserver.id.to_s, :remote => edit_licserver_path(licserver.id) } } 
+		= fa_icon('edit')
+		Edit
+	= link_to fa_icon('ban', :text => 'Delete'), licserver, :class => 'btn btn-danger', :method => :delete, 
+		:data => { :remote => true, :confirm => 'Really delete?' }
+	.modal.hide.fade{ :role => 'dialog', :id => 'licserver-modal-' + licserver.id.to_s }
+		.modal-header
+			%button.close{ :type => 'button', :data => { :dismiss => 'modal' } }
+				x
+			%h3
+				Update Licserver
+		.modal-body
+		.modal-footer
+			%button.btn{ :data => { :dismiss => 'modal' } }
+				Close
+			%button.btn.btn-primary.update-licserver{ :data => { :id => licserver.id } }
+				Update

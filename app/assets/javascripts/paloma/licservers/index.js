@@ -20,7 +20,7 @@
   Paloma.callbacks['licservers']['index'] = function(params){
     $(document).ready( function(){
 
-			//load more servers
+			//just load everyuthing
 			load_more_servers = function(target, mode){
 				var last_id = null; 
 				if($(target).children().length == 0){
@@ -72,72 +72,8 @@
 			//setup accordion
 			var setup_accordion = function(handle){
 				//load server info when accordion is clicked
-				handle.on('shown', function(){
-					if(handle.find('.info').children().length == 0){	
-						//add spinner
-						handle.find('.info').append( 
-							$.parseHTML('<div class="spin"><i class="fa fa-cog fa-spin fa-2x"></i></div>')
-						);
-
-						//load server info and setup the buttons
-						$.get('/licservers/' + handle.attr('data-id') + '.template', null, function(data, textStatus, jqXHR){
-							handle.find('.info').append(data).ready( function(){
-
-								//when the licserver modal has been clicked
-								$('.update-licserver').click(function(){
-									var handle = $('#licserver-modal-' + $(this).attr('data-id') );
-
-									//sanity checks before updating
-									if(licserver_modal_sanity_check(handle)==false){
-										return;
-									}
-
-									//update of a current server
-									var input_port;
-									var input_server;
-									if( handle.find('#server_info').val().indexOf('@') == -1){
-										input_port = '';
-										input_server = handle.find('#server_info').val();	
-									} else {
-										input_port = handle.find('#server_info').val().split('@')[0]
-										input_server = handle.find('#server_info').val().split('@')[1]
-									}
-
-									$.ajax( '/licservers/' + handle.find('#server_id').val(), {
-										data: { 
-											licserver:{ port:input_port, server:input_server, 
-												monitor_idle:handle.find('#monitor_idle').attr('checked')=='checked' },
-											tags:handle.find('#tags').val()
-										},
-										type:'PUT',
-										dataType: 'json'
-									}).done( function(data, textStatus, jqXHR){
-
-										//update the accordion
-										var accordion_handle = $('.accordion-group[data-id="' + handle.find('#server_id').val() + '"]');
-										accordion_handle.find('.accordion-toggle').text( handle.find('#server_info').val() );
-										$.get('/licservers/' + handle.find('#server_id').val() + '/info', null, function(data, textStatus, jqXHR){ 
-											accordion_handle.find('.info').replaceWith(data);
-										}, 'html');
-
-										//dismiss the modal
-										handle.modal('hide');
-									}); // $.ajax( '/licservers/' + handle.find('#server_id').val(), 
-								}); // $('.update-licserver').click(function(){
-							});
-
-							//remove spinner
-							handle.find('.spin').remove();
-
-						}, 'html').fail( function(){
-							//error handling
-							handle.find('.info').append( $.parseHTML('<div>Opss... something when wrong</div>') );
-							handle.find('.spin').remove();
-						});	
-						// $.get('/licservers/' + handle.attr('data-id') + '/info', null, function(data, textStatus, jqXHR){
-
-					}
-
+				handle.on('shown', function(e){
+					_l.load_licserver(handle.find('.info') );
 				}); // handle.on('shown', function(){
 
 				handle.attr('data-init', 'true');

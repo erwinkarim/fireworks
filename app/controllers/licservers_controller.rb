@@ -16,15 +16,11 @@ class LicserversController < ApplicationController
   def show
     @licserver = Licserver.find(params[:id])
     licserver = @licserver
-    @tags = @licserver.tags
-    #@features = @licserver.features.where{ created_at.gt (@licserver.features.last.created_at - 1.minute)}
-    #@features = @licserver.features.where{ created_at.gt (licserver.features.last.created_at - 1.minute )}
-    #@features = @licserver.features.order('created_at desc').limit(200).pluck(:name).uniq.
-    #  map{ |item| {:name => item}}
-    @features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| {:name => item.name } }
-    if @features.empty? then
-      @features = nil
-    end
+    #@tags = @licserver.tags
+    #@features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| {:name => item.name } }
+    #if @features.empty? then
+    #  @features = nil
+    #end
     if ads_user_signed_in? then
       @watched = current_ads_user.watch_lists.where(:model_type => 'Licserver', :model_id => @licserver.id ).first
     end
