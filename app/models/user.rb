@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   #attr_accessible :email, :password, :password_confirmation, :remember_me
-  attr_accessible :name
+  attr_accessible :name, :last_seen_at
   validates :name, :uniqueness => true, :presence => true
   has_many :machines, :dependent => :destroy
 
@@ -18,6 +18,7 @@ class User < ActiveRecord::Base
       user = self.create(:name => username)
       user.save!
     end 
+		user.update_attribute(:last_seen_at, DateTime.now)
 
     #from user, check if new machine or old machine, then user create or hone on that
     machine = user.machines.where(:name => machine_name).first

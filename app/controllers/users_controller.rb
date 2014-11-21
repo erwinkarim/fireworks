@@ -50,6 +50,10 @@ class UsersController < ApplicationController
   # GET    /users/:id(.:format)
   def show
     @user = User.find(params[:id])
+		if(ads_user_signed_in?) then
+			in_watch = current_ads_user.watch_lists.where(:model_type => 'User', :model_id => params[:id]).first
+			@watched = in_watch.nil? || !in_watch.active ? false : true
+		end
 
     respond_to do |format|
       format.html

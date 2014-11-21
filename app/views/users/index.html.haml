@@ -1,13 +1,14 @@
 .row
-  .page-header
-    %h2 Users
+	.span10.offset1
+		.page-header
+			%h2 Users
 .row
-  .span10.offset1
-    %form.form-search
-      %input#search-users.input-block-level.search-query{ :placeholder =>'Search Users...'}
+	.span10.offset1
+		%form.form-search
+			%input#search-users.input-block-level.search-query{ :placeholder =>'Search Users...'}
 .row
-  .span10.offset1
-    .accordion#user-listings 
+	.span10.offset1
+		.accordion#user-listings 
 .row
-  .span10.offset1
-    %button.btn.btn-primary#load-more-users{ :type => 'button',  :data => { :mode => 'default'}  } Load More Users
+	.span10.offset1
+		%button.btn.btn-primary#load-more-users{ :type => 'button',  :data => { :mode => 'default'}  } Load More Users

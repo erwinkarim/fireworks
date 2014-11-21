@@ -1,5 +1,7 @@
 .page-header
 	%h1
+		- if ads_user_signed_in? then
+			= link_to @watched ? fa_icon('star') : fa_icon('star-o'), ads_user_toggle_watch_path(current_ads_user), :method => :post, :remote => true
 		= @user.name
 	%ul.breadcrumb
 		%li
@@ -9,4 +11,4 @@
 			= @user.name
 .row
 	#user-info.span12
-		= render :template => 'users/show.template', :locals => { :@user => @user }
+		= render :template => 'users/show.template', :locals => { :@user => @user, :last_seen_at => @user.last_seen_at }

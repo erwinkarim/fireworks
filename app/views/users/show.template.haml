@@ -1,7 +1,14 @@
 .row-fluid
 	.span12
 		.user-info
-			User info here
+			%dl
+				%dt Login Name:
+				%dd #{@user.name}
+				%dt First Seen:
+				%dd #{@user.created_at.localtime}
+				%dt Last Seen:
+				%dd
+					= @user.last_seen_at.nil? ? 'Unknown' : @user.last_seen_at.localtime
 .row-fluid
 	.span12
 		.user-machines{ :data => { :init => "false" } }
