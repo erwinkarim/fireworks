@@ -6,4 +6,7 @@
 		.accordion-body.collapse{ :id => 'tags-' + tag.title }
 			.accordion-inner{ :data => { :init => 'false' } }
 				.watch-list
-					Watch List here
+					- if ads_user_signed_in? then
+						= watch_icon({:user => current_ads_user,  :model_type => 'Tag', :model_id => 22, :class => 'btn' , :text => true}) 
+					= link_to fa_icon('link',{ :text => 'Permalink' }), tag_path(tag.title), :class => 'btn'
+

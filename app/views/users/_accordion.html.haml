@@ -8,10 +8,7 @@
 				.accordion-inner
 					.links
 						- if ads_user_signed_in? then
-							- watched = current_ads_user.watch_lists.where(:model_type => 'User', :model_id => user.id).first	
-							= link_to fa_icon(watched.nil? || !watched.active ? 'star-o' : 'star'), 
-								ads_user_toggle_watch_path(:ads_user_id => current_ads_user.login, :model_type => 'User', :model_id => user.id), 
-								:method => :post, :data => { :remote => true }, :id => 'watchlist', :class => 'btn'
-						= link_to fa_icon('link'), user_path(user), { :class => 'btn' }
+							= watch_icon({ :user => current_ads_user, :model_type => 'User', :model_id => user.id, :class => 'btn', :text => true })
+						= link_to fa_icon('link', { :text => 'Permalink' }), user_path(user), { :class => 'btn' }
 					%br
 					= render :template => "users/show.template", :locals =>  { :@user => user }
