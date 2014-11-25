@@ -1,1 +1,10 @@
 console.log('watch/unwatch');
+console.log('target: #<%= params[:target] %>');
+var handle = $(document).find('#<%= params[:target] %>');
+if( handle.text() == ' Watched' ){
+	handle.text(' Watch');
+	handle.prepend( $.parseHTML('<i class="fa fa-star-o"></i>') );
+} else {
+	handle.text(' Watched');
+	handle.prepend( $.parseHTML('<i class="fa fa-star"></i>') );
+}

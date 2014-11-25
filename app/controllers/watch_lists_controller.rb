@@ -8,7 +8,7 @@ class WatchListsController < ApplicationController
     respond_to do |format|
       format.html
       format.template {
-        @watch_lists = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists
+        @watch_lists = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists.where(:active => true)
       }
     end
   end
