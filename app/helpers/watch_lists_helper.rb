@@ -16,4 +16,5 @@ module WatchListsHelper
 
 		return link_to link_text, link_address, :method => :post, :remote => true, :class => options[:class], :id => target 
 	end
+
 end

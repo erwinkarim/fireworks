@@ -8,10 +8,14 @@ class WatchListsController < ApplicationController
     respond_to do |format|
       format.html
       format.template {
-        @watch_lists = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists.where(:active => true)
+        #@watch_lists = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists.where(:active => true)
+        @watch_lists = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists.where(:active => true).map{ 
+					|x| { :entry => x, :handle_text => show_text(x.model_type.constantize.find(x.model_id)) } 
+				}
       }
     end
   end
+
 
 	# GET    /ads_users/:ads_user_id/watch_lists/:id(.:format) 
   def show
@@ -80,4 +84,20 @@ class WatchListsController < ApplicationController
 			@watch_list = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists.find(params[:id])
       #@watch_list = WatchList.find(params[:id])
     end
+
+		# returns the identifying text for the model_type.find(model_id)
+		def show_text handle
+			case handle
+			when Licserver
+				return handle.port.to_s + '@' + handle.server
+			when User
+				return handle.name
+			when FeatureHeader
+				return handle.name
+			when Tag
+				return handle.title
+			else
+				return 'Unknown Class'
+			end
+		end
 end
