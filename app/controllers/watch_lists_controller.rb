@@ -10,7 +10,9 @@ class WatchListsController < ApplicationController
       format.template {
         #@watch_lists = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists.where(:active => true)
         @watch_lists = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists.where(:active => true).map{ 
-					|x| { :entry => x, :handle_text => show_text(x.model_type.constantize.find(x.model_id)) } 
+					|x| { :entry => x, :handle_text => show_text(x.model_type.constantize.find(x.model_id)), 
+						:handle_url => url_text(x.model_type.constantize.find(x.model_id) )  
+					} 
 				}
       }
     end
@@ -98,6 +100,22 @@ class WatchListsController < ApplicationController
 				return handle.title
 			else
 				return 'Unknown Class'
+			end
+		end
+
+		#return the path to access this model
+		def url_text handle
+			case handle
+			when Licserver
+				return licserver_path(handle.id)
+			when User
+				return user_path(handle.id)
+			when FeatureHeader
+				return licserver_feature_path(handle.licserver_id, handle.name)
+			when Tag
+				return tag_path(handle.title)
+			else
+				return '#'
 			end
 		end
 end

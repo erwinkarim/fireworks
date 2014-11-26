@@ -10,3 +10,7 @@
 			.accordion-body.collapse{ :id => 'watch-body-' + watch_item[:entry].id.to_s , :data => { :id => watch_item[:entry].id,	:init => 'false', 
 				:'model-type' => watch_item[:entry].model_type, :'model-id' => watch_item[:entry].model_id } }
 				.accordion-inner
+					.handle
+						= watch_icon({ :user => current_ads_user, :model_type => watch_item[:entry].model_type, :model_id => watch_item[:entry].model_id, 
+							:text => true, :class => 'btn'} )
+						= link_to fa_icon('link', { :text => 'Permalink' }), watch_item[:handle_url], :class => 'btn'
