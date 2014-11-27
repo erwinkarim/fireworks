@@ -56,7 +56,7 @@ class TagsController < ApplicationController
   # GET    /tags/gen_accordion(.:format)
   # render the accordion
   def gen_accordion
-    @tags = Tag.select("title").uniq
+    @tags = Tag.select("title, min(id) as id").group(:title)
     
     respond_to do |format|
       #format.html{ render :template => 'tags/gen_accordion.template', :locals => { :@tags => @tags } }

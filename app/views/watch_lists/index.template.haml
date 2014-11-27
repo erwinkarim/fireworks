@@ -1,5 +1,6 @@
-- if @watch_lists.nil? then
-	%p Watched Nothing
+- if @watch_lists.nil? || @watch_lists.empty? then
+	.well
+		Nothing under your watch list yet. Explore #{ link_to 'Tags', tags_path }, #{ link_to 'Servers', licservers_path } or #{ link_to 'Users', users_path } pages to add items to your watch list.
 - else
 	- @watch_lists.each do |watch_item|
 		.accordion-group
