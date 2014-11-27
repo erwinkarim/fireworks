@@ -40,6 +40,19 @@
         }
       });
     };
+	
+		//load all them tags
+		var init_load = function(){$.get( '/tags/gen_accordion.template', null,
+        function(data, textStatus, jqXHR){
+          $('#tags-accordion').empty().append(data).ready( function(){
+            //process the accordion
+            $('.accordion-tag').each( function(index, value) {
+              setup_accordion( $(this) );
+            });
+          }) 
+        }, 'html'
+      )
+		};
 
     // Do something here.
     $(document).ready( function(){
@@ -50,23 +63,12 @@
         }
       });
     
-      //init_load();
-      //load all them tags
-      $.get( '/tags/gen_accordion.template', null,
-        function(data, textStatus, jqXHR){
-          $('#tags-accordion').empty().append(data).ready( function(){
-            //process the accordion
-            $('.accordion-tag').each( function(index, value) {
-              setup_accordion( $(this) );
-            });
-          }) 
-        }, 'html'
-      );
+      init_load();
 
       //setup search query
       $('#search-tags').typeahead({
         source: function(query, process){
-          return $.get('/tags/search/', { query:query }, function(data, textStatus, jqXHR){
+          return $.get('/tags/search', { query:query }, function(data, textStatus, jqXHR){
             return process(data.options);
           }, 'json'); 
         } 
@@ -78,7 +80,7 @@
 
           if( $(this).val().length != 0){
             //clear everything and return the one's with 
-            $.get('/tags/search', { query:$(this).val() }, function(data, textStatus, jqXHR){
+            $.get('/tags/search.template', { query:$(this).val() }, function(data, textStatus, jqXHR){
               $('#tags-accordion').empty();
               $('#tags-accordion').append(data).ready(function(){
                 $('.accordion-tag').each( function(index,value){

@@ -73,7 +73,7 @@ class TagsController < ApplicationController
     query = (params.has_key? :query) ? query = '%' + params[:query] + '%' : ''
     @tags = Tag.select('title').uniq.where{ (title.matches query) }.limit(20)
     respond_to do |format|
-      #format.html{ render :partial => 'display', :locals => { :tags => @tags } }
+      format.template{ render :template => 'tags/gen_accordion.template', :locals => { :@tags => @tags } }
       format.json {
         init_hash = { :options => [] }
         @tags.each{ |x| init_hash[:options] << x.title }
