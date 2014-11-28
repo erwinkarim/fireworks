@@ -13706,9 +13706,37 @@ var performFilters = function(filters, params){
 
   
   // ~> Start local definitions here and remove this line.
-    //setup accordion body
+	/* setup the tabs
+	 * handles must have these stucture:-
+	 * <handle>
+			%ul.nav.nav-tabs{ :id => 'user' + @user.id.to_s + '-tabs' }
+				- @user.machines.each do |machine|
+					%li
+						%a{ :href => '#user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
+							:data => { :toggle => 'tab', :'user-id' => @user.id, :'machine-id' => machine.id } }
+							= machine.name
+			.tab-content
+				- @user.machines.each do |machine|
+					.tab-pane{ :id => 'user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
+						:data => { :'machine-id' => machine.id, :'user-id' => @user.id } }
+	 * 			
+	 *
+	*/ 	
+	//setup accordion body
   locals.setup_accordion_body = function( handle) {
     handle.find('a[data-toggle="tab"]').on('shown', function(e){
+			//don't load if the data has been loaded
+			/*
+			var anchor_handle = handle.find('.nav-tabs').find(
+				'a[data-machine-id="' + e.target.attributes['data-machine-id'] + '"][data-user-id="' + e.target.attributes['data-user-id'] + '"]'
+				); 
+			*/
+			var anchor_handle = handle.find('.nav-tabs').find( "a[data-machine-id='" + e.target.attributes['data-machine-id'].value + "']" );
+			if(anchor_handle.attr('data-init') != 'false' ){
+					console.log('data loaded, skip loading');
+					return;
+			};
+
       //when clicked, start gather features data
       $('.tab-pane[data-machine-id="' + e.target.attributes['data-machine-id'].value + 
         '"][data-user-id="' + e.target.attributes['data-user-id'].value + '"]').append(
@@ -13720,14 +13748,15 @@ var performFilters = function(filters, params){
       var data_load_path = '/users/' + e.target.attributes['data-user-id'].value + 
         '/machines/' + e.target.attributes['data-machine-id'].value + '/gen_features';
 
+			var tab_handle = handle.find('.tab-pane[data-machine-id="' + e.target.attributes['data-machine-id'].value + 
+          '"][data-user-id="' + e.target.attributes['data-user-id'].value + '"]');
       //load the chart
       $.ajax( data_load_path, {
         dataType:'json'
       }).done( function(data, textStatus, jqXHR){
-        $('.tab-pane[data-machine-id="' + e.target.attributes['data-machine-id'].value + 
-          '"][data-user-id="' + e.target.attributes['data-user-id'].value + '"]').highcharts('StockChart', {
+        tab_handle.highcharts('StockChart', {
           //setup the chart
-          title: { text: 'Features usage by the user on machine' },
+          title: { text: 'Features usage by ' + tab_handle.attr('data-user-name') + '@' + tab_handle.attr('data-machine-name') },
           chart: {
             events : {
               load: function(){
@@ -13784,11 +13813,17 @@ var performFilters = function(filters, params){
           }, 
           series: data['graph_data']
         });
-      }); // $.ajax( 
+      }).fail( function(jqXHR, textStatus, errorThrown){
+				tab_handle.empty().append(
+					'failed to load: ' + textStatus
+				);
+					
+			}); // $.ajax( 
 
       //remove the spinner
+			anchor_handle.attr('data-init', 'true' );
     }); // handle.find('a[data-toggle="tab"]').on('shown', function(e){
-    handle.removeAttr('data-init');
+    handle.attr('data-init', 'true');
   }; // setup_accordion_body = function( handle) {
 
 
@@ -13972,9 +14007,10 @@ var performFilters = function(filters, params){
 
   Paloma.callbacks['users']['show'] = function(params){
     // Do something here.
-    $('.accordion-group').each( function(index) {
-      _l.setup_accordion_body($(this));
-    });
+		$(document).ready( function(){
+			_l.setup_accordion_body( $('#user-info') );
+			$('#user-info').find('a[data-toggle="tab"]:first').click();
+		});
   }; // Paloma.callbacks['users']['show'] = function(params){
 })();
 
@@ -14188,7 +14224,7 @@ var performFilters = function(filters, params){
     function setup_accordion( handle ){
       //when the accordion is shown, load the licserver
       handle.on('shown', function(){
-        if(handle.find('.accordion-inner').children().length == 0 ) {
+        if(handle.find('.accordion-inner').attr('data-init') == 'false' ) {
           $.get('/tags/' + $(this).attr('data-title') + '.template' , null, function(data, textStatus, jqXHR){
             handle.find('.accordion-inner').append(data).ready( function(){
               //when the licserver is clicked, show licserver info and detected features
@@ -14199,10 +14235,25 @@ var performFilters = function(filters, params){
 
               
             });
-          }, 'html' );
+          }, 'html' ).done( function(){
+						handle.find('.accordion-inner').attr('data-init', 'true');
+					});
         }
       });
     };
+	
+		//load all them tags
+		var init_load = function(){$.get( '/tags/gen_accordion.template', null,
+        function(data, textStatus, jqXHR){
+          $('#tags-accordion').empty().append(data).ready( function(){
+            //process the accordion
+            $('.accordion-tag').each( function(index, value) {
+              setup_accordion( $(this) );
+            });
+          }) 
+        }, 'html'
+      )
+		};
 
     // Do something here.
     $(document).ready( function(){
@@ -14213,23 +14264,12 @@ var performFilters = function(filters, params){
         }
       });
     
-      //init_load();
-      //load all them tags
-      $.get( '/tags/gen_accordion', null,
-        function(data, textStatus, jqXHR){
-          $('#tags-accordion').empty().append(data).ready( function(){
-            //process the accordion
-            $('.accordion-tag').each( function(index, value) {
-              setup_accordion( $(this) );
-            });
-          }) 
-        }, 'html'
-      );
+      init_load();
 
       //setup search query
       $('#search-tags').typeahead({
         source: function(query, process){
-          return $.get('/tags/search/', { query:query }, function(data, textStatus, jqXHR){
+          return $.get('/tags/search', { query:query }, function(data, textStatus, jqXHR){
             return process(data.options);
           }, 'json'); 
         } 
@@ -14241,7 +14281,7 @@ var performFilters = function(filters, params){
 
           if( $(this).val().length != 0){
             //clear everything and return the one's with 
-            $.get('/tags/search', { query:$(this).val() }, function(data, textStatus, jqXHR){
+            $.get('/tags/search.template', { query:$(this).val() }, function(data, textStatus, jqXHR){
               $('#tags-accordion').empty();
               $('#tags-accordion').append(data).ready(function(){
                 $('.accordion-tag').each( function(index,value){
@@ -14303,49 +14343,18 @@ var performFilters = function(filters, params){
   // locals.localMethod = function(){};
   var locals = Paloma.locals['features'] = {};
 
-  
   // ~> Start local definitions here and remove this line.
-
-
-  // Remove this line if you don't want to inherit locals defined
-  // on parent's _locals.js
-  Paloma.inheritLocals({from : '/', to : 'features'});
-})();
-(function(){ 
-  // Initializes the main container for all filters and skippers for this
-  // specific scope.
-  var filter = new Paloma.FilterScope('features');
-  
-  // The _x object is also available on callbacks.
-  // You can make a variable visible on callbacks by using _x here.
-  //
-  // Example:
-  // _x.visibleOnCallback = "I'm a shared variable"
-  var _x = Paloma.variableContainer;
-
-  // ~> Start definitions here and remove this line.
-})();
-(function(){
-  // You access variables from before/around filters from _x object.
-  // You can also share variables to after/around filters through _x object.
-  var _x = Paloma.variableContainer;
-
-  // We are using _L as an alias for the locals container.
-  // Use either of the two to access locals from other scopes.
-  //
-  // Example:
-  // _L.otherController.localVariable = 100;
-  var _L = Paloma.locals;
-
-  // Access locals for the current scope through the _l object.
-  //
-  // Example:
-  // _l.localMethod(); 
-  var _l = _L['features'];
-
-  Paloma.callbacks['features']['show'] = function(params){
-    function load_daily_graph( handle){
-      handle.highcharts('StockChart', {
+	
+	// load daily_grpah into a handle
+	// requirements:
+	// 		handle must have the following attributes:-
+	// 		data-feature			The name of the feature
+	// 		data-licserver		the licserver id
+	// 		data-last_data_point 
+  locals.load_daily_graph = function( handle){
+			//setup the graph
+			graph_handle = handle.find('.graph');
+      graph_handle.highcharts('StockChart', {
         title: { text: handle.attr('data-feature') + ' Daily Usage' },
         chart: {
           events:{
@@ -14389,9 +14398,9 @@ var performFilters = function(filters, params){
 
                     //for now it's slow and lock up the browser
                     //recursive_data_load(data['last_id']);
-                    $('#load-older').removeAttr('disabled');
-                    $('#dump-everything').removeAttr('disabled');
-                    $('.daily-graph').attr('data-last-point', data['last_id']);
+                    handle.find('#load-older').removeAttr('disabled');
+                    handle.find('#dump-everything').removeAttr('disabled');
+                    handle.attr('data-last-point', data['last_id']);
                   });
                 };
               }
@@ -14425,8 +14434,8 @@ var performFilters = function(filters, params){
                 //load new users when historical user listing is active 
                 if( $('#historical-users').hasClass('active')  ){
                   $('#historical-user-listings').empty();
-                  load_path = '/licservers/' + $('.daily-graph').attr('data-licserver') +  '/features/' + 
-                    $('.daily-graph').attr('data-feature') + '/historical_users';
+                  load_path = '/licservers/' + handle.attr('data-licserver') +  '/features/' + 
+                    handle.attr('data-feature') + '/historical_users';
                   $.get( load_path, { time_id:e.point.x } , function(data,textStatus,jqXHR){
                     $('#historical-user-listings').append(data).ready( function(){
                     });
@@ -14437,9 +14446,69 @@ var performFilters = function(filters, params){
           }
         }
       }); // handle.highcharts('StockChart', {
-    };
 
-    function load_monthly_histogram( handle ) {
+			//setup the buttons
+			
+      //load more data into the graph
+      handle.find('#load-older').click( function(){
+
+        var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 
+          handle.attr('data-feature') + '/get_data';
+        chart_handle = handle.find('.graph').highcharts();
+
+        $.ajax(data_load_path, { 
+          data: {start_id:handle.attr('data-last-point') },
+          dataType:'json', 
+          beforeSend: function(){
+            handle.find('#load-older').attr('disabled', 'disabled');
+            handle.find('#dump-everything').attr('disabled', 'disabled');
+            chart_handle.showLoading();
+          },
+          complete: function(){
+						console.log('run complete function');
+            chart_handle.redraw();
+            chart_handle.hideLoading();
+            handle.find('#load-older').removeAttr('disabled');
+            handle.find('#dump-everything').removeAttr('disabled');
+          }
+        }).done( function(data, textStatus, jqXHR){
+          for(i=0; i < data['data'][0]['data'].length; i++){
+            chart_handle.series[0].addPoint( data['data'][0]['data'][i], false, false );
+            chart_handle.series[1].addPoint( data['data'][1]['data'][i], false, false );
+          }
+          handle.attr('data-last-point', data['last_id']);
+        });
+      
+      }); // handle.find('#load-older').click( function(){
+
+      //dump eveyrthing into the graph (this can take a while)
+      handle.find('#dump-everything').click( function(){
+        var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 
+          handle.attr('data-feature') + '/data_dump';
+        chart_handle = handle.find('.graph').highcharts();
+
+        $.ajax(data_load_path, {
+          dataType:'json',
+          beforeSend: function(){
+            handle.find('#load-older').remove();
+            handle.find('#dump-everything').attr('disabled', 'disabled');
+            chart_handle.showLoading();
+          },
+          complete: function(){
+            //chart_handle.redraw();
+            chart_handle.hideLoading();
+            handle.find('#dump-everything').remove();
+          }
+        }).done( function(data, textStatus, jqXHR){
+          chart_handle.series[0].setData(data['data'][0]['data'], true);
+          chart_handle.series[1].setData(data['data'][1]['data'], true);
+        }); 
+      }); // handle.find('#dump-everything').click( function(){
+    }; // locals.load_daily_graph = function( handle){
+
+
+		//load monthly histrogram into a handle
+    locals.load_monthly_histogram = function( handle ) {
       handle.highcharts({
         title: { text:'Last 30 days Frequency Histogram' },
         subtitle: { text:'Middle on left axis is the median, graph is zoomable' },
@@ -14473,21 +14542,104 @@ var performFilters = function(filters, params){
   
         ]
       });
-    };
+    }; // locals.load_monthly_histogram = function( handle ) {
 
-    function load_users(handle){
+
+		//populate a local table and will up w/ user listings
+		//handle structure
+		//<handle data-licserver=.. data-feature=..
+    locals.load_users = function(handle){
       //load the table
-      load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + handle.attr('data-feature') +
-        '/users';
-      $.get( load_path, null, function( data, textStatus, jqXHR) {
-        handle.find('tbody').empty();
-        handle.find('tbody').append(data);
-        $('#user-list-last-update').empty().append(
-          $.parseHTML('Updated: ' + (new Date( $.now()).toLocaleString() ) )
-        );
-      }, 'html' ); 
+
+			function load_users_table(handle){
+				load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + handle.attr('data-feature') +
+					'/users';
+				$.get( load_path, null, function( data, textStatus, jqXHR) {
+					handle.find('tbody').empty();
+					handle.find('tbody').append(data).ready( function(){
+						//error handing w/
+						handle.find('.kill_user').bind('ajax:error', function(event , xhr, status, error){
+							alert('must sign in to kill');
+						});
+					});
+					$('#user-list-last-update').empty().append(
+						$.parseHTML('Updated: ' + (new Date( $.now()).toLocaleString() ) )
+					);
+				}, 'html' ); 
+			};
+
+      //refresh user listings
+      handle.find('#reload-users').click(function(){
+        handle.find('tbody').empty().append(
+          $.parseHTML('<tr><td class="loading-users" colspan=2><i class="fa fa-spinner fa-spin fa-4x"></i></td></tr>')
+        ).ready( function(){
+          load_users_table( handle );
+        });
+      });
+
+			//now load the init table
+			load_users_table(handle);
     };
 
+  // Remove this line if you don't want to inherit locals defined
+  // on parent's _locals.js
+  Paloma.inheritLocals({from : '/', to : 'features'});
+})();
+(function(){ 
+  // Initializes the main container for all filters and skippers for this
+  // specific scope.
+  var filter = new Paloma.FilterScope('features');
+  
+  // The _x object is also available on callbacks.
+  // You can make a variable visible on callbacks by using _x here.
+  //
+  // Example:
+  // _x.visibleOnCallback = "I'm a shared variable"
+  var _x = Paloma.variableContainer;
+
+  // ~> Start definitions here and remove this line.
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['features'];
+
+
+  Paloma.callbacks['features']['kill'] = function(params){
+  };
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['features'];
+
+  Paloma.callbacks['features']['show'] = function(params){
     // Do something here.
     $(document).ready( function(){
       //console.log('features/show loaded');
@@ -14497,72 +14649,14 @@ var performFilters = function(filters, params){
       });
 
       //load the daily graph
-      load_daily_graph( $('.daily-graph:first') );
-      load_monthly_histogram( $('.monthly-graph:first') );
-      load_users( $('#user-listings') );
+      _l.load_daily_graph( $('.daily-graph:first') );
+      _l.load_monthly_histogram( $('.monthly-graph:first') );
+      _l.load_users( $('#user-listings') );
 
-      //refresh user listings
-      $('#reload-users').click(function(){
-        $('#user-listings').find('tbody').empty().append(
-          $.parseHTML('<tr><td class="loading-users" colspan=2><i class="fa fa-spinner fa-spin fa-4x"></i></td></tr>')
-        ).ready( function(){
-          load_users( $('#user-listings') );
-        });
-      });
 
-      //load more data into the graph
-      $('#load-older').click( function(){
-
-        var data_load_path = '/licservers/' + $('.daily-graph').attr('data-licserver') + '/features/' + 
-          $('.daily-graph').attr('data-feature') + '/get_data';
-        chart_handle = $('.daily-graph').highcharts();
-
-        $.ajax(data_load_path, { 
-          data: {start_id:$('.daily-graph').attr('data-last-point') },
-          dataType:'json', 
-          beforeSend: function(){
-            $('#load-older').attr('disabled', 'disabled');
-            $('#dump-everything').attr('disabled', 'disabled');
-            chart_handle.showLoading();
-          },
-          complete: function(){
-            chart_handle.redraw();
-            chart_handle.hideLoading();
-            $('#load-older').removeAttr('disabled');
-            $('#dump-everything').removeAttr('disabled');
-          }
-        }).done( function(data, textStatus, jqXHR){
-          for(i=0; i < data['data'][0]['data'].length; i++){
-            chart_handle.series[0].addPoint( data['data'][0]['data'][i], false, false );
-            chart_handle.series[1].addPoint( data['data'][1]['data'][i], false, false );
-          }
-          $('.daily-graph').attr('data-last-point', data['last_id']);
-        });
-      
-      });
-
-      //dump eveyrthing into the graph (this can take a while)
-      $('#dump-everything').click( function(){
-        var data_load_path = '/licservers/' + $('.daily-graph').attr('data-licserver') + '/features/' + 
-          $('.daily-graph').attr('data-feature') + '/data_dump';
-        chart_handle = $('.daily-graph').highcharts();
-
-        $.ajax(data_load_path, {
-          dataType:'json',
-          beforeSend: function(){
-            $('#load-older').remove();
-            $('#dump-everything').attr('disabled', 'disabled');
-            chart_handle.showLoading();
-          },
-          complete: function(){
-            //chart_handle.redraw();
-            chart_handle.hideLoading();
-            $('#dump-everything').remove();
-          }
-        }).done( function(data, textStatus, jqXHR){
-          chart_handle.series[0].setData(data['data'][0]['data'], true);
-          chart_handle.series[1].setData(data['data'][1]['data'], true);
-        }); 
+      $('#watchlist').on('ajax:success', function(data, status, xhr){
+        //toggle the star
+        $(this).find('.fa').toggleClass('fa-star-o').toggleClass('fa-star');
       });
 
     });
@@ -14584,6 +14678,43 @@ var performFilters = function(filters, params){
 
   
   // ~> Start local definitions here and remove this line.
+	
+	//load licsrver/show.template into a handle
+	//handle must have the following attributes
+	//	data-licserver		licserver id
+	//	data-tag
+	locals.load_licserver = function(handle){
+		//when the licserver is clicked, show licserver info and detected features
+		$.get('/licservers/' + handle.attr('data-licserver') + '.template', null, 
+			function(data, textStatus, jqXHR){
+				if( handle.children().length == 0 ){
+					handle.append( data).ready( function(){
+						//load the featres listings
+						$.get('/licservers/' + handle.attr('data-licserver') + '/features/list', null, 
+							function(data, textStatus, jqXHR){
+								handle.find('.fa-spinner').remove();
+								handle.find('#licserver-' + handle.attr('data-licserver') + '-features-listing').append(
+									data
+								).ready( function(){
+									//when a feature is selected, show it's usage over time. lazy load the data
+									$('.accordion-group[data-init-feature="false"]').each( function(index,value){
+										Paloma.locals.tags.setup_features_accordion($(this));
+									});
+
+
+								});
+							}, 'html' ).fail( function(){
+								console.log('fail to load server');
+								handle.find('licserver-' + handle.attr('data-licserver') + '-features').find('.fa-spinner').remove();
+								handle.find('#licserver-' + handle.attr('data-licserver') + '-features-listing').append(
+									$.parseHTML('Opss, something went wrong. Failed to load feature listings')
+								);
+							}); //$.get('/licservers/' + e.target.attributes['data-licserver'].value + '/features/list', null, 
+					});
+				};
+			}, 'html' );
+	};
+
 
 
   // Remove this line if you don't want to inherit locals defined
@@ -14626,7 +14757,7 @@ var performFilters = function(filters, params){
   Paloma.callbacks['licservers']['index'] = function(params){
     $(document).ready( function(){
 
-			//load more servers
+			//just load everyuthing
 			load_more_servers = function(target, mode){
 				var last_id = null; 
 				if($(target).children().length == 0){
@@ -14678,72 +14809,8 @@ var performFilters = function(filters, params){
 			//setup accordion
 			var setup_accordion = function(handle){
 				//load server info when accordion is clicked
-				handle.on('shown', function(){
-					if(handle.find('.info').children().length == 0){	
-						//add spinner
-						handle.find('.info').append( 
-							$.parseHTML('<div class="spin"><i class="fa fa-cog fa-spin fa-2x"></i></div>')
-						);
-
-						//load server info and setup the buttons
-						$.get('/licservers/' + handle.attr('data-id') + '/info', null, function(data, textStatus, jqXHR){
-							handle.find('.info').append(data).ready( function(){
-
-								//when the licserver modal has been clicked
-								$('.update-licserver').click(function(){
-									var handle = $('#licserver-modal-' + $(this).attr('data-id') );
-
-									//sanity checks before updating
-									if(licserver_modal_sanity_check(handle)==false){
-										return;
-									}
-
-									//update of a current server
-									var input_port;
-									var input_server;
-									if( handle.find('#server_info').val().indexOf('@') == -1){
-										input_port = '';
-										input_server = handle.find('#server_info').val();	
-									} else {
-										input_port = handle.find('#server_info').val().split('@')[0]
-										input_server = handle.find('#server_info').val().split('@')[1]
-									}
-
-									$.ajax( '/licservers/' + handle.find('#server_id').val(), {
-										data: { 
-											licserver:{ port:input_port, server:input_server, 
-												monitor_idle:handle.find('#monitor_idle').attr('checked')=='checked' },
-											tags:handle.find('#tags').val()
-										},
-										type:'PUT',
-										dataType: 'json'
-									}).done( function(data, textStatus, jqXHR){
-
-										//update the accordion
-										var accordion_handle = $('.accordion-group[data-id="' + handle.find('#server_id').val() + '"]');
-										accordion_handle.find('.accordion-toggle').text( handle.find('#server_info').val() );
-										$.get('/licservers/' + handle.find('#server_id').val() + '/info', null, function(data, textStatus, jqXHR){ 
-											accordion_handle.find('.info').replaceWith(data);
-										}, 'html');
-
-										//dismiss the modal
-										handle.modal('hide');
-									}); // $.ajax( '/licservers/' + handle.find('#server_id').val(), 
-								}); // $('.update-licserver').click(function(){
-							});
-
-							//remove spinner
-							handle.find('.spin').remove();
-
-						}, 'html').fail( function(){
-							//error handling
-							handle.find('.info').append( $.parseHTML('<div>Opss... something when wrong</div>') );
-							handle.find('.spin').remove();
-						});	
-						// $.get('/licservers/' + handle.attr('data-id') + '/info', null, function(data, textStatus, jqXHR){
-
-					}
-
+				handle.on('shown', function(e){
+					_l.load_licserver(handle.find('.info') );
 				}); // handle.on('shown', function(){
 
 				handle.attr('data-init', 'true');
@@ -14860,9 +14927,290 @@ var performFilters = function(filters, params){
     // Do something here.
     $(document).ready(function(){
       console.log('licserver show loaded');
+			
+			_l.load_licserver($('.info') );
 
+      $('#watchlist').on('ajax:success', function(data, status, xhr){
+        //toggle the star
+        $(this).find('.fa').toggleClass('fa-star-o').toggleClass('fa-star');
+			});
     });
   }; // Paloma.callbacks['licservers']['show'] = function(params){
+})();
+
+
+
+(function(){
+  // Initializes callbacks container for the this specific scope.
+  Paloma.callbacks['ads_user'] = {};
+
+  // Initializes locals container for this specific scope.
+  // Define a local by adding property to 'locals'.
+  //
+  // Example:
+  // locals.localMethod = function(){};
+  var locals = Paloma.locals['ads_user'] = {};
+
+  
+  // ~> Start local definitions here and remove this line.
+
+
+  // Remove this line if you don't want to inherit locals defined
+  // on parent's _locals.js
+  Paloma.inheritLocals({from : '/', to : 'ads_user'});
+})();
+(function(){ 
+  // Initializes the main container for all filters and skippers for this
+  // specific scope.
+  var filter = new Paloma.FilterScope('ads_user');
+  
+  // The _x object is also available on callbacks.
+  // You can make a variable visible on callbacks by using _x here.
+  //
+  // Example:
+  // _x.visibleOnCallback = "I'm a shared variable"
+  var _x = Paloma.variableContainer;
+
+  // ~> Start definitions here and remove this line.
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['ads_user'];
+
+
+  Paloma.callbacks['ads_user']['show'] = function(params){
+    // Do something here.
+  };
+})();
+
+
+
+(function(){
+  // Initializes callbacks container for the this specific scope.
+  Paloma.callbacks['ads_users'] = {};
+
+  // Initializes locals container for this specific scope.
+  // Define a local by adding property to 'locals'.
+  //
+  // Example:
+  // locals.localMethod = function(){};
+  var locals = Paloma.locals['ads_users'] = {};
+
+  
+  // ~> Start local definitions here and remove this line.
+
+
+  // Remove this line if you don't want to inherit locals defined
+  // on parent's _locals.js
+  Paloma.inheritLocals({from : '/', to : 'ads_users'});
+})();
+(function(){ 
+  // Initializes the main container for all filters and skippers for this
+  // specific scope.
+  var filter = new Paloma.FilterScope('ads_users');
+  
+  // The _x object is also available on callbacks.
+  // You can make a variable visible on callbacks by using _x here.
+  //
+  // Example:
+  // _x.visibleOnCallback = "I'm a shared variable"
+  var _x = Paloma.variableContainer;
+
+  // ~> Start definitions here and remove this line.
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['ads_users'];
+
+
+  Paloma.callbacks['ads_users']['show'] = function(params){
+    // Do something here.
+  };
+})();
+
+
+
+(function(){
+  // Initializes callbacks container for the this specific scope.
+  Paloma.callbacks['watch_lists'] = {};
+
+  // Initializes locals container for this specific scope.
+  // Define a local by adding property to 'locals'.
+  //
+  // Example:
+  // locals.localMethod = function(){};
+  var locals = Paloma.locals['watch_lists'] = {};
+
+  
+  // ~> Start local definitions here and remove this line.
+
+
+  // Remove this line if you don't want to inherit locals defined
+  // on parent's _locals.js
+  Paloma.inheritLocals({from : '/', to : 'watch_lists'});
+})();
+(function(){ 
+  // Initializes the main container for all filters and skippers for this
+  // specific scope.
+  var filter = new Paloma.FilterScope('watch_lists');
+  
+  // The _x object is also available on callbacks.
+  // You can make a variable visible on callbacks by using _x here.
+  //
+  // Example:
+  // _x.visibleOnCallback = "I'm a shared variable"
+  var _x = Paloma.variableContainer;
+
+  // ~> Start definitions here and remove this line.
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['watch_lists'];
+
+
+  Paloma.callbacks['watch_lists']['index'] = function(params){
+    // Do something here.
+    $(document).ready( function(){
+      console.log('watch_lists/index loaded');
+      $.get(document.location.pathname + '.template', null, function(data,textStatus, jqXHR){
+        $("#watch-list").append(data).ready( function(){
+          //load the contents when shown
+          $('#watch-list').find('.accordion-body').each( function(index){
+            $(this).on('shown', function(){
+              if( $(this).attr('data-init') == 'false') {
+                var handle = $(this);
+                $.get(document.location.pathname + '/' + $(this).attr('data-id') + '.template' , null, function(data,textStatus, jqXHR){
+                  handle.find('.accordion-inner').append(data).ready(function(){
+										//load the data from watchlist/watch_list.id/show.template and execute the appropiate javascript
+										//kinda works, but because you might get multiple types, it only load for the first loaded item of the same type
+										if(handle.attr('data-model-type') == 'FeatureHeader'){
+											console.log('load FeatureHeader scripts');
+											_L.features.load_daily_graph( handle.find('.daily-graph') );
+											_L.features.load_monthly_histogram( handle.find('.monthly-graph') );
+											_L.features.load_users( handle.find('#user-listings') );
+										} else if (handle.attr('data-model-type') == 'Licserver'){
+											console.log('load Licserver scripts');
+											handle.find('.accordion-inner').attr('data-licserver', handle.attr('data-model-id') );
+											_L.licservers.load_licserver( handle.find('.accordion-inner') );
+										} else if (handle.attr('data-model-type') == 'User'){
+											console.log('load User scripts');
+											_L.users.setup_accordion_body( handle.find('.user-machines')  );
+										} else if (handle.attr('data-model-type') == 'Tag'){
+											console.log('load Tag scripts');
+											Paloma.callbacks['tags']['show']();
+										};
+									});
+                });
+                $(this).attr('data-init', 'true');
+              }
+            });
+          });
+        });
+        $('#watch-list').find('.loading').hide();
+      });
+    }); // $(document).ready( function(){
+  };
+})();
+
+
+
+(function(){
+  // Initializes callbacks container for the this specific scope.
+  Paloma.callbacks['feature_headers'] = {};
+
+  // Initializes locals container for this specific scope.
+  // Define a local by adding property to 'locals'.
+  //
+  // Example:
+  // locals.localMethod = function(){};
+  var locals = Paloma.locals['feature_headers'] = {};
+
+  
+  // ~> Start local definitions here and remove this line.
+
+
+  // Remove this line if you don't want to inherit locals defined
+  // on parent's _locals.js
+  Paloma.inheritLocals({from : '/', to : 'feature_headers'});
+})();
+(function(){ 
+  // Initializes the main container for all filters and skippers for this
+  // specific scope.
+  var filter = new Paloma.FilterScope('feature_headers');
+  
+  // The _x object is also available on callbacks.
+  // You can make a variable visible on callbacks by using _x here.
+  //
+  // Example:
+  // _x.visibleOnCallback = "I'm a shared variable"
+  var _x = Paloma.variableContainer;
+
+  // ~> Start definitions here and remove this line.
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['feature_headers'];
+
+
+  Paloma.callbacks['feature_headers']['accordion_group'] = function(params){
+    // Do something here.
+  };
 })();
 
 
@@ -14878,6 +15226,14 @@ var performFilters = function(filters, params){
 
 
 
+
+
+
+
+(function() {
+
+
+}).call(this);
 /* =========================================================
  * bootstrap-datepicker.js
  * http://www.eyecon.ro/bootstrap-datepicker
@@ -18720,6 +19076,10 @@ $.widget( "ui.slider", $.ui.mouse, {
 });
 
 }(jQuery));
+(function() {
+
+
+}).call(this);
 (function() {
 
 
