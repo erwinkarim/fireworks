@@ -6,11 +6,14 @@
 - stack.push params[:id] + ' Usage' 
 = generate_header(stack) 
 .row
-	.page-header
-		%h2 
-			- if ads_user_signed_in? then
-				= link_to fa_icon(@watched.nil? || !@watched.active ? 'star-o' : 'star'), 
-					ads_user_toggle_watch_path(:ads_user_id => current_ads_user.login, :model_type => 'FeatureHeader', :model_id => @feature.id), 
-					:method => :post, :data => { :remote => true }, :id => 'watchlist'
-			= params[:id]
-= render :template => "features/show.template"
+	.span12
+		.page-header
+			%h2 
+				- if ads_user_signed_in? then
+					= link_to fa_icon(@watched.nil? || !@watched.active ? 'star-o' : 'star'), 
+						ads_user_toggle_watch_path(:ads_user_id => current_ads_user.login, :model_type => 'FeatureHeader', :model_id => @feature.id), 
+						:method => :post, :data => { :remote => true }, :id => 'watchlist'
+				= params[:id]
+.row
+	.span12
+		= render :template => "features/show.template"
