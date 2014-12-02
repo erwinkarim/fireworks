@@ -47,7 +47,7 @@
 										} else if (handle.attr('data-model-type') == 'Tag'){
 											console.log('load Tag scripts');
 											Paloma.callbacks['tags']['show']();
-										} else if (handle.attr('data-model-type') == 'ReportSchedule')}
+										} else if (handle.attr('data-model-type') == 'ReportSchedule'){
 											console.log('load ReportSchedule scripts');
 										};
 									});

@@ -101,6 +101,8 @@ class WatchListsController < ApplicationController
 				return handle.name
 			when Tag
 				return handle.title
+			when ReportSchedule
+				return handle.title
 			else
 				return 'Unknown Class'
 			end
