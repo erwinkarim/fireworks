@@ -46,6 +46,9 @@ class WatchListsController < ApplicationController
 				elsif @watch_list.model_type == 'User' then
 					@user = User.find(@watch_list.model_id)
 					render 'users/show'
+				elsif @watch_list.model_type == 'ReportSchedule' then
+					@schedule = ReportSchedule.find(@watch_list.model_id)
+					render 'report_schedules/show'
         end
       }
     end
