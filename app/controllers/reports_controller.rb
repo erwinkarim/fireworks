@@ -15,6 +15,7 @@ class ReportsController < ApplicationController
         :schedule_id => ( params.has_key?(:report_schedule_id) ? params[:report_schedule_id] : nil), 
         :status => x.status } } 
       }
+			format.template
     end
   end
 

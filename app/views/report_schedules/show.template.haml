@@ -1,76 +1,64 @@
-.accordion-group{ :id => @schedule.title.nil? ? 'new-schedule-group' : false, 
-	:style => @schedule.title.nil? ? 'display:none;' : '', :data => { :id => @schedule.id } }
-	.accordion-heading
-		= link_to @schedule.title.nil? ? 'New Schedule' : @schedule.title, '#schedule' + @schedule.id.to_s, 
-			:data => { :toggle => 'collapse', :parent => '#schedule-accordion' }, :class => 'accordion-toggle'
-	.accordion-body.collapse{ :id => 'schedule' + @schedule.id.to_s, :data => { :id => @schedule.id } }
-		.accordion-inner{ :class => @schedule.title.nil? ? 'new-schedule' : '' }
-			.info-title
-				%h4 Infomation
-			.info
-				- if !@schedule.id.nil? then 
-					= watch_icon( {:user => current_ads_user, :model_type => 'ReportSchedule', :model_id => @schedule.id, :class => 'btn', :text => true })
-					= link_to fa_icon('link', { :text => 'Permalink' }), report_schedule_path(@schedule), :class => 'btn'
-			.report
-				%h4 Reports and Settings
-			.tabbable
-				%ul.nav.nav-tabs
-					- if !@schedule.title.nil? then
-						%li.active
-							%a{ :data => { :toggle => 'tab' }, :href => '#reports' + @schedule.id.to_s }Reports
-					%li{ :class => @schedule.title.nil? ? 'active' : '' }
-						%a{ :data => { :toggle => 'tab', :target => '#settings' + @schedule.id.to_s }, 
-							:href => '#settings' + @schedule.id.to_s }Settings
-				.tab-content
-					.tab-pane.active{ :id => 'reports' + @schedule.id.to_s }
-						%table.table.table-striped{ :data => { :id => @schedule.id.to_s } }
-							%thead
-								%tr
-									%th ID
-									%th Status
-									%th Created At
-									%th Other Formats
-							%tbody
-					.tab-pane.setting{ :id => 'settings' + @schedule.id.to_s , :data => { :id => @schedule.id }, 
-						:class => @schedule.title.nil? ? 'active' : '' }
-						= form_for @schedule, :html => {:class => 'form-horizontal schedule-form', :'data-type' => 'script', 
-							:'data-id' => @schedule.id }, :remote => true do |f|
-							.control-group#schedule-title-group
-								%label.control-label Title
-								.controls
-									%input#schedule-title-input{:type => 'text', :placeholder => 'Title', :name => 'title', 
-										:value => @schedule.title}  
-							.control-group
-								%label.control-label Scope
-								.controls
-									= select_tag 'time_scope', 
-										options_for_select(ReportSchedule::TIME_SCOPE.values, @schedule.time_scope)
-							.control-group{ :class => 'licserver-listing' }
-								%label.control-label Monitored Object
-								- (@schedule.monitored_obj.nil? ? { :'0' => Tag.first.title } : YAML::load(@schedule.monitored_obj)).each do |key,value|
-									.controls.licserver{:style => 'padding:5px 0px;' }
-										= select_tag 'monitored_type[]',
-											options_for_select(Tag.all.map{ |x| x.title }.uniq.sort, value ), { :class => 'monitored_cat' }
-										= select_tag 'monitored_licserver[]', 
-											options_for_select(Licserver.joins{tags}.where{ tags.title.eq value.to_s }.map{ |x| [x.port.to_s + '@' + x.server, x.id] }, key)
-										%button.btn.btn-danger{ :class => 'delete-licserver', :type => 'button', :disabled => (@schedule.monitored_obj.nil? || YAML::load(@schedule.monitored_obj).count == 1) }
-											%i.fa.fa-minus
-								.controls
-									%button.btn.btn-primary{ :type => 'button', :class => 'add-licserver', 
-										:data => { :id => @schedule.id } }
-										%i.fa.fa-plus
-							.control-group
-								%label.control-label 
-									%a{ :data => { :title => 'If you set scheduled, the report will run automatically after the scope is done. Ie; Scheduled Report with scope of last month will run when the new month comes in'} , 
-										:class => 'scheduled-tooltip' } Scheduled?
-								.controls
-									= select_tag 'schedule_terms',
-										options_for_select([['No - Ad Hoc Basis', false], ['Yes', true]], @schedule.scheduled.to_s)
-							.form-actions
-								- if @schedule.title.nil? then
-									%button.btn.btn-primary{ :type => 'submit' } Create Report
-									%button.btn#new-schedule-cancel{ :type => 'button' } Cancel
-								- else
-									%button.btn.btn-primary{ :type => 'submit' } Update
-									= link_to 'Delete Report', report_schedule_path(@schedule), :method => :delete, :remote => true,
-										:class => 'btn btn-danger delete-report', :data => { :confirm => 'Really delete Schedule?' }
+.tabbable
+	%ul.nav.nav-tabs
+		- if !@schedule.title.nil? then
+			%li.active
+				%a{ :data => { :toggle => 'tab' }, :href => '#reports' + @schedule.id.to_s }Reports
+		%li{ :class => @schedule.title.nil? ? 'active' : '' }
+			%a{ :data => { :toggle => 'tab', :target => '#settings' + @schedule.id.to_s }, 
+				:href => '#settings' + @schedule.id.to_s }Settings
+	.tab-content
+		.tab-pane.active{ :id => 'reports' + @schedule.id.to_s }
+			%table.table.table-striped{ :data => { :id => @schedule.id.to_s } }
+				%thead
+					%tr
+						%th ID
+						%th Status
+						%th Created At
+						%th Other Formats
+				%tbody
+					= render :template => 'reports/index.template', :locals => { :@schedule => @schedule, 
+						:@pendings => Delayed::Job.select{|x| (YAML::load(x.handler).object.id == params[:report_schedule_id].to_i) && (YAML::load(x.handler).object.instance_of?(ReportSchedule)) } }
+
+		.tab-pane.setting{ :id => 'settings' + @schedule.id.to_s , :data => { :id => @schedule.id }, 
+			:class => @schedule.title.nil? ? 'active' : '' }
+			= form_for @schedule, :html => {:class => 'form-horizontal schedule-form', :'data-type' => 'script', 
+				:'data-id' => @schedule.id }, :remote => true do |f|
+				.control-group#schedule-title-group
+					%label.control-label Title
+					.controls
+						%input#schedule-title-input{:type => 'text', :placeholder => 'Title', :name => 'title', 
+							:value => @schedule.title}  
+				.control-group
+					%label.control-label Scope
+					.controls
+						= select_tag 'time_scope', 
+							options_for_select(ReportSchedule::TIME_SCOPE.values, @schedule.time_scope)
+				.control-group{ :class => 'licserver-listing' }
+					%label.control-label Monitored Object
+					- (@schedule.monitored_obj.nil? ? { :'0' => Tag.first.title } : YAML::load(@schedule.monitored_obj)).each do |key,value|
+						.controls.licserver{:style => 'padding:5px 0px;' }
+							= select_tag 'monitored_type[]',
+								options_for_select(Tag.all.map{ |x| x.title }.uniq.sort, value ), { :class => 'monitored_cat' }
+							= select_tag 'monitored_licserver[]', 
+								options_for_select(Licserver.joins{tags}.where{ tags.title.eq value.to_s }.map{ |x| [x.port.to_s + '@' + x.server, x.id] }, key)
+							%button.btn.btn-danger{ :class => 'delete-licserver', :type => 'button', :disabled => (@schedule.monitored_obj.nil? || YAML::load(@schedule.monitored_obj).count == 1) }
+								%i.fa.fa-minus
+					.controls
+						%button.btn.btn-primary{ :type => 'button', :class => 'add-licserver', 
+							:data => { :id => @schedule.id } }
+							%i.fa.fa-plus
+				.control-group
+					%label.control-label 
+						%a{ :data => { :title => 'If you set scheduled, the report will run automatically after the scope is done. Ie; Scheduled Report with scope of last month will run when the new month comes in'} , 
+							:class => 'scheduled-tooltip' } Scheduled?
+					.controls
+						= select_tag 'schedule_terms',
+							options_for_select([['No - Ad Hoc Basis', false], ['Yes', true]], @schedule.scheduled.to_s)
+				.form-actions
+					- if @schedule.title.nil? then
+						%button.btn.btn-primary{ :type => 'submit' } Create Report
+						%button.btn#new-schedule-cancel{ :type => 'button' } Cancel
+					- else
+						%button.btn.btn-primary{ :type => 'submit' } Update
+						= link_to 'Delete Report', report_schedule_path(@schedule), :method => :delete, :remote => true,
+							:class => 'btn btn-danger delete-report', :data => { :confirm => 'Really delete Schedule?' }

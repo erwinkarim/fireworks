@@ -1,14 +1,29 @@
 .page-header
-  %h1 Report Schedule
+	%h1 Report Schedule
 
 .row
-  .span12
-    .accordion#schedule-accordion
-      - @schedules.each do |schedule|
-        = render :partial => 'schedule-accordion-group', :locals => { :schedule => schedule}
-      = render :partial => 'schedule-accordion-group', :locals => { :schedule => ReportSchedule.new}
-
+	.span12
+		.accordion#schedule-accordion
+			- @schedules.each do |schedule|
+				.accordion-group{ :id => schedule.title.nil? ? 'new-schedule-group' : false, 
+					:style => schedule.title.nil? ? 'display:none;' : '', :data => { :id => schedule.id } }
+					.accordion-heading
+						= link_to schedule.title.nil? ? 'New Schedule' : schedule.title, '#schedule' + schedule.id.to_s, 
+							:data => { :toggle => 'collapse', :parent => '#schedule-accordion', :setup => 'false', :'report-schedule' => schedule.id }, 
+							:class => 'accordion-toggle'
+					.accordion-body.collapse{ :id => 'schedule' + schedule.id.to_s, :data => { :id => schedule.id } }
+						.accordion-inner{ :class => schedule.title.nil? ? 'new-schedule' : '' }
+							.info-title
+								%h4 Infomation
+							.info
+								- if !schedule.id.nil? then 
+									= watch_icon( {:user => current_ads_user, :model_type => 'ReportSchedule', :model_id => schedule.id, :class => 'btn', :text => true })
+									= link_to fa_icon('link', { :text => 'Permalink' }), report_schedule_path(schedule), :class => 'btn'
+							.report
+								%h4 Reports and Settings
+							.loading-report
+								= fa_icon('cog spin 4x')
 .row
-  .span12
-    %button.btn.btn-large.btn-primary#new-schedule-btn( type:button )New Schedule
-    #new-schedule
+	.span12
+		%button.btn.btn-large.btn-primary#new-schedule-btn( type:button )New Schedule
+		#new-schedule

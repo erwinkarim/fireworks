@@ -207,10 +207,28 @@
     }; //var setup_accordion_body = function(ab_handle){
 
     $(document).ready( function(){
+			/*
       $('.accordion-body').each( function(index) {
         setup_accordion_body( $(this) );  
       }) // $('.accordion-body').each( function(index) {
+			*/
 
+			//setup when showing data accordion
+			$('#schedule-accordion').find('a[data-toggle=collapse]').each( function(index){
+				var link_handle = $(this);
+				var accordion_body = $( link_handle.attr('href') );
+				accordion_body.on('shown', function(){
+					if(link_handle.attr('data-setup') == 'false') {
+						$.get('/report_schedules/' + link_handle.attr('data-report-schedule') + '.template', null, function(data, textStatus, jqXHR){
+							accordion_body.find('.accordion-inner').append(data).ready( function(){
+								accordion_body.find('.loading-report').remove();
+								console.log('setup buttons for this report schedule');
+							});
+						});
+						link_handle.attr('data-setup', 'true');
+					}
+				});
+			});
 
       $('.delete-licserver').click( function(){
         delete_licserver($(this) );
