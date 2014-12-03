@@ -21,35 +21,6 @@
     // Do something here.
     //
 
-    //in licserver to be monitored listing, delete the one that is being clicked.
-    //if there's only 1 left, disable delete button to prevent it from monitoring and empty list
-    var delete_licserver = function(handle){
-      var licserver_listing_handle = handle.closest('.licserver-listing');
-      $.when(handle.closest('.licserver').remove()).then( function(){
-        if(licserver_listing_handle.find('.licserver').length == 1){
-          licserver_listing_handle.find('.delete-licserver:first').attr('disabled', 'disabled');
-        }
-      });
-    };
-
-    var add_licserver_listings = function(handle){
-    };
-
-    //handle changes in monitored object dropdown selection. handle changes when the category changes
-    var setup_monitored_obj_dropdown = function(handle){
-      //the handle is the category object
-      handle.bind('change',  function(){
-        //update the licserver listing nearest to this object
-        $.get( '/tags/' + $(this).val() + '/gen_licservers', 
-          null,
-          function(data, textStatus, jqXHR){
-            handle.parent().find('#monitored_licserver_:first').empty().append(data); 
-          },
-          'html' 
-        );
-      });
-    };
-
     //setup the accordion body as it get loaded
     // ab_handle must be class .accordion-body created by _schedule_accordion_group template
     var setup_accordion_body = function(ab_handle){
@@ -134,38 +105,6 @@
         };
       }); // ab_handle.on('show', function(){
 
-      //bind change action on monotired object category dropdown
-      ab_handle.find('.monitored_cat').each( function(index) {
-        //$(this).bind('change', setup_monitored_obj_dropdown($(this)) );  
-        setup_monitored_obj_dropdown( $(this) );
-      });
-
-      //bind adding new licservers button
-      ab_handle.find('.add-licserver').click(function(){
-        var handle = $(this).closest('.licserver-listing').find('.licserver:last');
-    
-        //generate new listings from website
-        $.get( '/report_schedules/gen_monitored_obj_listings', function(data){
-            handle.after(data).ready( function(){
-              //ensure that all minus is enabled and works
-              handle.closest('.licserver-listing').find('.licserver').each(function(index, e){
-                $(this).find('.delete-licserver').removeAttr('disabled');
-              });
-
-              $(this).find('.delete-licserver').click( function(){
-                delete_licserver($(this));
-              });
-
-              //ensure that the dropdown action of the category works
-              $(this).find('.monitored_cat').bind('change', function(){
-                setup_monitored_obj_dropdown( $(this) );
-              });
-            })
-          }, null, 
-          'html'
-        ); // $.get( '/report_schedules/gen_monitored_obj_listings', function(data){
-      }); // ab_handle.find('.add-licserver').click(function(){
-
       //when submiting the form, do sanity checks
       ab_handle.find('.schedule-form').on('ajax:before', function(){
         if( $(this).find('#schedule-title-input').val() == '') {
@@ -213,7 +152,7 @@
       }) // $('.accordion-body').each( function(index) {
 			*/
 
-			//setup when showing data accordion
+			//load accordion contents when shown
 			$('#schedule-accordion').find('a[data-toggle=collapse]').each( function(index){
 				var link_handle = $(this);
 				var accordion_body = $( link_handle.attr('href') );
@@ -221,8 +160,8 @@
 					if(link_handle.attr('data-setup') == 'false') {
 						$.get('/report_schedules/' + link_handle.attr('data-report-schedule') + '.template', null, function(data, textStatus, jqXHR){
 							accordion_body.find('.accordion-inner').append(data).ready( function(){
+								_l.setup_report_tab(accordion_body.find('.tabbable'));
 								accordion_body.find('.loading-report').remove();
-								console.log('setup buttons for this report schedule');
 							});
 						});
 						link_handle.attr('data-setup', 'true');

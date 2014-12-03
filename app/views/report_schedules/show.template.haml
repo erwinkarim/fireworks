@@ -18,7 +18,9 @@
 				%tbody
 					= render :template => 'reports/index.template', :locals => { :@schedule => @schedule, 
 						:@pendings => Delayed::Job.select{|x| (YAML::load(x.handler).object.id == params[:report_schedule_id].to_i) && (YAML::load(x.handler).object.instance_of?(ReportSchedule)) } }
-
+			%button.btn.btn-primary.generate-report{ :data => { :id => @schedule.id } } Generate
+			%button.btn.btn-info.refresh-report
+				= fa_icon('refresh')
 		.tab-pane.setting{ :id => 'settings' + @schedule.id.to_s , :data => { :id => @schedule.id }, 
 			:class => @schedule.title.nil? ? 'active' : '' }
 			= form_for @schedule, :html => {:class => 'form-horizontal schedule-form', :'data-type' => 'script', 

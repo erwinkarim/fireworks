@@ -13,3 +13,4 @@
 //= require ./ads_users/_manifest.js
 //= require ./watch_lists/_manifest.js
 //= require ./feature_headers/_manifest.js
+//= require ./reports/_manifest.js
