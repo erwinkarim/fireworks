@@ -4,4 +4,5 @@
 			%h2 Report Schedule #{@schedule.id}
 .row
 	.span12
-		Schedule content here
+		.info{ :data => { :'schedule-id' => @schedule.id } }
+			= fa_icon('cog spin 4x', { :text => 'Loading...' })

@@ -49,6 +49,7 @@
 											Paloma.callbacks['tags']['show']();
 										} else if (handle.attr('data-model-type') == 'ReportSchedule'){
 											console.log('load ReportSchedule scripts');
+											_L.report_schedules.setup_report_tab( handle.find('.tabbable') );
 										};
 									});
                 });

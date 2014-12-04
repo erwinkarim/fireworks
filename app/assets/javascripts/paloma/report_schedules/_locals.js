@@ -48,7 +48,7 @@
 				type:'POST', 
 				dataType:'json'
 			}).done(function(data, statusText,jqXHR){
-				$('#reports' + $(this).attr('data-id') ).find('tbody').append(
+				handle.find('tbody').append(
 					$('<tr/>').append(
 						$('<td/>', { colspan:5, text:'Generate request sent' })
 					)
@@ -60,7 +60,7 @@
 		handle.find('.refresh-report').click( function(){
 			//refresh the report listing
 			console.log('report listing refresh called');
-			var accordion_handle = $(this).closest('.accordion-body');
+			var accordion_handle = $(this).closest('.tabbable');
 			$(this).find('.fa-refresh').addClass('fa-spin');
 			$.ajax(
 				'/report_schedules/' + accordion_handle.attr('data-id') + '/reports', {
@@ -104,7 +104,47 @@
 			); // $.get( '/report_schedules/gen_monitored_obj_listings', function(data){
 		}); // hoandle.find('.add-licserver').click(function(){
 
-	};
+		//when submiting the form, do sanity checks
+		handle.find('.schedule-form').on('ajax:before', function(){
+			if( $(this).find('#schedule-title-input').val() == '') {
+				//highlight title
+				$(this).find('#schedule-title-group').addClass('error');
+				return false;
+			}
+		}).on('ajax:success', function(e, data, textStatus, jqXHR){
+
+			//if the new report schedule is open, close it
+			//reset the form and hide it
+			if( $('#new_report_schedule').length > 0 ) {
+				$('#new_report_schedule')[0].reset();
+				$('#new-schedule-group').hide();
+				$('#new-schedule-btn').show();
+			};
+
+
+			//update or recreate new accordion-group
+			var accordion_id = data.id
+			if( data.id != null && $('.accordion-group[data-id=' + data.id + ']').length == 0){
+				//group does not exist and data.id is valid, create a new one!
+				$.ajax('/report_schedules/' + data.id + '/accordion', {
+					dataType:'html'
+				}).done( function(data, statusText, jqXHR){
+					$('#new-schedule-group').before(
+						$.parseHTML(data)
+					).ready( function(){
+						setup_accordion_body( $('.accordion-group[data-id=' + accordion_id + ']') );
+					})
+				});
+			} else {
+				//group exists, update it
+				var accord_handle = $('.accordion-group[data-id=' + data.id + ']');
+				accord_handle.find('.accordion-toggle').text(data.title);
+			}
+
+		}).on('ajax:error', function(xhr, status, error){
+			//if got error (usually the title uniqueness) highlight the error and move on
+		});
+	}; // locals.setup_report_tab = function(handle){
 
 
   // Remove this line if you don't want to inherit locals defined

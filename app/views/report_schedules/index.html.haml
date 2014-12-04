@@ -5,24 +5,28 @@
 	.span12
 		.accordion#schedule-accordion
 			- @schedules.each do |schedule|
-				.accordion-group{ :id => schedule.title.nil? ? 'new-schedule-group' : false, 
-					:style => schedule.title.nil? ? 'display:none;' : '', :data => { :id => schedule.id } }
+				.accordion-group{ :id => false, :data => { :id => schedule.id } }
 					.accordion-heading
-						= link_to schedule.title.nil? ? 'New Schedule' : schedule.title, '#schedule' + schedule.id.to_s, 
+						= link_to schedule.title, '#schedule' + schedule.id.to_s, 
 							:data => { :toggle => 'collapse', :parent => '#schedule-accordion', :setup => 'false', :'report-schedule' => schedule.id }, 
 							:class => 'accordion-toggle'
 					.accordion-body.collapse{ :id => 'schedule' + schedule.id.to_s, :data => { :id => schedule.id } }
-						.accordion-inner{ :class => schedule.title.nil? ? 'new-schedule' : '' }
+						.accordion-inner
 							.info-title
 								%h4 Infomation
 							.info
-								- if !schedule.id.nil? then 
-									= watch_icon( {:user => current_ads_user, :model_type => 'ReportSchedule', :model_id => schedule.id, :class => 'btn', :text => true })
-									= link_to fa_icon('link', { :text => 'Permalink' }), report_schedule_path(schedule), :class => 'btn'
+								= watch_icon( {:user => current_ads_user, :model_type => 'ReportSchedule', :model_id => schedule.id, :class => 'btn', :text => true })
+								= link_to fa_icon('link', { :text => 'Permalink' }), report_schedule_path(schedule), :class => 'btn'
 							.report
 								%h4 Reports and Settings
 							.loading-report
 								= fa_icon('cog spin 4x')
+			.accordion-group#new-schedule-group{ :style => 'display:none;' }
+				.accordion-heading
+					%a.accordion-toggle{ :data => { :toggle => 'collapse', :parent => '#schedule-accordion' }, :href => '#new-schedule' } New Schedule
+				.accordion-body.collapse{ :id => 'new-schedule' }
+					.accordion-inner.new-schedule
+						= render :template => 'report_schedules/show.template', :locals => { :@schedule => ReportSchedule.new }
 .row
 	.span12
 		%button.btn.btn-large.btn-primary#new-schedule-btn( type:button )New Schedule
