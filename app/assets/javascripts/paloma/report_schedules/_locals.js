@@ -41,6 +41,9 @@
 	locals.setup_report_tab = function(handle){
 		console.log('setup report tab');
 
+		//setup tool tip
+		handle.find('.scheduled-tooltip').tooltip();
+
 		//configure generate new report
 		handle.find('.generate-report').click( function(){
 			// TODO: this is problem matic

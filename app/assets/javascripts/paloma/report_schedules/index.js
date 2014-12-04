@@ -18,69 +18,9 @@
 
 
   Paloma.callbacks['report_schedules']['index'] = function(params){
-    // Do something here.
-    //
-
-    //setup the accordion body as it get loaded
-    // ab_handle must be class .accordion-body created by _schedule_accordion_group template
-    var setup_accordion_body = function(ab_handle){
-      var rs_id = ab_handle.attr('data-id');
-
-      //handle the accordion
-      ab_handle.on('show', function(){
-        //if report table contents empty, refresh
-        //setup tooltip for
-        ab_handle.find('.scheduled-tooltip').tooltip();
-
-      }); // ab_handle.on('show', function(){
-
-      //when submiting the form, do sanity checks
-      ab_handle.find('.schedule-form').on('ajax:before', function(){
-        if( $(this).find('#schedule-title-input').val() == '') {
-          //highlight title
-          $(this).find('#schedule-title-group').addClass('error');
-          return false;
-        }
-      }).on('ajax:success', function(e, data, textStatus, jqXHR){
-  
-        //if the new report schedule is open, close it
-        //reset the form and hide it
-        $('#new_report_schedule')[0].reset();
-        $('#new-schedule-group').hide();
-        $('#new-schedule-btn').show();
-
-
-        //update or recreate new accordion-group
-        var accordion_id = data.id
-        if( data.id != null && $('.accordion-group[data-id=' + data.id + ']').length == 0){
-          //group does not exist and data.id is valid, create a new one!
-          $.ajax('/report_schedules/' + data.id + '/accordion', {
-            dataType:'html'
-          }).done( function(data, statusText, jqXHR){
-            $('#new-schedule-group').before(
-              $.parseHTML(data)
-            ).ready( function(){
-              setup_accordion_body( $('.accordion-group[data-id=' + accordion_id + ']') );
-            })
-          });
-        } else {
-          //group exists, update it
-          var accord_handle = $('.accordion-group[data-id=' + data.id + ']');
-          accord_handle.find('.accordion-toggle').text(data.title);
-        }
-
-      }).on('ajax:error', function(xhr, status, error){
-        //if got error (usually the title uniqueness) highlight the error and move on
-      });
-    }; //var setup_accordion_body = function(ab_handle){
-
+		
+		//setup the accordion, new schedule and cancel button when the document is fully loaded
     $(document).ready( function(){
-			/*
-      $('.accordion-body').each( function(index) {
-        setup_accordion_body( $(this) );  
-      }) // $('.accordion-body').each( function(index) {
-			*/
-
 			//load accordion contents when shown
 			$('#schedule-accordion').find('a[data-toggle=collapse]').each( function(index){
 				var link_handle = $(this);
@@ -97,11 +37,6 @@
 					}
 				});
 			});
-
-      $('.delete-licserver').click( function(){
-        delete_licserver($(this) );
-      });
-
 
       //adding new 
       $('#new-schedule-btn').click( function(){
