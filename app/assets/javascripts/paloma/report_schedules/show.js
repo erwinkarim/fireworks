@@ -20,7 +20,7 @@
   Paloma.callbacks['report_schedules']['show'] = function(params){
     // Do something here.
 		$(document).ready( function(){
-			$.get('/report_schedules/' + $('.info').attr('data-schedule-id') + '.template', null, function(data, textStatus, jqXHR){
+			$.get('/report_schedules/' + $('.info').attr('data-schedule-id') + '.template', { delete_enabled:true }, function(data, textStatus, jqXHR){
 				$('.info').empty().append( data ).ready( function(){
 					_l.setup_report_tab($(this) );
 				});

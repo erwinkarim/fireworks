@@ -38,6 +38,7 @@
 	};
 	
 	// setup report schedule tabs
+	// call this on the page after using ajax to get /report_schedules/<report_schedule_id>/show.template
 	locals.setup_report_tab = function(handle){
 		console.log('setup report tab');
 

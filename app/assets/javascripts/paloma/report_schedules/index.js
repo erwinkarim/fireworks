@@ -27,7 +27,7 @@
 				var accordion_body = $( link_handle.attr('href') );
 				accordion_body.on('shown', function(){
 					if(link_handle.attr('data-setup') == 'false') {
-						$.get('/report_schedules/' + link_handle.attr('data-report-schedule') + '.template', null, function(data, textStatus, jqXHR){
+						$.get('/report_schedules/' + link_handle.attr('data-report-schedule') + '.template', { delete_enabled:'true' } , function(data, textStatus, jqXHR){
 							accordion_body.find('.accordion-inner').append(data).ready( function(){
 								_l.setup_report_tab(accordion_body.find('.tabbable'));
 								accordion_body.find('.loading-report').remove();

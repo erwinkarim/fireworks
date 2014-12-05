@@ -1,6 +1,5 @@
 .page-header
 	%h1 Report Schedule
-
 .row
 	.span12
 		.accordion#schedule-accordion
@@ -17,8 +16,6 @@
 							.info
 								= watch_icon( {:user => current_ads_user, :model_type => 'ReportSchedule', :model_id => schedule.id, :class => 'btn', :text => true })
 								= link_to fa_icon('link', { :text => 'Permalink' }), report_schedule_path(schedule), :class => 'btn'
-							.report
-								%h4 Reports and Settings
 							.loading-report
 								= fa_icon('cog spin 4x')
 			.accordion-group#new-schedule-group{ :style => 'display:none;' }

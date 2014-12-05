@@ -1,3 +1,4 @@
+%h4 Reports & Settings
 .tabbable{ :data => { :id => @schedule.id } }
 	%ul.nav.nav-tabs
 		- if !@schedule.title.nil? then
@@ -62,5 +63,6 @@
 						%button.btn#new-schedule-cancel{ :type => 'button' } Cancel
 					- else
 						%button.btn.btn-primary{ :type => 'submit' } Update
-						= link_to 'Delete Report', report_schedule_path(@schedule), :method => :delete, :remote => true,
-							:class => 'btn btn-danger delete-report', :data => { :confirm => 'Really delete Schedule?' }
+						- if @delete_enabled then
+							= link_to 'Delete Report', report_schedule_path(@schedule), :method => :delete, :remote => true,
+								:class => 'btn btn-danger delete-report', :data => { :confirm => 'Really delete Schedule?' }

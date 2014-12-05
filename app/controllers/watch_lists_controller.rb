@@ -119,6 +119,8 @@ class WatchListsController < ApplicationController
 				return licserver_feature_path(handle.licserver_id, handle.name)
 			when Tag
 				return tag_path(handle.title)
+			when ReportSchedule
+				return report_schedule_path(handle.id)
 			else
 				return '#'
 			end

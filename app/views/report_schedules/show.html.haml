@@ -1,7 +1,15 @@
 .row
 	.span12
 		.page-header
-			%h2 Report Schedule #{@schedule.id}
+			%h1 
+				- if ads_user_signed_in? then
+					= watch_icon( {:user => current_ads_user, :model_type => 'ReportSchedule', :model_id => @schedule.id })
+				#{@schedule.title}
+			%ul.breadcrumb
+				%li
+					%a{ :href => report_schedules_path } Reports
+					%span.divider /
+				%li #{@schedule.title }
 .row
 	.span12
 		.info{ :data => { :'schedule-id' => @schedule.id } }

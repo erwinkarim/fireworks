@@ -13,7 +13,13 @@ class ReportSchedulesController < ApplicationController
   #GET    /report_schedule/:id(.:format)
   # get report schedule
   def show
-    @schedule = ReportSchedule.find(params[:id])
+		respond_to do |format|
+			@schedule = ReportSchedule.find(params[:id])
+			format.html
+			format.template{
+				@delete_enabled = params.has_key?(:delete_enabled) && params[:delete_enabled] == 'true' ?  true : false
+			}
+		end
   end
 
   # PUT    /report_schedule/:id(.:format)
