@@ -29,6 +29,7 @@
       _l.load_daily_graph( $('.daily-graph:first') );
       _l.load_monthly_histogram( $('.monthly-graph:first') );
       _l.load_users( $('#user-listings') );
+			_l.nuke_users( $('#really-nuk-em') );
 
 
       $('#watchlist').on('ajax:success', function(data, status, xhr){

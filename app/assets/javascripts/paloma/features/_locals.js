@@ -247,6 +247,38 @@
 			load_users_table(handle);
     };
 
+		//nuke users from the table listing
+		locals.nuke_users = function(handle){
+			handle.closest('#user-listings').find('#nuke-users').removeAttr('disabled');
+
+			//configure on click
+			handle.on('click', function(){
+				console.log('nukem button pressed')
+
+				var modal_handle = handle.closest('.modal');
+				var confirmation_handle = modal_handle.find('#nuke-confirmation-box');
+				var nuke_alert_box = modal_handle.find('.nuke-alert-box');
+
+				if ( confirmation_handle.val() == handle.attr('data-feature')){
+					console.log('correct answer');
+
+					//start nuking users
+					handle.closest('.tab-content').find('.kill-user').each( function(index){
+						$(this).click();
+					});
+					
+					//reset the form and hide
+					confirmation_handle.val('');
+					modal_handle.modal('hide');
+					nuke_alert_box.html('Nuking users of ' + handle.attr('data-feature') + '...');
+				} else {
+					console.log('incorrect answer');
+					nuke_alert_box.html('Wrong Answer');
+				}
+
+			});
+		};
+
   // Remove this line if you don't want to inherit locals defined
   // on parent's _locals.js
   Paloma.inheritLocals({from : '/', to : 'features'});

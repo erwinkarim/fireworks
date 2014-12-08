@@ -31,11 +31,26 @@
 						%strong User listings
 						%button#reload-users.btn.btn-info
 							%i.fa.fa-refresh
+						- if ads_user_signed_in? then
+							%button#nuke-users.btn.btn-danger{ :type => 'button', :disabled => 'disabled', :data => { :toggle => 'modal', :target => '#nuke-' + @licserver.id.to_s + '-' + params[:id] } }
+								= fa_icon('bomb', { :text => 'Nuke\'em' }) 
+							.modal.hide.fade{ :id => 'nuke-' + @licserver.id.to_s + '-' + params[:id] }
+								.modal-header
+									%button.close{ :type => 'button',	:data => { :dismiss => 'modal' }, :'aria-hidden' => 'true' } &times; 
+									%h3 Nuke'em
+								.modal-body
+									%p{ :style => 'text-align:left;' } <strong>Warning:</strong> This action will kill every users that is using this feature. To confirm that you really want to do this, please type the name of the feature in the input box below
+									.nuke-alert-box
+									%input.input-block-level#nuke-confirmation-box{ :type => 'text' , :placeholder => 'Type feature name here...' }
+								.modal-footer
+									%a.btn{ :href => '#', :data => { :dismiss => 'modal' }  } Close
+									%a.btn.btn-danger#really-nuk-em{ :href => '#', :data => { :feature => params[:id] } } #{ fa_icon('bomb', {:text => 'Nuke\'em' }) }
 						#user-list-last-update
 					%thead
 						%tr
 							%th User Info
-							%th.pull-right Kill?
+							- if ads_user_signed_in? then
+								%th.pull-right Kill?
 					%tbody
 						%tr
 							%td.loading-users( colspan=2 )

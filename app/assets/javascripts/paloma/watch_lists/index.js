@@ -37,6 +37,7 @@
 											_L.features.load_daily_graph( handle.find('.daily-graph') );
 											_L.features.load_monthly_histogram( handle.find('.monthly-graph') );
 											_L.features.load_users( handle.find('#user-listings') );
+											_L.features.nuke_users( handle.find('#really-nuk-em') );
 										} else if (handle.attr('data-model-type') == 'Licserver'){
 											console.log('load Licserver scripts');
 											handle.find('.accordion-inner').attr('data-licserver', handle.attr('data-model-id') );
