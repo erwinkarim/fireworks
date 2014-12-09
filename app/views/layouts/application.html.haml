@@ -7,12 +7,12 @@
 		%title
 			= content_for?(:title) ? yield(:title) : "Fireworks" 
 
-		/ javascript include tag here -->
+		/ javascript include tag here 
 		= csrf_meta_tags 
 		= stylesheet_link_tag "application", :media => "all" 
 
-		/ For third-generation iPad with high-resolution Retina display: -->
-		/ Size should be 144 x 144 pixels -->
+		/ For third-generation iPad with high-resolution Retina display: 
+		/ Size should be 144 x 144 pixels 
 		= favicon_link_tag 'images/apple-touch-icon-144x144-precomposed.png', :rel => 'apple-touch-icon-precomposed', 
 			:type => 'image/png', :sizes => '144x144' 
 
@@ -36,66 +36,55 @@
 		= favicon_link_tag 'images/favicon.ico', :rel => 'shortcut icon' 
 	%body
 
-		.navbar.navbar-fixed-top
-			.navbar-inner
-				.container
-					%a{ :class => 'btn btn-navbar', :data => { :target => 'nav-collapse', :toggle => 'collapse' } }
+		.navbar.navbar-default.navbar-fixed-top{ :role => 'navigation' }
+			.container
+				.navbar-header
+					%button.navbar-toggle.collapse{ :type => 'button', :data => { :toggle => 'collapse', :target => '#main-navbar' } }
+						%span.sr-only Toggle Navigation
 						%span.icon-bar
 						%span.icon-bar
 						%span.icon-bar
-					%a.brand{ :href => root_path }
+					%a.navbar-brand{ :href => root_path }
 						Fireworks
-					.container.nav-collapse
-						%ul.nav{ :role => 'navigation' }
-							%li
-								= link_to 'Tags', tags_path
-							%li
-								= link_to 'Servers', licservers_path
-							%li
-								= link_to 'Users', users_path
-							%li.dropdown
-								%a.dropdown-toggle{ :href => '#', :data => { :toggle => 'dropdown' } }
-									Idle Client
+
+				.navbar-collapse.collapse#main-navbar
+					%ul.nav.navbar-nav
+						%li #{ link_to 'Tags', tags_path }
+						%li #{ link_to 'Servers', licservers_path }
+						%li #{ link_to 'Users', users_path }
+						%li.dropdown
+							%a.dropdown-toggle{ :href => '#', :data => { :toggle => 'dropdown' } }
+								Idle Client
+								%span.caret
+							%ul.dropdown-menu{ :role => 'menu' }
+								%li #{ link_to 'Download Client', welcome_download_client_path  }
+								%li.divider
+								%li #{ link_to 'List Idle Clients', idle_user_show_path }
+						%li #{ link_to 'Reports', report_schedules_path }
+					%ul.nav.navbar-nav.navbar-right
+						%li
+							%a.dropdown-toggle#drop-help{ :href => '#', :data => { :toggle => 'dropdown' } }
+								Help
+								%b.caret
+							%ul.dropdown-menu{ :role => 'menu', :aria => { :labelledby => 'drop-help'}  }
+								%li #{ link_to 'Fireworks Help', welcome_tech_path }
+								%li.divider
+								%li #{ link_to 'About', welcome_about_path }
+								%li #{ link_to 'Settings', '#' }
+						%li
+							- if ads_user_signed_in? then
+								%a.dropdown-toggle#drop-ads-user{ :href => '#', :data => { :toggle => 'dropdown' } }
+									= current_ads_user.name 
 									%b.caret
-								%ul.dropdown-menu{ :role => 'menu' }
-									%li
-										= link_to 'Download Client', welcome_download_client_path 
+								%ul.dropdown-menu{ :role => 'menu', :aria => { :labelledby => 'drop-ads-user' } }
+									%li #{ link_to 'My Watch List', ads_user_watch_lists_path(current_ads_user.login) }
 									%li.divider
-									%li
-										= link_to 'List Idle Clients', idle_user_show_path
-							%li
-								= link_to 'Reports', report_schedules_path
-						%ul.nav.pull-right
-							%li
-								%a.dropdown-toggle#drop-help{ :href => '#', :data => { :toggle => 'dropdown' } }
-									Help
-									%b.caret
-								%ul.dropdown-menu{ :role => 'menu', :aria => { :labelledby => 'drop-help'}  }
-									%li
-										= link_to 'Fireworks Help', welcome_tech_path
-									%li.divider
-									%li
-										= link_to 'About', welcome_about_path
-									%li
-										= link_to 'Settings', '#'
-							%li
-								- if ads_user_signed_in? then
-									%a.dropdown-toggle#drop-ads-user{ :href => '#', :data => { :toggle => 'dropdown' } }
-										= current_ads_user.name 
-										%b.caret
-									%ul.dropdown-menu{ :role => 'menu', :aria => { :labelledby => 'drop-ads-user' } }
-										%li
-											= link_to 'My Watch List', ads_user_watch_lists_path(current_ads_user.login)
-										%li.divider
-										%li
-											= link_to 'Sign Out', destroy_ads_user_session_path, :method => :delete
-								- else
-									= link_to 'Sign In', ads_user_session_path
-		%br
-		%br
-		%br
+									%li #{ link_to 'Sign Out', destroy_ads_user_session_path, :method => :delete }
+							- else
+								= link_to 'Sign In', ads_user_session_path
+
 		.container.yield_div
-			= bootstrap_flash
+			= # bootstrap_flash
 			= yield
 
 		.container
@@ -109,5 +98,3 @@
 		/ Placed at the end of the document so the pages load faster 
 		= javascript_include_tag "application" 
 		= yield :other_javascript 
-		:javascript
-			$('.dropdown-toggle').dropdown();

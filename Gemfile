@@ -34,7 +34,7 @@ end
 
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-gem 'twitter-bootstrap-rails', '=2.2.7'
+#gem 'twitter-bootstrap-rails', '=2.2.7'
 gem 'font-awesome-rails', '=4.1.0'
 gem 'haml'
 #gem 'psych'

@@ -1,0 +1,26 @@
+.jumbotron
+	%h1 Welcom to Fireworks!
+	%p All your FlexLicenses, Monitored
+	%p
+		%a.btn.btn-default.btn-large{ :href => tags_path } Enter
+.row
+	.col-xs-6
+		.thumbnail
+			%img{ :src => "http://placehold.it/480x270" }
+			.caption
+				%h3 How It Works
+				%p Explain how fireworks works
+				%p
+					%a.btn.btn-default{ :href => welcome_tech_path } Learn More
+	.col-xs-6
+		.thumbnail
+			%img{ :src => "http://placehold.it/480x270" }
+			.caption
+				%h3 Idle Client
+				%p Monitor Idle Client
+				%p
+					- if !@clientOs.nil? then 
+						= link_to 'Download for '+@clientOS, welcome_download_client_path(:type => @clientOS), :class=>'btn btn-default'
+				%p
+					%small #{ link_to 'Download for other platforms', welcome_download_client_path }
+
