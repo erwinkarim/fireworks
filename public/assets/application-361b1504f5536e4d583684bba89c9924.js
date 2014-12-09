@@ -13398,6 +13398,144 @@ var performFilters = function(filters, params){
 
   
   // ~> Start local definitions here and remove this line.
+	//handle changes in monitored object dropdown selection. handle changes when the category changes
+	var setup_monitored_obj_dropdown = function(handle){
+		//the handle is the category object
+		handle.bind('change',  function(){
+			//update the licserver listing nearest to this object
+			$.get( '/tags/' + $(this).val() + '/gen_licservers', 
+				null,
+				function(data, textStatus, jqXHR){
+					handle.parent().find('#monitored_licserver_:first').empty().append(data); 
+				},
+				'html' 
+			);
+		});
+	};
+
+	//in licserver to be monitored listing, delete the one that is being clicked.
+	//if there's only 1 left, disable delete button to prevent it from monitoring and empty list
+	var delete_licserver = function(handle){
+		var licserver_listing_handle = handle.closest('.licserver-listing');
+		$.when(handle.closest('.licserver').remove()).then( function(){
+			if(licserver_listing_handle.find('.licserver').length == 1){
+				licserver_listing_handle.find('.delete-licserver:first').attr('disabled', 'disabled');
+			}
+		});
+	};
+	
+	// setup report schedule tabs
+	// call this on the page after using ajax to get /report_schedules/<report_schedule_id>/show.template
+	locals.setup_report_tab = function(handle){
+		console.log('setup report tab');
+
+		//setup tool tip
+		handle.find('.scheduled-tooltip').tooltip();
+
+		//configure generate new report
+		handle.find('.generate-report').click( function(){
+			// TODO: this is problem matic
+			$.ajax( '/report_schedules/' + $(this).attr('data-id') + '/reports', {
+				type:'POST', 
+				dataType:'json'
+			}).done(function(data, statusText,jqXHR){
+				handle.find('tbody').append(
+					$('<tr/>').append(
+						$('<td/>', { colspan:5, text:'Generate request sent' })
+					)
+				)
+			});
+		});
+
+		//configure refresh-report listing
+		handle.find('.refresh-report').click( function(){
+			//refresh the report listing
+			console.log('report listing refresh called');
+			var accordion_handle = $(this).closest('.tabbable');
+			$(this).find('.fa-refresh').addClass('fa-spin');
+			$.ajax(
+				'/report_schedules/' + accordion_handle.attr('data-id') + '/reports', {
+				dataType:'html'
+			}).done(function (data,statusText, jqXHR){
+				//clean and repopulate the table
+				accordion_handle.find('tbody').empty();
+				accordion_handle.find('tbody').append( data);
+			})
+			$(this).find('.fa-refresh').removeClass('fa-spin');
+		});
+
+		//configure change action on monitored obj category dropdown
+		handle.find('.monitored_cat').each( function(index) {
+			setup_monitored_obj_dropdown( $(this) );
+		});
+
+		//configure add new licservers to monitor 
+		handle.find('.add-licserver').click(function(){
+			var licserver_listing_handle = $(this).closest('.licserver-listing');
+	
+			//generate new listings from website
+			$.get( '/report_schedules/gen_monitored_obj_listings', function(data){
+					licserver_listing_handle.find('.licserver:last').after(data).ready( function(){
+						//ensure that all minus is enabled and works
+						licserver_listing_handle.find('.licserver').each(function(index, e){
+							$(this).find('.delete-licserver').removeAttr('disabled');
+						});
+
+						$(this).find('.delete-licserver').click( function(){
+							delete_licserver($(this));
+						});
+
+						//ensure that the dropdown action of the category works
+						$(this).find('.monitored_cat').each( function(index) {
+							setup_monitored_obj_dropdown( $(this) );
+						});
+					})
+				}, null, 
+				'html'
+			); // $.get( '/report_schedules/gen_monitored_obj_listings', function(data){
+		}); // hoandle.find('.add-licserver').click(function(){
+
+		//when submiting the form, do sanity checks
+		handle.find('.schedule-form').on('ajax:before', function(){
+			if( $(this).find('#schedule-title-input').val() == '') {
+				//highlight title
+				$(this).find('#schedule-title-group').addClass('error');
+				return false;
+			}
+		}).on('ajax:success', function(e, data, textStatus, jqXHR){
+
+			//if the new report schedule is open, close it
+			//reset the form and hide it
+			if( $('#new_report_schedule').length > 0 ) {
+				$('#new_report_schedule')[0].reset();
+				$('#new-schedule-group').hide();
+				$('#new-schedule-btn').show();
+			};
+
+
+			//update or recreate new accordion-group
+			var accordion_id = data.id
+			if( data.id != null && $('.accordion-group[data-id=' + data.id + ']').length == 0){
+				//group does not exist and data.id is valid, create a new one!
+				$.ajax('/report_schedules/' + data.id + '/accordion', {
+					dataType:'html'
+				}).done( function(data, statusText, jqXHR){
+					$('#new-schedule-group').before(
+						$.parseHTML(data)
+					).ready( function(){
+						setup_accordion_body( $('.accordion-group[data-id=' + accordion_id + ']') );
+					})
+				});
+			} else {
+				//group exists, update it
+				var accord_handle = $('.accordion-group[data-id=' + data.id + ']');
+				accord_handle.find('.accordion-toggle').text(data.title);
+			}
+
+		}).on('ajax:error', function(xhr, status, error){
+			//if got error (usually the title uniqueness) highlight the error and move on
+		});
+	}; // locals.setup_report_tab = function(handle){
 
 
   // Remove this line if you don't want to inherit locals defined
@@ -13438,204 +13576,25 @@ var performFilters = function(filters, params){
 
 
   Paloma.callbacks['report_schedules']['index'] = function(params){
-    // Do something here.
-    //
-
-    //in licserver to be monitored listing, delete the one that is being clicked.
-    //if there's only 1 left, disable delete button to prevent it from monitoring and empty list
-    var delete_licserver = function(handle){
-      var licserver_listing_handle = handle.closest('.licserver-listing');
-      $.when(handle.closest('.licserver').remove()).then( function(){
-        if(licserver_listing_handle.find('.licserver').length == 1){
-          licserver_listing_handle.find('.delete-licserver:first').attr('disabled', 'disabled');
-        }
-      });
-    };
-
-    var add_licserver_listings = function(handle){
-    };
-
-    //handle changes in monitored object dropdown selection. handle changes when the category changes
-    var setup_monitored_obj_dropdown = function(handle){
-      //the handle is the category object
-      handle.bind('change',  function(){
-        //update the licserver listing nearest to this object
-        $.get( '/tags/' + $(this).val() + '/gen_licservers', 
-          null,
-          function(data, textStatus, jqXHR){
-            handle.parent().find('#monitored_licserver_:first').empty().append(data); 
-          },
-          'html' 
-        );
-      });
-    };
-
-    //setup the accordion body as it get loaded
-    // ab_handle must be class .accordion-body created by _schedule_accordion_group template
-    var setup_accordion_body = function(ab_handle){
-      var rs_id = ab_handle.attr('data-id');
-
-      //handle the accordion
-      ab_handle.on('show', function(){
-        //if report table contents empty, refresh
-        //setup tooltip for
-        ab_handle.find('.scheduled-tooltip').tooltip();
-
-        if( 
-          ab_handle.find('.new-schedule').length == 0 &&
-          ab_handle.find('#reports'  + rs_id).find('tbody').children().length == 0
-        ){
-          //genearte the report listing
-          ab_handle.find('.accordion-inner').append(
-            $.parseHTML('<i class="fa fa-spinner fa-4x fa-spin"></i>')
-          );
-          $.ajax(
-            '/report_schedules/' + ab_handle.attr('data-id') + '/reports', {
-              dataType:'html'
-            }
-          ).done( function( data, statusText, jqXHR){
-
-            $('.accordion-body[data-id=' + rs_id + ']').find('.accordion-inner').append(
-              $.parseHTML(' ')
-            );
-
-            //maybe change this to generate from template
-            $('#reports' + rs_id).find('table').after(
-                $('<button/>', { text:'Generate', class:'btn btn-primary generate_report', 'data-id':rs_id}
-                ).on('click', function(){
-                  $('#reports' + rs_id).find('table').find('tbody').append(
-                    $('<tr/>', { class:'generating-report'} ).append(
-                      $('<td/>', { colspan:4}).prepend(
-                        $.parseHTML('<i class="fa fa-spinner fa-spin"></i>')
-                      )
-                    )
-                  );
-
-                  //submit a deaayed jobs to churn out report
-                  //$.ajax('generate report')
-                  // TODO: this is problem matic
-                  $.ajax( '/report_schedules/' + $(this).attr('data-id') + '/reports', {
-                    type:'POST', 
-                    dataType:'json'
-                  }).done(function(data, statusText,jqXHR){
-                    $('#reports' + rs_id).find('tbody').append(
-                      $('<tr/>').append(
-                        $('<td/>', { colspan:5, text:'Generate request sent' })
-                      )
-                    )
-                    $('#reports' + rs_id).find('table').find('.generating-report').remove();
-                  });
-                }) // $('<button/>', { ... }).on('click', function(){
-              ).after(
-                $.parseHTML(' ')
-              ).after(
-                $('<button/>', { class:'btn btn-info refresh_report'}).click(function(){
-                  //refresh the report listing
-                  var accordion_handle = $(this).closest('.accordion-body');
-                  $(this).find('.fa-refresh').addClass('fa-spin');
-                  $.ajax(
-                    '/report_schedules/' + accordion_handle.attr('data-id') + '/reports', {
-                    dataType:'html'
-                  }).done(function (data,statusText, jqXHR){
-                    //clean and repopulate the table
-                    accordion_handle.find('tbody').empty();
-                    accordion_handle.find('tbody').append( data);
-                  })
-                  $(this).find('.fa-refresh').removeClass('fa-spin');
-                }).append(
-                  $('<i/>',{ class:'fa fa-refresh' })
-                )
-            ) // $('.accordion-body[data-id=' + rs_id + ']').find('#reports' + rs_id).append(
-
-            $('#reports' + rs_id).find('tbody').append( data);
-
-            $('.in').find('.fa-spinner').remove();
-          });
-        };
-      }); // ab_handle.on('show', function(){
-
-      //bind change action on monotired object category dropdown
-      ab_handle.find('.monitored_cat').each( function(index) {
-        //$(this).bind('change', setup_monitored_obj_dropdown($(this)) );  
-        setup_monitored_obj_dropdown( $(this) );
-      });
-
-      //bind adding new licservers button
-      ab_handle.find('.add-licserver').click(function(){
-        var handle = $(this).closest('.licserver-listing').find('.licserver:last');
-    
-        //generate new listings from website
-        $.get( '/report_schedules/gen_monitored_obj_listings', function(data){
-            handle.after(data).ready( function(){
-              //ensure that all minus is enabled and works
-              handle.closest('.licserver-listing').find('.licserver').each(function(index, e){
-                $(this).find('.delete-licserver').removeAttr('disabled');
-              });
-
-              $(this).find('.delete-licserver').click( function(){
-                delete_licserver($(this));
-              });
-
-              //ensure that the dropdown action of the category works
-              $(this).find('.monitored_cat').bind('change', function(){
-                setup_monitored_obj_dropdown( $(this) );
-              });
-            })
-          }, null, 
-          'html'
-        ); // $.get( '/report_schedules/gen_monitored_obj_listings', function(data){
-      }); // ab_handle.find('.add-licserver').click(function(){
-
-      //when submiting the form, do sanity checks
-      ab_handle.find('.schedule-form').on('ajax:before', function(){
-        if( $(this).find('#schedule-title-input').val() == '') {
-          //highlight title
-          $(this).find('#schedule-title-group').addClass('error');
-          return false;
-        }
-      }).on('ajax:success', function(e, data, textStatus, jqXHR){
-  
-        //if the new report schedule is open, close it
-        //reset the form and hide it
-        $('#new_report_schedule')[0].reset();
-        $('#new-schedule-group').hide();
-        $('#new-schedule-btn').show();
-
-
-        //update or recreate new accordion-group
-        var accordion_id = data.id
-        if( data.id != null && $('.accordion-group[data-id=' + data.id + ']').length == 0){
-          //group does not exist and data.id is valid, create a new one!
-          $.ajax('/report_schedules/' + data.id + '/accordion', {
-            dataType:'html'
-          }).done( function(data, statusText, jqXHR){
-            $('#new-schedule-group').before(
-              $.parseHTML(data)
-            ).ready( function(){
-              setup_accordion_body( $('.accordion-group[data-id=' + accordion_id + ']') );
-            })
-          });
-        } else {
-          //group exists, update it
-          var accord_handle = $('.accordion-group[data-id=' + data.id + ']');
-          accord_handle.find('.accordion-toggle').text(data.title);
-        }
-
-      }).on('ajax:error', function(xhr, status, error){
-        //if got error (usually the title uniqueness) highlight the error and move on
-      });
-    }; //var setup_accordion_body = function(ab_handle){
-
+		
+		//setup the accordion, new schedule and cancel button when the document is fully loaded
     $(document).ready( function(){
-      $('.accordion-body').each( function(index) {
-        setup_accordion_body( $(this) );  
-      }) // $('.accordion-body').each( function(index) {
-
-
-      $('.delete-licserver').click( function(){
-        delete_licserver($(this) );
-      });
-
+			//load accordion contents when shown
+			$('#schedule-accordion').find('a[data-toggle=collapse]').each( function(index){
+				var link_handle = $(this);
+				var accordion_body = $( link_handle.attr('href') );
+				accordion_body.on('shown', function(){
+					if(link_handle.attr('data-setup') == 'false') {
+						$.get('/report_schedules/' + link_handle.attr('data-report-schedule') + '.template', { delete_enabled:'true' } , function(data, textStatus, jqXHR){
+							accordion_body.find('.accordion-inner').append(data).ready( function(){
+								_l.setup_report_tab(accordion_body.find('.tabbable'));
+								accordion_body.find('.loading-report').remove();
+							});
+						});
+						link_handle.attr('data-setup', 'true');
+					}
+				});
+			});
 
       //adding new 
       $('#new-schedule-btn').click( function(){
@@ -13653,6 +13612,36 @@ var performFilters = function(filters, params){
 
     }); // $(document).ready( function(){
   }; // Paloma.callbacks['report_schedule']['index'] = function(params){
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['report_schedules'];
+
+
+  Paloma.callbacks['report_schedules']['show'] = function(params){
+    // Do something here.
+		$(document).ready( function(){
+			$.get('/report_schedules/' + $('.info').attr('data-schedule-id') + '.template', { delete_enabled:true }, function(data, textStatus, jqXHR){
+				$('.info').empty().append( data ).ready( function(){
+					_l.setup_report_tab($(this) );
+				});
+			}, 'html');
+		}); // $(document).ready( function(){
+  };
 })();
 
 
@@ -14581,6 +14570,38 @@ var performFilters = function(filters, params){
 			load_users_table(handle);
     };
 
+		//nuke users from the table listing
+		locals.nuke_users = function(handle){
+			handle.closest('#user-listings').find('#nuke-users').removeAttr('disabled');
+
+			//configure on click
+			handle.on('click', function(){
+				console.log('nukem button pressed')
+
+				var modal_handle = handle.closest('.modal');
+				var confirmation_handle = modal_handle.find('#nuke-confirmation-box');
+				var nuke_alert_box = modal_handle.find('.nuke-alert-box');
+
+				if ( confirmation_handle.val() == handle.attr('data-feature')){
+					console.log('correct answer');
+
+					//start nuking users
+					handle.closest('.tab-content').find('.kill-user').each( function(index){
+						$(this).click();
+					});
+					
+					//reset the form and hide
+					confirmation_handle.val('');
+					modal_handle.modal('hide');
+					nuke_alert_box.html('Nuking users of ' + handle.attr('data-feature') + '...');
+				} else {
+					console.log('incorrect answer');
+					nuke_alert_box.html('Wrong Answer');
+				}
+
+			});
+		};
+
   // Remove this line if you don't want to inherit locals defined
   // on parent's _locals.js
   Paloma.inheritLocals({from : '/', to : 'features'});
@@ -14652,6 +14673,7 @@ var performFilters = function(filters, params){
       _l.load_daily_graph( $('.daily-graph:first') );
       _l.load_monthly_histogram( $('.monthly-graph:first') );
       _l.load_users( $('#user-listings') );
+			_l.nuke_users( $('#really-nuk-em') );
 
 
       $('#watchlist').on('ajax:success', function(data, status, xhr){
@@ -15130,6 +15152,7 @@ var performFilters = function(filters, params){
 											_L.features.load_daily_graph( handle.find('.daily-graph') );
 											_L.features.load_monthly_histogram( handle.find('.monthly-graph') );
 											_L.features.load_users( handle.find('#user-listings') );
+											_L.features.nuke_users( handle.find('#really-nuk-em') );
 										} else if (handle.attr('data-model-type') == 'Licserver'){
 											console.log('load Licserver scripts');
 											handle.find('.accordion-inner').attr('data-licserver', handle.attr('data-model-id') );
@@ -15140,6 +15163,9 @@ var performFilters = function(filters, params){
 										} else if (handle.attr('data-model-type') == 'Tag'){
 											console.log('load Tag scripts');
 											Paloma.callbacks['tags']['show']();
+										} else if (handle.attr('data-model-type') == 'ReportSchedule'){
+											console.log('load ReportSchedule scripts');
+											_L.report_schedules.setup_report_tab( handle.find('.tabbable') );
 										};
 									});
                 });
@@ -15212,6 +15238,66 @@ var performFilters = function(filters, params){
     // Do something here.
   };
 })();
+
+
+
+(function(){
+  // Initializes callbacks container for the this specific scope.
+  Paloma.callbacks['reports'] = {};
+
+  // Initializes locals container for this specific scope.
+  // Define a local by adding property to 'locals'.
+  //
+  // Example:
+  // locals.localMethod = function(){};
+  var locals = Paloma.locals['reports'] = {};
+
+  
+  // ~> Start local definitions here and remove this line.
+
+
+  // Remove this line if you don't want to inherit locals defined
+  // on parent's _locals.js
+  Paloma.inheritLocals({from : '/', to : 'reports'});
+})();
+(function(){ 
+  // Initializes the main container for all filters and skippers for this
+  // specific scope.
+  var filter = new Paloma.FilterScope('reports');
+  
+  // The _x object is also available on callbacks.
+  // You can make a variable visible on callbacks by using _x here.
+  //
+  // Example:
+  // _x.visibleOnCallback = "I'm a shared variable"
+  var _x = Paloma.variableContainer;
+
+  // ~> Start definitions here and remove this line.
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['reports'];
+
+
+  Paloma.callbacks['reports']['index'] = function(params){
+    // Do something here.
+  };
+})();
+
 
 
 
@@ -17125,260 +17211,6 @@ w(!0,L,a);Lb();return L},addEvent:A,removeEvent:X,createElement:Z,discardElement
 
 
 }).call(this);
-(function(){ 
-  // Initializes the main container for all filters and skippers for this
-  // specific scope.
-  var filter = new Paloma.FilterScope('report_schedule');
-  
-  // The _x object is also available on callbacks.
-  // You can make a variable visible on callbacks by using _x here.
-  //
-  // Example:
-  // _x.visibleOnCallback = "I'm a shared variable"
-  var _x = Paloma.variableContainer;
-
-  // ~> Start definitions here and remove this line.
-})();
-(function(){
-  // Initializes callbacks container for the this specific scope.
-  Paloma.callbacks['report_schedule'] = {};
-
-  // Initializes locals container for this specific scope.
-  // Define a local by adding property to 'locals'.
-  //
-  // Example:
-  // locals.localMethod = function(){};
-  var locals = Paloma.locals['report_schedule'] = {};
-
-  
-  // ~> Start local definitions here and remove this line.
-
-
-  // Remove this line if you don't want to inherit locals defined
-  // on parent's _locals.js
-  Paloma.inheritLocals({from : '/', to : 'report_schedule'});
-})();
-(function(){
-  // You access variables from before/around filters from _x object.
-  // You can also share variables to after/around filters through _x object.
-  var _x = Paloma.variableContainer;
-
-  // We are using _L as an alias for the locals container.
-  // Use either of the two to access locals from other scopes.
-  //
-  // Example:
-  // _L.otherController.localVariable = 100;
-  var _L = Paloma.locals;
-
-  // Access locals for the current scope through the _l object.
-  //
-  // Example:
-  // _l.localMethod(); 
-  var _l = _L['report_schedule'];
-
-
-  Paloma.callbacks['report_schedule']['index'] = function(params){
-    // Do something here.
-    //
-    //popopulate a report listing table
-    //  handle: the table that we want to populate, must be a <table/> element
-    //  data: the data we want to populate the table with. must contain
-    //    { id, schedule_id, created_at, status }
-    function populate_report_listing_table( handle, data){
-      handle.find('tbody').append(
-        $('<tr/>').append(
-          $('<td/>').append(
-            $('<a/>', { 
-              text:data.id, href:'/report_schedule/' + data.schedule_id + '/reports/' + data.id 
-            })
-          )
-        ).append(
-          $('<td/>', { text:data.status} )
-        ).append(
-          $('<td/>', { text:data.created_at} )
-        ).append(
-          $('<td/>').append(
-            $('<a/>', { 
-              text:'xml', href:'/report_schedule/' + data.schedule_id + '/reports/' + data.id + '.xml'
-            }).after(
-              $.parseHTML(' | ')
-            ).after(
-              $('<a/>', { 
-                text:'csv', href:'/report_schedule/' + data.schedule_id + '/reports/' + data.id + '.csv'
-              })
-            )
-          )
-        )
-      );
-    };
-
-    //in licserver to be monitored listing, delete the one that is being clicked.
-    //if there's only 1 left, disable delete button to prevent it from monitoring and empty list
-    var delete_licserver = function(handle){
-      var licserver_listing_handle = handle.closest('.licserver-listing');
-      $.when(handle.closest('.licserver').remove()).then( function(){
-        if(licserver_listing_handle.find('.licserver').length == 1){
-          licserver_listing_handle.find('.delete-licserver:first').attr('disabled', 'disabled');
-        }
-      });
-    };
-
-    $(document).ready( function(){
-      $('.accordion-body').each( function(index) {
-        var rs_id = $(this).attr('data-id');
-
-
-        $(this).on('show', function(){
-          //if contents empty, reports
-          //TODO: reappend using the correct data-id so when doing parallel request, doesn't mess up
-
-          //setup tooltip for
-          $(this).find('.scheduled-tooltip').tooltip();
-          if( 
-            $(this).find('#reports'  + rs_id).children().length == 0
-          ){
-            //genearte the report listing
-            $(this).find('.accordion-inner').append(
-              $.parseHTML('<i class="fa fa-spinner fa-4x fa-spin"></i>')
-            );
-            $.ajax(
-              '/report_schedule/' + $(this).attr('data-id') + '/reports', {
-                dataType:'json'
-              }
-            ).done( function( data, statusText, jqXHR){
-
-              $('.accordion-body[data-id=' + rs_id + ']').find('.accordion-inner').append(
-                $.parseHTML(' ')
-              );
-
-              $('.accordion-body[data-id=' + rs_id + ']').find('#reports' + rs_id).append(
-                $('<table/>', { class:'table table-striped'} ).append(
-                  $('<thead/>').append(
-                    $('<tr/>').append(
-                      $('<th/>', { text:'ID' } )
-                    ).append(
-                      $('<th/>', { text:'Status' } )
-                    ).append(
-                      $('<th/>', { text:'Created At' } )
-                    ).append(
-                      $('<th/>', { text:'Other Formats' } )
-                    )
-                  )
-                ).append(
-                  $('<tbody/>')
-                ).after(
-                  $('<button/>', { text:'Generate', class:'btn btn-primary generate_report'}
-                  ).on('click', function(){
-                    //console.log('generate new report for schedule ' + $('.in:first').attr('data-id') );
-                    $('.in:first').find('table').find('tbody').append(
-                      $('<tr/>', { class:'generating-report'} ).append(
-                        $('<td/>', { colspan:3}).prepend(
-                          $.parseHTML('<i class="fa fa-spinner fa-spin"></i>')
-                        )
-                      )
-                    );
-
-                    //submit a deaayed jobs to churn out report
-                    //$.ajax('generate report')
-                    $.ajax( '/report_schedule/' + $('.in:first').attr('data-id') + '/reports', {
-                      type:'POST', 
-                      dataType:'json'
-                    }).done(function(data, statusText,jqXHR){
-                      $('.in:first').find('tbody').append(
-                        $('<tr/>').append(
-                          $('<td/>', { colspan:5, text:'Generate request sent' })
-                        )
-                      )
-                      $('.in:first').find('table').find('.generating-report').remove();
-                    });
-                  }) // $('<button/>', { ... }).on('click', function(){
-                ).after(
-                  $.parseHTML(' ')
-                ).after(
-                  $('<button/>', { class:'btn btn-info refresh_report'}).click(function(){
-                    //refresh the report listing
-                    var accordion_handle = $(this).closest('.accordion-body');
-                    $(this).find('.fa-refresh').addClass('fa-spin');
-                    $.ajax(
-                      '/report_schedule/' + accordion_handle.attr('data-id') + '/reports', {
-                      dataType:'json'
-                    }).done(function (data,statusText, jqXHR){
-                      //clean and repopulate the table
-                      accordion_handle.find('tbody').empty();
-                      $.each(data, function(index,value){
-                        populate_report_listing_table( accordion_handle, value);
-                      });
-                    })
-                    $(this).find('.fa-refresh').removeClass('fa-spin');
-                  }).append(
-                    $('<i/>',{ class:'fa fa-refresh' })
-                  )
-                ) 
-              ) // $('.accordion-body[data-id=' + rs_id + ']').find('#reports' + rs_id).append(
-
-              $.each(data, function(index, value){
-                populate_report_listing_table($('.in').find('#reports' + rs_id), value);
-              });
-
-              $('.in').find('.fa-spinner').remove();
-            });
-          };
-        });
-      }) // $('.accordion-body').each( function(index) {
-
-      //adding new licservers
-      $('.add-licserver').click(function(){
-        var handle = $(this).closest('.licserver-listing').find('.licserver:last');
-    
-        handle.after(
-          $('<div/>', { class:'controls licserver', style:'padding:5px 0px;' }).append(
-            $('<select/>', { name:'monitored_licserver[]' })
-          ).append(
-            $.parseHTML(' ')
-          ).append(
-            $('<button/>', { class:'btn btn-danger delete-licserver', type:'button' }).append(
-              $('<i/>', { class:'fa fa-minus' })
-            ).click( function(){
-              delete_licserver($(this) );
-            })
-          ).append(
-            $('<br/>')
-          )
-        );
-      
-        //get licserver listings and convert them into options tag
-        $.ajax('/licservers', {
-          dataType:'json'
-        }).done( function( data, textStatus, jqXHR){
-          $.each(data, function(index,element){
-            handle.next().find('select').append(
-              $('<option/>', { text:(element.port==null ? '' : element.port) + '@' + element.server, 
-                value:element.id })
-            );
-          });
-        }); //$.ajax('/licservers', { ... 
-
-        //check if there's disabled button and enable it back
-        if( handle.find('.delete-licserver:disabled').length > 0){
-          handle.find('.delete-licserver:disabled').removeAttr('disabled');
-        }
-      });
-
-      $('.delete-licserver').click( function(){
-        delete_licserver($(this) );
-      });
-
-
-      //adding new 
-      $('#new-schedule-btn').click( function(){
-        console.log('new schedule requested');
-      });
-    }); // $(document).ready( function(){
-  }; // Paloma.callbacks['report_schedule']['index'] = function(params){
-})();
-
-
-
 (function() {
 
 
