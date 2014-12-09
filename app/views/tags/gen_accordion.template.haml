@@ -1,12 +1,13 @@
 - @tags.each do |tag|
-	.accordion-group.accordion-tag{ :data => {:title => tag.title } }
-		.accordion-heading
-			%a.accordion-toggle{ :data => {:toggle => 'collapse', :parent => '#tags-accordion' } , :href => '#tags-' + tag.title }
-				= tag.title
-		.accordion-body.collapse{ :id => 'tags-' + tag.title }
-			.accordion-inner{ :data => { :init => 'false' } }
+	.panel.panel-default.accordion-tag{ :data => {:title => tag.title } }
+		.panel-heading
+			%h4.panel-title
+				%a{ :data => {:toggle => 'collapse', :parent => '#tags-accordion' } , :href => '#tags-' + tag.title }
+					= tag.title
+		.panel-body.collapse{ :id => 'tags-' + tag.title }
+			.panel-inner{ :data => { :init => 'false' } }
 				.watch-list
 					- if ads_user_signed_in? then
-						= watch_icon({:user => current_ads_user,  :model_type => 'Tag', :model_id => tag.id, :class => 'btn' , :text => true}) 
-					= link_to fa_icon('link',{ :text => 'Permalink' }), tag_path(tag.title), :class => 'btn'
+						= watch_icon({:user => current_ads_user,  :model_type => 'Tag', :model_id => tag.id, :class => 'btn btn-default' , :text => true}) 
+					= link_to fa_icon('link',{ :text => 'Permalink' }), tag_path(tag.title), :class => 'btn btn-default'
 
