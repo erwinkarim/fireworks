@@ -30,7 +30,7 @@
 									data
 								).ready( function(){
 									//when a feature is selected, show it's usage over time. lazy load the data
-									$('.accordion-group[data-init-feature="false"]').each( function(index,value){
+									$('.panel[data-init-features="false"]').each( function(index,value){
 										Paloma.locals.tags.setup_features_accordion($(this));
 									});
 
@@ -43,8 +43,14 @@
 									$.parseHTML('Opss, something went wrong. Failed to load feature listings')
 								);
 							}); //$.get('/licservers/' + e.target.attributes['data-licserver'].value + '/features/list', null, 
+							
+							//setup the update licserver button
+							handle.find('.update-licserver').on('click', function(){
+								console.log('update licserver clicked');
+							});
 					});
 				};
+
 			}, 'html' );
 	};
 

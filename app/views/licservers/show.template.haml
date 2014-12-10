@@ -28,25 +28,24 @@
 			%span.label.label-warning No Tags
 		- else
 			- licserver.tags.each do |tag|
-				= link_to tag.title, tag_path(tag.title), :class => 'btn btn-mini tags', :data => { :id => tag.id, :'tag-title' => tag.title, }
+				= link_to tag.title, tag_path(tag.title), :class => 'btn btn-default btn-mini tags', :data => { :id => tag.id, :'tag-title' => tag.title, }
 .edit-server
 	.page-header
 		%h4 Action
 	%button.btn.btn-primary#edit-licserver{ :data => { :id => licserver.id, :toggle => 'modal', 
-		:target => '#licserver-modal-' + licserver.id.to_s, :remote => edit_licserver_path(licserver.id) } } 
+		:target => '#licserver-modal-' + licserver.id.to_s } } 
 		= fa_icon('edit')
 		Edit
 	= link_to fa_icon('ban', :text => 'Delete'), licserver, :class => 'btn btn-danger', :method => :delete, 
 		:data => { :remote => true, :confirm => 'Really delete?' }
-	.modal.hide.fade{ :role => 'dialog', :id => 'licserver-modal-' + licserver.id.to_s }
-		.modal-header
-			%button.close{ :type => 'button', :data => { :dismiss => 'modal' } }
-				x
-			%h3
-				Update Licserver
-		.modal-body
-		.modal-footer
-			%button.btn{ :data => { :dismiss => 'modal' } }
-				Close
-			%button.btn.btn-primary.update-licserver{ :data => { :id => licserver.id } }
-				Update
+	.modal.fade{ :role => 'dialog', :id => 'licserver-modal-' + licserver.id.to_s }
+		.modal-dialog
+			.modal-content
+				.modal-header
+					%button.close{ :type => 'button', :data => { :dismiss => 'modal' } } &times;
+					%h3.modal-title Update Licserver
+				.modal-body
+					= render :partial => 'form.html', :locals => { :licserver => licserver }
+				.modal-footer
+					%button.btn.btn-default{ :data => { :dismiss => 'modal' } } Close
+					%button.btn.btn-primary.update-licserver{ :data => { :id => licserver.id } } Update

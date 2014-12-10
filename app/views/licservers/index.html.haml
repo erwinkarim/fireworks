@@ -1,28 +1,27 @@
 .row
-	.span10.offset1
+	.col-xs-10.col-xs-offset-1
 		.page-header
 			%h2 Servers
 .row
-	.span10.offset1
-		%form.form-search
-			%input#search-servers.input-block-level.search-query{ :placeholder =>'Search Servers...'}
+	.col-xs-10.col-xs-offset-1
+		%form{ :role => 'form' }
+			.form-group
+				%input#search-servers.form-control.search-query{:type => 'text',  :placeholder =>'Search Servers...'}
 .row
-	.span10.offset1
-		.accordion#server-listings{ :last => 0 } 
+	.col-xs-10.col-xs-offset-1
+		.panel-group#server-listings{ :last => 0 } 
 - if ads_user_signed_in? then
 	.row
-		.span10.offset1
-			%button.btn.btn-primary{ :data => { :toggle => 'modal', :target => '#new-licserver-modal' , :remote => '/licservers/new'} }
-				New Licserver
-	#new-licserver-modal.modal.hide.fade{ :role => 'dialog' }
-		.modal-header
-			%button.close{ :type => 'button', :data => { :dismiss => 'modal' } }
-				x
-			%h3
-				New Licserver
-		.modal-body
-		.modal-footer
-			%button.btn{ :data => { :dismiss => 'modal' } }
-				Close
-			%button.btn.btn-primary#new-licserver-btn
-				Create
+		.col-xs-10.col-xs-offset-1
+			%button.btn.btn-primary{ :data => { :toggle => 'modal', :target => '#new-licserver-modal' } } New Licserver
+			#new-licserver-modal.modal.fade{ :role => 'dialog', :tabindex => -1 }
+				.modal-dialog
+					.modal-content
+						.modal-header
+							%button.close{ :type => 'button', :data => { :dismiss => 'modal' } } &times;
+							%h4.modal-title New Licserver
+						.modal-body
+							= render :partial => 'form.html', :locals =>   { :licserver => nil } 
+						.modal-footer
+							%button.btn.btn-default{ :type => 'button', :data => { :dismiss => 'modal' } } Close
+							%button.btn.btn-primary#new-licserver-btn{ :type => 'button' } Create

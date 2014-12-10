@@ -1,0 +1,8 @@
+%p bananas
+- @anal_dump.each do |this_anal|
+	%tr
+		%td #{ link_to this_anal[0], licserver_feature_path( @licserver, this_anal[0] ) }
+		%td #{ this_anal[1] }
+		%td #{ this_anal[2] }
+		%td #{ this_anal[3] }
+		%td #{ number_to_percentage( this_anal[1].to_f*100 / this_anal[2] ) }

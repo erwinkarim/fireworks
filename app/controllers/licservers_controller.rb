@@ -50,6 +50,7 @@ class LicserversController < ApplicationController
 
     respond_to do |format|
       format.html { render :partial => 'form', :locals => { :licserver => nil } }
+			format.template { render :partial => 'form.html', :locals => { :licserver => nil } }
       format.json { render json: @licserver }
     end
   end
@@ -148,20 +149,27 @@ class LicserversController < ApplicationController
     @licserver = Licserver.find(params[:licserver_id])
 
     #input error margin is 0.1%  
-    feature_error_margin = @licserver.features.count * 0.001
     #feature_error_margin = 0
 
-    @anal_dump = @licserver.features.where{ 
-          # 0800 to 1700 malaysia time because data is stored in UTC
-          ( to_char( created_at, 'HH24:MI:SS') > '01:00:00' ) & 
-          ( to_char( created_at, 'HH24:MI:SS' ) < '10:00:00' ) & 
-          ( to_char( created_at, 'D') != 1 ) & ( to_char( created_at, 'D' ) != 7 ) & 
-          ( created_at.gt 6.months.ago ) 
-          #( to_char( created_at, 'MM') >= 5 ) & ( to_char( created_at, 'MM') <= 7)  }.
-      }.select{ [name, sum(current).as(total_current), sum(max).as(total_max), count(max).as(max_count) ] }.
-      group{ name }.
-      having{ count(name) > feature_error_margin }.
-      map{ |x| [ x.name, x.total_current, x.total_max, x.max_count ]  }
+
+		respond_to do |format|
+			format.html
+			format.template {
+				feature_error_margin = @licserver.features.count * 0.001
+				@anal_dump = @licserver.features.where{ 
+							# 0800 to 1700 malaysia time because data is stored in UTC
+						( to_char( created_at, 'HH24:MI:SS') > '01:00:00' ) & 
+						( to_char( created_at, 'HH24:MI:SS' ) < '10:00:00' ) & 
+						( to_char( created_at, 'D') != 1 ) & ( to_char( created_at, 'D' ) != 7 ) & 
+							( created_at.gt 6.months.ago ) 
+							#( to_char( created_at, 'MM') >= 5 ) & ( to_char( created_at, 'MM') <= 7)  }.
+					}.select{ [name, sum(current).as(total_current), sum(max).as(total_max), count(max).as(max_count) ] }.
+					group{ name }.
+					having{ count(name) > feature_error_margin }.
+					map{ |x| [ x.name, x.total_current, x.total_max, x.max_count ]  }
+			}
+			format.json { render json: @anal_dump }
+		end
   end
 
 	# GET    /licservers/get_more

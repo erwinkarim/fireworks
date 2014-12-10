@@ -51,7 +51,7 @@
 						$(target).find('.spin').remove();
 
 						//setup the accordion so it'd will dynamically load the server info when shown
-						$(target).find('.accordion-group[data-init="false"]').each( function(index, value){
+						$(target).find('.panel[data-init="false"]').each( function(index, value){
 							setup_accordion($(this));
 						});
 						
@@ -72,7 +72,7 @@
 			//setup accordion
 			var setup_accordion = function(handle){
 				//load server info when accordion is clicked
-				handle.on('shown', function(e){
+				handle.on('shown.bs.collapse', function(e){
 					_l.load_licserver(handle.find('.info') );
 				}); // handle.on('shown', function(){
 
@@ -121,7 +121,7 @@
       });
 
 			//clear the dialog box
-			$('#new-licserver-modal').on('shown', function(){
+			$('#new-licserver-modal').on('shown.bs.modal', function(){
 				$(this).find('#server_info').val('');
 				$(this).find('.status').empty();
 			});
@@ -146,7 +146,7 @@
 					//create a new accordion and append the info
 					$('#server-listings').append(data).ready( function(){
 						//setup the accordion so it'd will dynamically load the server info when shown
-						$('#server-listings').find('.accordion-group[data-init="false"]').each( function(index, value){
+						$('#server-listings').find('.panel[data-init="false"]').each( function(index, value){
 							setup_accordion($(this));
 						});
 						handle.modal('hide');
