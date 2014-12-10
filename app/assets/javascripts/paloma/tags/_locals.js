@@ -13,7 +13,8 @@
   // ~> Start local definitions here and remove this line.
   // setup tabs body
   locals.setup_tab = function(handle){
-		handle.on('shown', function(e){
+		//handle.on('shown', function(e){
+		handle.on('shown.bs.tab', function(e){
 			//when the licserver is clicked, show licserver info and detected features
 			$.get('/licservers/' + e.target.attributes['data-licserver'].value + '.template', null, 
 				function(data, textStatus, jqXHR){
@@ -33,7 +34,7 @@
 										data
 									).ready( function(){
 										//when a feature is selected, show it's usage over time. lazy load the data
-										$('.accordion-group[data-init-feature="false"]').each( function(index,value){
+										$('.panel[data-init-features="false"]').each( function(index,value){
 											locals.setup_features_accordion($(this));
 										});
 
@@ -54,7 +55,9 @@
 	}; // locals.setup_tab = function(handle){
 
 	locals.setup_features_accordion = function(handle){
-		handle.find('.accordion-body').on('show', function(){
+		//handle.find('.panel-body').on('show', function(){
+		handle.on('show.bs.collapse', function(){
+			console.log('show them panels');
 			//load the graph
 			if(handle.find('.features-graph').children().length == 0){
 				var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 

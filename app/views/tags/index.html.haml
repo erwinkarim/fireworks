@@ -1,8 +1,9 @@
 .row
-	.span10.offset1
-		%form.form-search
-			%input#search-tags.input-block-level.search-query{ :placeholder => 'Search...' }
+	.col-xs-10.col-xs-offset-1
+		%form.form
+			.form-group.has-feedback
+				%input#search-tags.form-control.search-query{ :type => 'text', :placeholder => 'Search...' }
 .row
-	.span10.offset1
+	.col-xs-10.col-xs-offset-1
 		.panel-group#tags-accordion
 			%i.fa.fa-cog.fa-4x.fa-spin

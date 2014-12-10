@@ -1,14 +1,11 @@
 .page-header
 	%h1
 		- if ads_user_signed_in? then
-			= link_to fa_icon(@watched.nil? || !@watched.active ? 'star-o' : 'star'), 
-				ads_user_toggle_watch_path(:ads_user_id => current_ads_user.login, :model_type => 'Tag', :model_id => @tag_handle.id ), 
-				:method => :post, :data => { :remote => true }, :id => 'watchlist'
+			= watch_icon({:user => current_ads_user,  :model_type => 'Tag', :model_id => @tag_handle.id }) 
 		#{@tag}
 	%ul.breadcrumb
 		%li
 			%a{ :href => tags_path } Tags
-			%span.divider /
 		%li.active
 			= @tag
 = render :template => 'tags/show.template', :locals => { :@tag => @tag }

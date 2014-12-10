@@ -14,12 +14,12 @@
 	.page-header
 		%h4 Features
 	.licserver-more-info
-		= link_to fa_icon('info',:text => 'More Info'), licserver_features_path(licserver.id) , :class => 'btn' 
-		= link_to fa_icon('bar-chart-o', :text => 'Analysis'), licserver_analysis_path( licserver.id) , :class => 'btn'
+		= link_to fa_icon('info',:text => 'More Info'), licserver_features_path(licserver.id) , :class => 'btn btn-default' 
+		= link_to fa_icon('bar-chart-o', :text => 'Analysis'), licserver_analysis_path( licserver.id) , :class => 'btn btn-default'
 	%br
 	.feature-listings
 		%i.fa.fa-spinner.fa-spin.fa-4x
-		.accordion{ :id => 'licserver-' + licserver.id.to_s + '-features-listing' }
+		.panel-group{ :id => 'licserver-' + licserver.id.to_s + '-features-listing' }
 .tags
 	.page-header
 		%h4 Tags

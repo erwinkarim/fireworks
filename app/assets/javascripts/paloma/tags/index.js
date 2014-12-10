@@ -22,10 +22,11 @@
     //setup the accordion
     function setup_accordion( handle ){
       //when the accordion is shown, load the licserver
-      handle.on('shown', function(){
-        if(handle.find('.accordion-inner').attr('data-init') == 'false' ) {
+      //handle.on('shown', function(){
+      handle.on('shown.bs.collapse', function(){
+        if(handle.find('.panel-inner').attr('data-init') == 'false' ) {
           $.get('/tags/' + $(this).attr('data-title') + '.template' , null, function(data, textStatus, jqXHR){
-            handle.find('.accordion-inner').append(data).ready( function(){
+            handle.find('.panel-inner').append(data).ready( function(){
               //when the licserver is clicked, show licserver info and detected features
               $('a[data-toggle="tab"][data-init="false"]').each( function(index, value){
 								_l.setup_tab($(this));
