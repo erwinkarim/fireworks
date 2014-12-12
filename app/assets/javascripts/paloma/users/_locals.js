@@ -29,7 +29,7 @@
 	*/ 	
 	//setup accordion body
   locals.setup_accordion_body = function( handle) {
-    handle.find('a[data-toggle="tab"]').on('shown', function(e){
+    handle.find('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
 			//don't load if the data has been loaded
 			/*
 			var anchor_handle = handle.find('.nav-tabs').find(

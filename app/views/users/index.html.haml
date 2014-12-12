@@ -1,14 +1,15 @@
 .row
-	.span10.offset1
+	.col-xs-10.col-xs-offset-1
 		.page-header
 			%h2 Users
 .row
-	.span10.offset1
-		%form.form-search
-			%input#search-users.input-block-level.search-query{ :placeholder =>'Search Users...'}
+	.col-xs-10.col-xs-offset-1
+		%form{ :role => 'form' }
+			.form-group
+				%input#search-users.form-control{ :type => 'text',  :placeholder =>'Search Users...'}
 .row
-	.span10.offset1
-		.accordion#user-listings 
+	.col-xs-10.col-xs-offset-1
+		.panel-group#user-listings 
 .row
-	.span10.offset1
+	.col-xs-10.col-xs-offset-1
 		%button.btn.btn-primary#load-more-users{ :type => 'button',  :data => { :mode => 'default'}  } Load More Users

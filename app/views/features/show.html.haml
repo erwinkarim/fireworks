@@ -1,10 +1,11 @@
-- stack = Array.new 
-- stack.push link_to "Fireworks", tags_path 
-- stack.push link_to "Servers", licservers_path 
-- stack.push link_to @licserver.port.to_s + '@' + @licserver.server, licserver_path(params[:licserver_id]) 
-- stack.push link_to "Features", licserver_features_path(params[:licserver_id]) 
-- stack.push params[:id] + ' Usage' 
-= generate_header(stack) 
+.row
+	.col-xs-12
+		%ol.breadcrumb
+			%li #{ link_to 'Fireworks', tags_path }
+			%li #{ link_to 'Servers', licservers_path }
+			%li #{ link_to @licserver.port.to_s + '@' + @licserver.server, licserver_path( params[:licserver_id] ) } 
+			%li #{ link_to 'Features', licserver_features_path(params[:licserver_id]) }
+			%li.active #{ params[:id] } Usage
 .row
 	.span12
 		.page-header

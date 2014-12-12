@@ -35,12 +35,12 @@
         $('#user-listings').append(
           $.parseHTML(data)
         ).ready( function(){
-          $('.accordion-group[data-init=false]').each( function(index) {
+          $('.panel[data-init=false]').each( function(index) {
             _l.setup_accordion_body($(this));
           });
           
           //update the add more users button
-          $('#load-more-users').attr('data-last-userid', $('#user-listings .accordion-group:last').attr('data-id') );
+          $('#load-more-users').attr('data-last-userid', $('#user-listings .panel:last').attr('data-id') );
         });
   
       }); // $.ajax( '/users/get_more', {
@@ -78,12 +78,12 @@
           $('#user-listings').append(
             $.parseHTML(data)
           ).ready( function(){
-            $('.accordion-group[data-init=false]').each( function(index) {
+            $('.panel[data-init=false]').each( function(index) {
               _l.setup_accordion_body($(this));
             });
             
             //update the add more users button
-            $('#load-more-users').attr('data-last-userid', $('#user-listings .accordion-group:last').attr('data-id') );
+            $('#load-more-users').attr('data-last-userid', $('#user-listings .panel:last').attr('data-id') );
 
             //remove the spinner
             $('#user-listings').find('.fa-spinner').remove();
@@ -122,7 +122,7 @@
               $('#user-listings').append(
                 $.parseHTML(data)
               ).ready( function(){
-                $('.accordion-group[data-init=false]').each( function(index) {
+                $('.panel[data-init=false]').each( function(index) {
                   _l.setup_accordion_body($(this));
                 });
               });
