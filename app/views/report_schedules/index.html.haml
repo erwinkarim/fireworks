@@ -2,27 +2,29 @@
 	%h1 Report Schedule
 .row
 	.span12
-		.accordion#schedule-accordion
+		.panel-group#schedule-accordion
 			- @schedules.each do |schedule|
-				.accordion-group{ :id => false, :data => { :id => schedule.id } }
-					.accordion-heading
-						= link_to schedule.title, '#schedule' + schedule.id.to_s, 
-							:data => { :toggle => 'collapse', :parent => '#schedule-accordion', :setup => 'false', :'report-schedule' => schedule.id }, 
-							:class => 'accordion-toggle'
-					.accordion-body.collapse{ :id => 'schedule' + schedule.id.to_s, :data => { :id => schedule.id } }
-						.accordion-inner
+				.panel.panel-default{ :id => false, :data => { :id => schedule.id } }
+					.panel-heading{ :role => 'tab' }
+						%h4.panel-title
+							= link_to schedule.title, '#schedule' + schedule.id.to_s, 
+								:data => { :toggle => 'collapse', :parent => '#schedule-accordion', :setup => 'false', :'report-schedule' => schedule.id }, 
+								:class => 'accordion-toggle'
+					.panel-collapse.collapse{ :id => 'schedule' + schedule.id.to_s, :data => { :id => schedule.id } }
+						.panel-body
 							.info-title
 								%h4 Infomation
 							.info
-								= watch_icon( {:user => current_ads_user, :model_type => 'ReportSchedule', :model_id => schedule.id, :class => 'btn', :text => true })
-								= link_to fa_icon('link', { :text => 'Permalink' }), report_schedule_path(schedule), :class => 'btn'
+								= watch_icon( {:user => current_ads_user, :model_type => 'ReportSchedule', :model_id => schedule.id, :class => 'btn btn-default', :text => true })
+								= link_to fa_icon('link', { :text => 'Permalink' }), report_schedule_path(schedule), :class => 'btn btn-default'
 							.loading-report
 								= fa_icon('cog spin 4x')
-			.accordion-group#new-schedule-group{ :style => 'display:none;' }
-				.accordion-heading
-					%a.accordion-toggle{ :data => { :toggle => 'collapse', :parent => '#schedule-accordion' }, :href => '#new-schedule' } New Schedule
-				.accordion-body.collapse{ :id => 'new-schedule' }
-					.accordion-inner.new-schedule
+			.panel.panel-default#new-schedule-group{ :style => 'display:none;' }
+				.panel-heading
+					%h4.panel-title
+						%a.collapsed{ :data => { :toggle => 'collapse', :parent => '#schedule-accordion' }, :href => '#new-schedule' } New Schedule
+				.panel-collapse.collapse{ :id => 'new-schedule' }
+					.panel-body.new-schedule
 						= render :template => 'report_schedules/show.template', :locals => { :@schedule => ReportSchedule.new }
 .row
 	.span12

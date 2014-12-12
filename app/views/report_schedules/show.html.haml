@@ -8,8 +8,7 @@
 			%ul.breadcrumb
 				%li
 					%a{ :href => report_schedules_path } Reports
-					%span.divider /
-				%li #{@schedule.title }
+				%li.active #{@schedule.title }
 .row
 	.span12
 		.info{ :data => { :'schedule-id' => @schedule.id } }

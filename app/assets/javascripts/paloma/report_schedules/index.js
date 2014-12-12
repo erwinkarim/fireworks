@@ -25,10 +25,10 @@
 			$('#schedule-accordion').find('a[data-toggle=collapse]').each( function(index){
 				var link_handle = $(this);
 				var accordion_body = $( link_handle.attr('href') );
-				accordion_body.on('shown', function(){
+				accordion_body.on('shown.bs.collapse', function(){
 					if(link_handle.attr('data-setup') == 'false') {
 						$.get('/report_schedules/' + link_handle.attr('data-report-schedule') + '.template', { delete_enabled:'true' } , function(data, textStatus, jqXHR){
-							accordion_body.find('.accordion-inner').append(data).ready( function(){
+							accordion_body.find('.panel-body').append(data).ready( function(){
 								_l.setup_report_tab(accordion_body.find('.tabbable'));
 								accordion_body.find('.loading-report').remove();
 							});
