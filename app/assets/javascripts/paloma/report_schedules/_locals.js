@@ -19,7 +19,7 @@
 			$.get( '/tags/' + $(this).val() + '/gen_licservers', 
 				null,
 				function(data, textStatus, jqXHR){
-					handle.parent().find('#monitored_licserver_:first').empty().append(data); 
+					handle.closest('.licserver').find('#monitored_licserver_:first').empty().append(data); 
 				},
 				'html' 
 			);
@@ -29,7 +29,8 @@
 	//in licserver to be monitored listing, delete the one that is being clicked.
 	//if there's only 1 left, disable delete button to prevent it from monitoring and empty list
 	var delete_licserver = function(handle){
-		var licserver_listing_handle = handle.closest('.licserver-listing');
+		//var licserver_listing_handle = handle.closest('.licserver-listing');
+		var licserver_listing_handle = handle.closest('.setting');
 		$.when(handle.closest('.licserver').remove()).then( function(){
 			if(licserver_listing_handle.find('.licserver').length == 1){
 				licserver_listing_handle.find('.delete-licserver:first').attr('disabled', 'disabled');
@@ -84,13 +85,14 @@
 
 		//configure add new licservers to monitor 
 		handle.find('.add-licserver').click(function(){
-			var licserver_listing_handle = $(this).closest('.licserver-listing');
+			var licserver_listing_handle = $(this).closest('.setting').find('.licserver-listing');
 	
 			//generate new listings from website
 			$.get( '/report_schedules/gen_monitored_obj_listings', function(data){
-					licserver_listing_handle.find('.licserver:last').after(data).ready( function(){
+					//licserver_listing_handle.find('.licserver:last').after(data).ready( function(){
+					licserver_listing_handle.before(data).ready( function(){
 						//ensure that all minus is enabled and works
-						licserver_listing_handle.find('.licserver').each(function(index, e){
+						licserver_listing_handle.closest('.setting').find('.licserver').each(function(index, e){
 							$(this).find('.delete-licserver').removeAttr('disabled');
 						});
 
@@ -107,6 +109,15 @@
 				'html'
 			); // $.get( '/report_schedules/gen_monitored_obj_listings', function(data){
 		}); // hoandle.find('.add-licserver').click(function(){
+
+		//configure schedule title text field. ensure that i
+		handle.find('#schedule-title-input').keyup( function(){
+			if( $(this).val() == '' ) {
+				handle.find('#submit-button').attr('disabled', 'disabled');
+			} else {
+				handle.find('#submit-button').removeAttr('disabled');
+			}
+		});
 
 		//when submiting the form, do sanity checks
 		handle.find('.schedule-form').on('ajax:before', function(){

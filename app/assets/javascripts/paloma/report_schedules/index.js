@@ -38,9 +38,12 @@
 				});
 			});
 
+			//setup the new schedule
+			_l.setup_report_tab( $('#new-schedule-group').find('.tabbable') );
+
       //adding new 
       $('#new-schedule-btn').click( function(){
-        $('#new-schedule-group').show('slow').find('.accordion-toggle').click();
+        $('#new-schedule-group').show('slow').find('.panel-title').find('a').click();
         $('#new-schedule-btn').hide();
         //reset the form before sending out
       });
