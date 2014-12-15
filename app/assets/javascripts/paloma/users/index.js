@@ -32,9 +32,11 @@
       $.ajax( '/users/get_more', {
         dataType:'html'
       }).done( function(data, textStatus, jqXHR){
+				//remove the spinner
         $('#user-listings').append(
           $.parseHTML(data)
         ).ready( function(){
+					$('#user-listings').find('.fa-cog').remove();
           $('.panel[data-init=false]').each( function(index) {
             _l.setup_accordion_body($(this));
           });
@@ -59,7 +61,7 @@
 
         //load da spinner
         $('#user-listings').append(
-          $.parseHTML('<i class="fa fa-spinner fa-spin fa-4x"></i>')
+          $.parseHTML('<i class="fa fa-cog fa-spin fa-4x"></i>')
         );
 
         //check in which mode that this button is loading
@@ -86,7 +88,7 @@
             $('#load-more-users').attr('data-last-userid', $('#user-listings .panel:last').attr('data-id') );
 
             //remove the spinner
-            $('#user-listings').find('.fa-spinner').remove();
+            $('#user-listings').find('.fa-cog').remove();
           });
     
         }); // $.ajax( '/users/get_more', {

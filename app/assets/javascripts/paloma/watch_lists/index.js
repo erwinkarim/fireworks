@@ -28,7 +28,9 @@
             $(this).on('shown.bs.collapse', function(){
               if( $(this).attr('data-init') == 'false') {
                 var handle = $(this);
+								handle.find('.panel-body').append( '<i class="fa fa-cog fa-spin fa-4x"></i>');
                 $.get(document.location.pathname + '/' + $(this).attr('data-id') + '.template' , null, function(data,textStatus, jqXHR){
+									handle.find('.fa-cog').remove();
                   handle.find('.panel-body').append(data).ready(function(){
 										//load the data from watchlist/watch_list.id/show.template and execute the appropiate javascript
 										//kinda works, but because you might get multiple types, it only load for the first loaded item of the same type
