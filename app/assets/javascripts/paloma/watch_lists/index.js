@@ -24,12 +24,12 @@
       $.get(document.location.pathname + '.template', null, function(data,textStatus, jqXHR){
         $("#watch-list").append(data).ready( function(){
           //load the contents when shown
-          $('#watch-list').find('.accordion-body').each( function(index){
-            $(this).on('shown', function(){
+          $('#watch-list').find('.panel-collapse').each( function(index){
+            $(this).on('shown.bs.collapse', function(){
               if( $(this).attr('data-init') == 'false') {
                 var handle = $(this);
                 $.get(document.location.pathname + '/' + $(this).attr('data-id') + '.template' , null, function(data,textStatus, jqXHR){
-                  handle.find('.accordion-inner').append(data).ready(function(){
+                  handle.find('.panel-body').append(data).ready(function(){
 										//load the data from watchlist/watch_list.id/show.template and execute the appropiate javascript
 										//kinda works, but because you might get multiple types, it only load for the first loaded item of the same type
 										if(handle.attr('data-model-type') == 'FeatureHeader'){
@@ -40,8 +40,8 @@
 											_L.features.nuke_users( handle.find('#really-nuk-em') );
 										} else if (handle.attr('data-model-type') == 'Licserver'){
 											console.log('load Licserver scripts');
-											handle.find('.accordion-inner').attr('data-licserver', handle.attr('data-model-id') );
-											_L.licservers.load_licserver( handle.find('.accordion-inner') );
+											handle.find('.panel-body').attr('data-licserver', handle.attr('data-model-id') );
+											_L.licservers.load_licserver( handle.find('.panel-body') );
 										} else if (handle.attr('data-model-type') == 'User'){
 											console.log('load User scripts');
 											_L.users.setup_accordion_body( handle.find('.user-machines')  );

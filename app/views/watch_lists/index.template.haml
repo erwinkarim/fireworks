@@ -3,15 +3,16 @@
 		Nothing under your watch list yet. Explore #{ link_to 'Tags', tags_path }, #{ link_to 'Servers', licservers_path } or #{ link_to 'Users', users_path } pages to add items to your watch list.
 - else
 	- @watch_lists.each do |watch_item|
-		.accordion-group
-			.accordion-heading
-				%a.accordion-toggle{ :data => { :id => watch_item[:entry].id, :toggle => 'collapse', :parent => 'false' }, 
-					:href => '#watch-body-' + watch_item[:entry].id.to_s }
-					#{watch_item[:entry].model_type}:#{watch_item[:handle_text]}
-			.accordion-body.collapse{ :id => 'watch-body-' + watch_item[:entry].id.to_s , :data => { :id => watch_item[:entry].id,	:init => 'false', 
+		.panel.panel-default
+			.panel-heading
+				%h4.panel-title
+					%a.accordion-toggle{ :data => { :id => watch_item[:entry].id, :toggle => 'collapse', :parent => 'false' }, 
+						:href => '#watch-body-' + watch_item[:entry].id.to_s }
+						#{watch_item[:entry].model_type}:#{watch_item[:handle_text]}
+			.panel-collapse.collapse{ :id => 'watch-body-' + watch_item[:entry].id.to_s , :data => { :id => watch_item[:entry].id,	:init => 'false', 
 				:'model-type' => watch_item[:entry].model_type, :'model-id' => watch_item[:entry].model_id } }
-				.accordion-inner
+				.panel-body
 					.handle
 						= watch_icon({ :user => current_ads_user, :model_type => watch_item[:entry].model_type, :model_id => watch_item[:entry].model_id, 
-							:text => true, :class => 'btn'} )
-						= link_to fa_icon('link', { :text => 'Permalink' }), watch_item[:handle_url], :class => 'btn'
+							:text => true, :class => 'btn btn-default'} )
+						= link_to fa_icon('link', { :text => 'Permalink' }), watch_item[:handle_url], :class => 'btn btn-default'
