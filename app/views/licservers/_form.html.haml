@@ -1,4 +1,4 @@
-.form{ :role => 'form' }
+%form.form{ :role => 'form', :data => { :licserver => licserver.nil? ? 0 : licserver.id } }
 	= hidden_field_tag 'server_id', licserver.nil? ? 0 : licserver.id 
 	.form-group.server_info-control
 		%label.control-label

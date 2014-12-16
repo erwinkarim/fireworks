@@ -47,6 +47,27 @@
 							//setup the update licserver button
 							handle.find('.update-licserver').on('click', function(){
 								console.log('update licserver clicked');
+								var form_handle = handle.find('form');
+								var status_handle = handle.find('.status')
+
+								//sanity checks on the form
+
+								//everything ok, post the form
+
+								status_handle.text(
+									$.parseHTML('<i class="fa fa-cog fa-spin"></i> Submitting data...')
+								);
+								$.ajax( '/licservers/' + form_handle.attr('data-licserver')  , { 
+									type:'PUT', data:form_handle.serialize(), 
+									success: function(data, textStatus, jqXHR){
+										console.log('form submited');
+										status_handle.text('');
+
+										//update handle
+
+									}
+								});
+
 							});
 					});
 				};
