@@ -31,7 +31,7 @@
 								handle.find('.panel-body').append( '<i class="fa fa-cog fa-spin fa-4x"></i>');
                 $.get(document.location.pathname + '/' + $(this).attr('data-id') + '.template' , null, function(data,textStatus, jqXHR){
 									handle.find('.fa-cog').remove();
-                  handle.find('.panel-body').append(data).ready(function(){
+                  handle.find('.content').append(data).ready(function(){
 										//load the data from watchlist/watch_list.id/show.template and execute the appropiate javascript
 										//kinda works, but because you might get multiple types, it only load for the first loaded item of the same type
 										if(handle.attr('data-model-type') == 'FeatureHeader'){
@@ -42,8 +42,8 @@
 											_L.features.nuke_users( handle.find('#really-nuk-em') );
 										} else if (handle.attr('data-model-type') == 'Licserver'){
 											console.log('load Licserver scripts');
-											handle.find('.panel-body').attr('data-licserver', handle.attr('data-model-id') );
-											_L.licservers.load_licserver( handle.find('.panel-body') );
+											handle.find('.content').attr('data-licserver', handle.attr('data-model-id') );
+											_L.licservers.load_licserver( handle.find('.content') );
 										} else if (handle.attr('data-model-type') == 'User'){
 											console.log('load User scripts');
 											_L.users.setup_accordion_body( handle.find('.user-machines')  );

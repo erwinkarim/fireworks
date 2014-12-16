@@ -51,9 +51,13 @@
 								var status_handle = handle.find('.status')
 
 								//sanity checks on the form
+								if( form_handle.find('#server_info').val() == '' ){
+									form_handle.find('.server-info-control').addClass('has-error');
+									status_handle.text('Server port and IP can\'t be blank');
+									return;
+								};
 
 								//everything ok, post the form
-
 								status_handle.text(
 									$.parseHTML('<i class="fa fa-cog fa-spin"></i> Submitting data...')
 								);
@@ -61,10 +65,17 @@
 									type:'PUT', data:form_handle.serialize(), 
 									success: function(data, textStatus, jqXHR){
 										console.log('form submited');
-										status_handle.text('');
 
 										//update handle
+										handle.find('.licserver-title').text( form_handle.find('#server_info').val()  );
 
+										//load tags
+										$.get( '/licservers/' + form_handle.attr('data-licserver') + '/tags.template', null, function(data, textStatus, jqXHR){
+											handle.find('.tags-well').empty().append( data );
+										}, 'html');
+
+										status_handle.text('');
+										handle.find('.modal').modal('toggle');
 									}
 								});
 

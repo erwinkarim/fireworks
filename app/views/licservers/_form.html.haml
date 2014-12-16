@@ -1,6 +1,6 @@
 %form.form{ :role => 'form', :data => { :licserver => licserver.nil? ? 0 : licserver.id } }
 	= hidden_field_tag 'server_id', licserver.nil? ? 0 : licserver.id 
-	.form-group.server_info-control
+	.form-group.server-info-control
 		%label.control-label
 			Server port and IP
 		= text_field_tag 'server_info', 
@@ -12,7 +12,7 @@
 		= text_field_tag 'tags', 
 			licserver.nil? ? '' : licserver.tags.map{|x| x.title }.join(' '), 
 			:placeholder => 'Seperate tags by spaces; ie "Openworks Geoprobe"', :class => 'form-control' 
-	.checkbox.monitor_idle-control
+	.checkbox.monitor-idle-control
 		%label
 			= (check_box_tag 'monitor_idle', 'monitor_idle', licserver.nil? ? false : licserver.monitor_idle?, :class => 'checkbox' )  + ' Monitor Idle Users'
 		%p.help-block Monitor users for idle activity

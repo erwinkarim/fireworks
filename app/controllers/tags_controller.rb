@@ -1,5 +1,8 @@
 class TagsController < ApplicationController
   def index
+		if params.has_key? :licserver_id then
+			@tags = Licserver.find(params[:licserver_id]).tags
+		end
   end 
 
   def create

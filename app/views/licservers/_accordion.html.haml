@@ -3,7 +3,7 @@
 		.panel.panel-default{ :data => { :id => licserver.id, :init => 'false' } }
 			.panel-heading
 				%h4.panel-title
-					%a{ :data => { :toggle => 'collapse', :parent => '#licserver-listings' }, :href => '#licserver' + licserver.id.to_s } 
+					%a.licserver-title{ :data => { :toggle => 'collapse', :parent => '#licserver-listings' }, :href => '#licserver' + licserver.id.to_s } 
 						= licserver.port.to_s + '@' + licserver.server
 			.panel-body.collapse{ :id => 'licserver' + licserver.id.to_s }
 				.accordion-inner

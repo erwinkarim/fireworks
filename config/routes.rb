@@ -18,9 +18,6 @@ Fireworks::Application.routes.draw do
 			get 'search'
 		end
     post 'update_settings'
-    #for backwards compatability, show is retain. 
-		get 'info'
-    get 'show_template'
     resources :features, :constraints => { :id => /[^\/]+(?=\.html\z|\.json\z|\.xml\z)|[^\/]+/ } do
       collection do
         get 'list'
@@ -38,7 +35,6 @@ Fireworks::Application.routes.draw do
   resources :feature_headers, only: [:accordion_group]
 
   controller :licservers do
-    match '/licserver/treding' => :trending, :via => :get , :as => 'licserver_trendy'
     match '/licserver/:licserver_id/analysis' => :analysis, :via => :get, :as => 'licserver_analysis'
   end
 
