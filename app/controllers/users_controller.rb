@@ -20,7 +20,8 @@ class UsersController < ApplicationController
     end
     
     respond_to do |format|
-      format.html { render :partial => 'accordion', :locals => { :users => @users } }
+      #format.html { render :partial => 'accordion', :locals => { :users => @users } }
+      format.template { render :template => 'users/get_more.template', :locals => { :users => @users } }
       format.json { render :json => @users }
     end
   end
@@ -37,7 +38,8 @@ class UsersController < ApplicationController
     @users = User.where{ (name.matches query) & (id.lteq start_id) }.order('id desc').limit(20)   
 
     respond_to do |format|
-      format.html { render :partial => 'accordion', :locals => { :users => @users } }
+      #format.html { render :partial => 'accordion', :locals => { :users => @users } }
+      format.template { render :template => 'users/get_more.template', :locals => { :users => @users } }
       format.json { 
 				#to give back in typeahead format
         init_hash = { :options => [] }

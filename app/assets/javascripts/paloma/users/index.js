@@ -29,7 +29,7 @@
     //init load
     init_load = function(){
       //init load
-      $.ajax( '/users/get_more', {
+      $.ajax( '/users/get_more.template', {
         dataType:'html'
       }).done( function(data, textStatus, jqXHR){
 				//remove the spinner
@@ -66,10 +66,10 @@
 
         //check in which mode that this button is loading
         if( $(this).attr('data-mode') == 'search') {
-          var load_path = '/users/search';
+          var load_path = '/users/search.template';
           var data_header = { start_id:$(this).attr('data-last-userid'), query:$('#search-users').val() }
         } else {
-          var load_path = '/users/get_more';
+          var load_path = '/users/get_more.template';
           var data_header = { start_id:$(this).attr('data-last-userid')}
         }
         //load more users
@@ -116,7 +116,7 @@
 
           if($(this).val().length != 0){
             //reload the accordion and put the revelent people
-            $.ajax( '/users/search', {
+            $.ajax( '/users/search.template', {
               data: { query:$(this).val() },
               dataType:'html'
             }).done( function(data,textStatus, jqXHR){
