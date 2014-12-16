@@ -113,51 +113,42 @@
 		//configure schedule title text field. ensure that i
 		handle.find('#schedule-title-input').keyup( function(){
 			if( $(this).val() == '' ) {
-				handle.find('#submit-button').attr('disabled', 'disabled');
+				handle.find('.new-schedule-button').attr('disabled', 'disabled');
+				handle.find('.update-schedule-button').attr('disabled', 'disabled');
 			} else {
-				handle.find('#submit-button').removeAttr('disabled');
+				handle.find('.new-schedule-button').removeAttr('disabled');
+				handle.find('.update-schedule-button').removeAttr('disabled');
 			}
 		});
 
-		//when submiting the form, do sanity checks
-		handle.find('.schedule-form').on('ajax:before', function(){
-			if( $(this).find('#schedule-title-input').val() == '') {
-				//highlight title
-				$(this).find('#schedule-title-group').addClass('error');
-				return false;
-			}
-		}).on('ajax:success', function(e, data, textStatus, jqXHR){
+		handle.find('.new-schedule-button').click( function(){
+			console.log('create new schedule clicked');
 
-			//if the new report schedule is open, close it
-			//reset the form and hide it
-			if( $('#new_report_schedule').length > 0 ) {
-				$('#new_report_schedule')[0].reset();
-				$('#new-schedule-group').hide();
+			var form_handle = handle.find('.schedule-form');
+
+			//create new schedule as template and get the results and add it as a new panel
+			$.post( '/report_schedules.template', form_handle.serialize(), function(data, textStatus, jqXHR){
+				console.log('new report created');
+				form_handle.trigger('reset').find('.new-schedule-button').attr('disabled', 'disabled');
+				$('#new-schedule-group').fadeOut();
 				$('#new-schedule-btn').show();
-			};
-
-
-			//update or recreate new accordion-group
-			var accordion_id = data.id
-			if( data.id != null && $('.accordion-group[data-id=' + data.id + ']').length == 0){
-				//group does not exist and data.id is valid, create a new one!
-				$.ajax('/report_schedules/' + data.id + '/accordion', {
-					dataType:'html'
-				}).done( function(data, statusText, jqXHR){
-					$('#new-schedule-group').before(
-						$.parseHTML(data)
-					).ready( function(){
-						setup_accordion_body( $('.accordion-group[data-id=' + accordion_id + ']') );
-					})
+				$('#new-schedule-group').before(data).ready( function(){
+					locals.setup_report_tab( $(this) );	
 				});
-			} else {
-				//group exists, update it
-				var accord_handle = $('.accordion-group[data-id=' + data.id + ']');
-				accord_handle.find('.accordion-toggle').text(data.title);
-			}
+			}, 'html');
+		});
 
-		}).on('ajax:error', function(xhr, status, error){
-			//if got error (usually the title uniqueness) highlight the error and move on
+		handle.find('.update-schedule-button').click( function(){
+			console.log('update schedule clicked');
+		});
+
+		handle.find('.delete-schedule-button').click( function(){
+			$.ajax('/report_schedules/' + $(this).attr('data-id'), {
+					type: 'DELETE',
+					success: function( data, textStatus, jqXHR){
+						handle.closest('.panel').fadeOut();
+					}
+			});
 		});
 	}; // locals.setup_report_tab = function(handle){
 

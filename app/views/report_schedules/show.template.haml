@@ -26,8 +26,7 @@
 		.tab-pane.setting{ :id => 'settings' + @schedule.id.to_s , :data => { :id => @schedule.id }, 
 			:class => @schedule.title.nil? ? 'active' : '' }
 			%p
-				= form_for @schedule, :html => {:class => 'schedule-form', :'data-type' => 'script', 
-					:'data-id' => @schedule.id }, :remote => true do |f|
+				%form.form.schedule-form{ :role => 'form', :data => { :id => @schedule.id } }
 					.form-group#schedule-title-group
 						%label.control-label Title
 						%input.form-control#schedule-title-input{:type => 'text', :placeholder => 'Title', :name => 'title', 
@@ -66,10 +65,9 @@
 							options_for_select([['No - Ad Hoc Basis', false], ['Yes', true]], @schedule.scheduled.to_s), { :class => 'form-control' }
 					.form-actions
 						- if @schedule.title.nil? then
-							%button.btn.btn-primary#submit-button{ :type => 'submit', :disabled => 'disabled' } Create Report
+							%button.btn.btn-primary.new-schedule-button{ :type => 'button', :disabled => 'disabled' } Create Report
 							%button.btn#new-schedule-cancel{ :type => 'button' } Cancel
 						- else
-							%button.btn.btn-primary#submit-button{ :type => 'submit' } Update
+							%button.btn.btn-primary.update-schedule-button{ :type => 'button' } Update
 							- if @delete_enabled then
-								= link_to 'Delete Report', report_schedule_path(@schedule), :method => :delete, :remote => true,
-									:class => 'btn btn-danger delete-report', :data => { :confirm => 'Really delete Schedule?' }
+								%button.btn.btn-danger.delete-schedule-button.delete-report{ :type => 'button', :data => { :id => @schedule.id }  } Delete
