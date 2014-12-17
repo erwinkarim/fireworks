@@ -56,7 +56,7 @@
 
 	locals.setup_features_accordion = function(handle){
 		//handle.find('.panel-body').on('show', function(){
-		handle.on('show.bs.collapse', function(){
+		handle.on('shown.bs.collapse', function(){
 			console.log('show them panels');
 			//load the graph
 			if(handle.find('.features-graph').children().length == 0){
