@@ -19,7 +19,7 @@
 								= link_to fa_icon('link', { :text => 'Permalink' }), report_schedule_path(schedule), :class => 'btn btn-default'
 							.loading-report
 								= fa_icon('cog spin 4x')
-			.panel.panel-default#new-schedule-group{ :style => 'display:none;' }
+			#new-schedule-group{ :style => 'display:none;' }
 .row
 	.col-xs-12
 		%button.btn.btn-large.btn-primary#new-schedule-modal-btn{ :data => { :toggle => 'modal', :target => '#new-schedule-modal' } } New Schedule Modal

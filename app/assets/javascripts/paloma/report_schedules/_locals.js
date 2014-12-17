@@ -111,7 +111,7 @@
 		}); // hoandle.find('.add-licserver').click(function(){
 
 		//configure schedule title text field. ensure that i
-		handle.find('#schedule-title-input').keyup( function(){
+		handle.find('.schedule-title-input').keyup( function(){
 			if( $(this).val() == '' ) {
 				handle.closest('.modal').find('.new-schedule-button').attr('disabled', 'disabled');
 				handle.find('.update-schedule-button').attr('disabled', 'disabled');
@@ -124,7 +124,7 @@
 
 		//handle update schedule button
 		handle.find('.update-schedule-button').click( function(){
-			var panel_handle = $(this).closest('.panel');
+			var panel_handle = handle.closest('.panel');
 			var form_handle = handle.find('.schedule-form');
 
 			console.log('update schedule clicked');
@@ -133,7 +133,7 @@
 					data: form_handle.serialize(),
 					success: function( data, textStatus, jqXHR){
 						//update the panel
-						panel_handle.find('.schedule-title').text( form_handle.find('#schedule-title-input').val() );
+						panel_handle.find('.schedule-title').text( form_handle.find('.schedule-title-input').val() );
 						$(document).find('.flash-msg').append(data);
 					}
 			});
