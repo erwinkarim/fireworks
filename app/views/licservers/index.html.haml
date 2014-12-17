@@ -1,18 +1,18 @@
 .row
-	.col-xs-10.col-xs-offset-1
+	.col-xs-12.col-md-10.col-md-offset-1
 		.page-header
 			%h2 Servers
 .row
-	.col-xs-10.col-xs-offset-1
+	.col-xs-12.col-md-10.col-md-offset-1
 		%form{ :role => 'form' }
 			.form-group
 				%input#search-servers.form-control.search-query{:type => 'text',  :placeholder =>'Search Servers...'}
 .row
-	.col-xs-10.col-xs-offset-1
+	.col-xs-12.col-md-10.col-md-offset-1
 		.panel-group#server-listings{ :last => 0 } 
 - if ads_user_signed_in? then
 	.row
-		.col-xs-10.col-xs-offset-1
+		.col-xs-12.col-md-10.col-md-offset-1
 			%button.btn.btn-primary{ :data => { :toggle => 'modal', :target => '#new-licserver-modal' } } New Licserver
 			#new-licserver-modal.modal.fade{ :role => 'dialog', :tabindex => -1 }
 				.modal-dialog
