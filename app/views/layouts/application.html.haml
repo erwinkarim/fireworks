@@ -38,7 +38,7 @@
 		.navbar.navbar-default.navbar-fixed-top{ :role => 'navigation' }
 			.container-fluid
 				.navbar-header
-					%button.navbar-toggle.collapse{ :type => 'button', :data => { :toggle => 'collapse', :target => '#main-navbar' } }
+					%button.navbar-toggle.collapsed{ :type => 'button', :data => { :toggle => 'collapse', :target => '#main-navbar' } }
 						%span.sr-only Toggle Navigation
 						%span.icon-bar
 						%span.icon-bar
@@ -82,8 +82,9 @@
 							- else
 								= link_to 'Sign In', ads_user_session_path
 
+		.container.flash-msg
+			/ put flash messages here
 		.container.yield_div
-			= # bootstrap_flash
 			= yield
 
 		.container

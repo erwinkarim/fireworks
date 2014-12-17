@@ -64,10 +64,7 @@
 						= select_tag 'schedule_terms',
 							options_for_select([['No - Ad Hoc Basis', false], ['Yes', true]], @schedule.scheduled.to_s), { :class => 'form-control' }
 					.form-actions
-						- if @schedule.title.nil? then
-							%button.btn.btn-primary.new-schedule-button{ :type => 'button', :disabled => 'disabled' } Create Report
-							%button.btn#new-schedule-cancel{ :type => 'button' } Cancel
-						- else
-							%button.btn.btn-primary.update-schedule-button{ :type => 'button' } Update
+						- if !@schedule.title.nil? then
+							%button.btn.btn-primary.update-schedule-button{ :type => 'button', :data => { :id => @schedule.id } } Update
 							- if @delete_enabled then
 								%button.btn.btn-danger.delete-schedule-button.delete-report{ :type => 'button', :data => { :id => @schedule.id }  } Delete

@@ -3,7 +3,7 @@
 		%h4.panel-title
 			= link_to @rs.title, '#schedule' + @rs.id.to_s, 
 				:data => { :toggle => 'collapse', :parent => '#schedule-accordion', :setup => 'false', :'report-schedule' => @rs.id }, 
-				:class => 'accordion-toggle'
+				:class => 'accordion-toggle schedule-title'
 	.panel-collapse.collapse{ :id => 'schedule' + @rs.id.to_s, :data => { :id => @rs.id } }
 		.panel-body
 			.info-title

@@ -1,7 +1,7 @@
 .page-header
 	%h1 Report Schedule
 .row
-	.span12
+	.col-xs-12
 		.panel-group#schedule-accordion
 			- @schedules.each do |schedule|
 				.panel.panel-default{ :id => false, :data => { :id => schedule.id } }
@@ -9,7 +9,7 @@
 						%h4.panel-title
 							= link_to schedule.title, '#schedule' + schedule.id.to_s, 
 								:data => { :toggle => 'collapse', :parent => '#schedule-accordion', :setup => 'false', :'report-schedule' => schedule.id }, 
-								:class => 'accordion-toggle'
+								:class => 'accordion-toggle schedule-title'
 					.panel-collapse.collapse{ :id => 'schedule' + schedule.id.to_s, :data => { :id => schedule.id } }
 						.panel-body
 							.info-title
@@ -20,13 +20,18 @@
 							.loading-report
 								= fa_icon('cog spin 4x')
 			.panel.panel-default#new-schedule-group{ :style => 'display:none;' }
-				.panel-heading
-					%h4.panel-title
-						%a.collapsed{ :data => { :toggle => 'collapse', :parent => '#schedule-accordion' }, :href => '#new-schedule' } New Schedule
-				.panel-collapse.collapse{ :id => 'new-schedule' }
-					.panel-body.new-schedule
-						= render :template => 'report_schedules/show.template', :locals => { :@schedule => ReportSchedule.new }
 .row
-	.span12
-		%button.btn.btn-large.btn-primary#new-schedule-btn( type:button )New Schedule
-		#new-schedule
+	.col-xs-12
+		%button.btn.btn-large.btn-primary#new-schedule-modal-btn{ :data => { :toggle => 'modal', :target => '#new-schedule-modal' } } New Schedule Modal
+		.modal.fade#new-schedule-modal{ :tabindex => -1, :role => 'dialog' }
+			.modal-dialog.modal-lg
+				.modal-content
+					.modal-header
+						%button.close{ :type => 'button', :data => { :dismiss => 'modal' } }
+							%span{ :aria => { :hidden => 'true' } } &times;
+						%h4.modal-title New Report Schedule
+					.modal-body
+						= render :template => 'report_schedules/show.template', :locals => { :@schedule => ReportSchedule.new }
+					.modal-footer
+						%button.btn.btn-default{ :type => 'button', :data => { :dismiss => 'modal' } } Close
+						%button.btn.btn-primary.new-schedule-button{ :type => 'button', :disabled => 'disabled' } Create

@@ -40,9 +40,9 @@ class ReportSchedulesController < ApplicationController
     )
 
     respond_to do |format|
-      format.html
       format.json { render :json => @rs }
       format.js  
+			format.template
     end
   end
 

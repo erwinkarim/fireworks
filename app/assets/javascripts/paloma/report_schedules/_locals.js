@@ -113,33 +113,30 @@
 		//configure schedule title text field. ensure that i
 		handle.find('#schedule-title-input').keyup( function(){
 			if( $(this).val() == '' ) {
-				handle.find('.new-schedule-button').attr('disabled', 'disabled');
+				handle.closest('.modal').find('.new-schedule-button').attr('disabled', 'disabled');
 				handle.find('.update-schedule-button').attr('disabled', 'disabled');
 			} else {
-				handle.find('.new-schedule-button').removeAttr('disabled');
+				//it's move to a modal now
+				handle.closest('.modal').find('.new-schedule-button').removeAttr('disabled');
 				handle.find('.update-schedule-button').removeAttr('disabled');
 			}
 		});
 
-		handle.find('.new-schedule-button').click( function(){
-			console.log('create new schedule clicked');
-
+		//handle update schedule button
+		handle.find('.update-schedule-button').click( function(){
+			var panel_handle = $(this).closest('.panel');
 			var form_handle = handle.find('.schedule-form');
 
-			//create new schedule as template and get the results and add it as a new panel
-			$.post( '/report_schedules.template', form_handle.serialize(), function(data, textStatus, jqXHR){
-				console.log('new report created');
-				form_handle.trigger('reset').find('.new-schedule-button').attr('disabled', 'disabled');
-				$('#new-schedule-group').fadeOut();
-				$('#new-schedule-btn').show();
-				$('#new-schedule-group').before(data).ready( function(){
-					locals.setup_report_tab( $(this) );	
-				});
-			}, 'html');
-		});
-
-		handle.find('.update-schedule-button').click( function(){
 			console.log('update schedule clicked');
+			$.ajax( '/report_schedules/' + $(this).attr('data-id') + '.template', {
+					type: 'PUT',
+					data: form_handle.serialize(),
+					success: function( data, textStatus, jqXHR){
+						//update the panel
+						panel_handle.find('.schedule-title').text( form_handle.find('#schedule-title-input').val() );
+						$(document).find('.flash-msg').append(data);
+					}
+			});
 		});
 
 		handle.find('.delete-schedule-button').click( function(){

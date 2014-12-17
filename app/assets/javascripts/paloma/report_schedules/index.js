@@ -39,21 +39,29 @@
 			});
 
 			//setup the new schedule
-			_l.setup_report_tab( $('#new-schedule-group').find('.tabbable') );
+			_l.setup_report_tab( $('#new-schedule-modal').find('.tabbable') );
 
-      //adding new 
-      $('#new-schedule-btn').click( function(){
-        $('#new-schedule-group').show('slow').find('.panel-title').find('a').click();
-        $('#new-schedule-btn').hide();
-        //reset the form before sending out
-      });
+			//configure create new report schedule
+			$(document).find('.new-schedule-button').click( function(){
+				console.log('create new schedule clicked');
+		
+				var handle = $('#new-schedule-modal');
+				var form_handle = handle.find('.schedule-form');
 
-      //cancle adding new schedule
-      $('#new-schedule-cancel').click( function(){
-        $('#new-schedule-group').hide('slow');
-        $('#new-schedule-btn').show();
-      });
+				//create new schedule as template and get the results and add it as a new panel
+				$.post( '/report_schedules.template', form_handle.serialize(), function(data, textStatus, jqXHR){
+					console.log('new report created');
+					form_handle.trigger('reset');
+					handle.find('.new-schedule-button').attr('disabled', 'disabled');
 
+					$('#new-schedule-group').before(data).ready( function(){
+						_l.setup_report_tab( $(this) );	
+					});
+
+					handle.modal('hide');
+
+				}, 'html');
+			});
 
     }); // $(document).ready( function(){
   }; // Paloma.callbacks['report_schedule']['index'] = function(params){
