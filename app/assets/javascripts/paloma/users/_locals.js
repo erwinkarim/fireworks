@@ -45,7 +45,7 @@
       //when clicked, start gather features data
       $('.tab-pane[data-machine-id="' + e.target.attributes['data-machine-id'].value + 
         '"][data-user-id="' + e.target.attributes['data-user-id'].value + '"]').append(
-        $.parseHTML('<i class="fa fa-spinner fa-spin fa-4x"></i>')
+        $.parseHTML('<i class="fa fa-cog fa-spin fa-4x"></i>')
       );
 
       //show the thing is being loaded

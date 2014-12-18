@@ -3,7 +3,7 @@
 		%ol.breadcrumb
 			%li #{ link_to 'Fireworks', tags_path }
 			%li #{ link_to 'Servers', licservers_path }
-			%li #{ link_to @licserver.port.to_s + '@' + @licserver.server, licserver_path( params[:licserver_id] ) } 
+			%li #{ link_to @licserver.port.to_s + '@' + @licserver.server, licserver_path( @licserver.id ) } 
 			%li.active Features
 .row
 	.col-xs-12
@@ -12,37 +12,23 @@
 				%p No Features detected...
 			- else 
 				- @features.each do |f| 
-					= link_to f.name,licserver_feature_path(params[:licserver_id],f.name), :class=>'btn btn-default' 
+					= link_to f.name,licserver_feature_path(@licserver.id ,f.name), :class=>'btn btn-default' 
 .row
 	.col-xs-12
-	%table.table.table-striped
-		%caption Extended Features Info
-		%thead
-			%tr
-				%th Name
-				%th Version
-				%th Seats
-				%th Expires
-				%th Deamon
-			%tbody
-				- if @features_info.nil? then 
-					%tr{colspan=> "5"}
-						%td No Features Detected
-				- else 
-					- @features_info.each do |element| 
-						- if DateTime.parse(element[:expire].to_s) < DateTime.now + 1.month then 
-							- if DateTime.parse(element[:expire].to_s) < DateTime.now + 7.days then 
-								- tr_class = 'error'
-							- else 
-								- tr_class = 'warning' 
-						- else 
-							- tr_class = ''
-						%tr{ :class => tr_class }
-							%td #{ link_to element[:feature], licserver_feature_path(params[:licserver_id], element[:feature]) } 
-							%td	#{ element[:version] } 
-							%td #{ element[:seats] }
-							%td #{ element[:expire]  }
-							%td #{ element[:deamon] }
+		%table.table.table-striped.lic-info-table{ :data => { :id => @licserver.id } }
+			%caption Extended Features Info
+			%thead
+				%tr
+					%th Name
+					%th Version
+					%th Seats
+					%th Expires
+					%th Deamon
+				%tbody
+					%tr.loading
+						%td{ :colspan => "5" } 
+							%i.fa.fa-cog.fa-4x.fa-spin
+
 .row
 	.col-xs-12
 		= render 'graph_summary'

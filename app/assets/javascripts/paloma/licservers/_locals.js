@@ -25,7 +25,7 @@
 						//load the featres listings
 						$.get('/licservers/' + handle.attr('data-licserver') + '/features/list', null, 
 							function(data, textStatus, jqXHR){
-								handle.find('.fa-spinner').remove();
+								handle.find('.fa-cog').remove();
 								handle.find('#licserver-' + handle.attr('data-licserver') + '-features-listing').append(
 									data
 								).ready( function(){
@@ -38,7 +38,7 @@
 								});
 							}, 'html' ).fail( function(){
 								console.log('fail to load server');
-								handle.find('licserver-' + handle.attr('data-licserver') + '-features').find('.fa-spinner').remove();
+								handle.find('licserver-' + handle.attr('data-licserver') + '-features').find('.fa-cog').remove();
 								handle.find('#licserver-' + handle.attr('data-licserver') + '-features-listing').append(
 									$.parseHTML('Opss, something went wrong. Failed to load feature listings')
 								);

@@ -10,4 +10,7 @@
 					- if ads_user_signed_in? then
 						= watch_icon({:user => current_ads_user,  :model_type => 'Tag', :model_id => tag.id, :class => 'btn btn-default' , :text => true}) 
 					= link_to fa_icon('link',{ :text => 'Permalink' }), tag_path(tag.title), :class => 'btn btn-default'
+				.loading
+					%br
+					%i.fa.fa-cog.fa-4x.fa-spin
 

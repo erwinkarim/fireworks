@@ -26,6 +26,7 @@
       handle.on('shown.bs.collapse', function(){
         if(handle.find('.panel-inner').attr('data-init') == 'false' ) {
           $.get('/tags/' + $(this).attr('data-title') + '.template' , null, function(data, textStatus, jqXHR){
+						handle.find('.panel-inner').find('.loading').remove();
             handle.find('.panel-inner').append(data).ready( function(){
               //when the licserver is clicked, show licserver info and detected features
               $('a[data-toggle="tab"][data-init="false"]').each( function(index, value){
@@ -36,7 +37,7 @@
               
             });
           }, 'html' ).done( function(){
-						handle.find('.accordion-inner').attr('data-init', 'true');
+						handle.find('.panel-inner').attr('data-init', 'true');
 					});
         }
       });

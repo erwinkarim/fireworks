@@ -3,7 +3,7 @@ class FeaturesController < ApplicationController
 	
   def index
     @licserver = Licserver.find(params[:licserver_id])
-    if @licserver.features.count > 0 then
+    if @licserver.feature_headers.count > 0 then
       #@features = @licserver.features.where("created_at > ?", Licserver.find(params[:licserver_id]).features.last.created_at - 1.minute)
       @features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }
     else 
@@ -12,7 +12,8 @@ class FeaturesController < ApplicationController
 
     #get features info
     if !@features.nil? then
-      @features_info = Licserver.get_features_demise params[:licserver_id]
+      #@features_info = Licserver.get_features_demise params[:licserver_id]
+      @features_info = nil
     end
 
     respond_to do |format|
@@ -175,4 +176,14 @@ class FeaturesController < ApplicationController
       format.html{ render :partial => 'historical_users', :locals => { :users => @users, :feature => feature, :selected_time => (feature.nil? ? selected_time : feature.created_at) } }
     end
   end
+
+	#  /licservers/:licserver_id/features/lic_info
+	#  Get lic_info
+	def lic_info
+      @features_info = Licserver.get_features_demise params[:licserver_id]
+
+			respond_to do |format|
+				format.template
+			end
+	end
 end

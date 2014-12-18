@@ -237,7 +237,7 @@
       //refresh user listings
       handle.find('#reload-users').click(function(){
         handle.find('tbody').empty().append(
-          $.parseHTML('<tr><td class="loading-users" colspan=2><i class="fa fa-spinner fa-spin fa-4x"></i></td></tr>')
+          $.parseHTML('<tr><td class="loading-users" colspan=2><i class="fa fa-cog fa-spin fa-4x"></i></td></tr>')
         ).ready( function(){
           load_users_table( handle );
         });

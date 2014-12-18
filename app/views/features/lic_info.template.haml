@@ -1,0 +1,18 @@
+- if @features_info.nil? then
+	%tr
+		%td{ :colspan => "5" } No Features detected here
+- else 
+	- @features_info.each do |element| 
+		- if DateTime.parse(element[:expire].to_s) < DateTime.now + 1.month then 
+			- if DateTime.parse(element[:expire].to_s) < DateTime.now + 7.days then 
+				- tr_class = 'error'
+			- else 
+				- tr_class = 'warning' 
+		- else 
+			- tr_class = ''
+		%tr{ :class => tr_class }
+			%td #{ link_to element[:feature], licserver_feature_path(params[:licserver_id], element[:feature]) } 
+			%td	#{ element[:version] } 
+			%td #{ element[:seats] }
+			%td #{ element[:expire]  }
+			%td #{ element[:deamon] }

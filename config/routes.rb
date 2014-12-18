@@ -21,6 +21,7 @@ Fireworks::Application.routes.draw do
     resources :features, :constraints => { :id => /[^\/]+(?=\.html\z|\.json\z|\.xml\z)|[^\/]+/ } do
       collection do
         get 'list'
+				get 'lic_info'
       end
       get 'get_data'
       get "monthly"
