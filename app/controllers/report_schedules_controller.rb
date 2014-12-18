@@ -61,6 +61,7 @@ class ReportSchedulesController < ApplicationController
       :scheduled => params[:schedule_terms] == 'true'
     )
     @rs.save!
+		@delete_enabled = true
 
     respond_to do |format|
       format.html

@@ -41,10 +41,10 @@
 			//setup the new schedule
 			_l.setup_report_tab( $('#new-schedule-modal').find('.tabbable') );
 
-			//configure create new report schedule
+			//configure create new report scheduke
 			$(document).find('.new-schedule-button').click( function(){
 				console.log('create new schedule clicked');
-		
+
 				var handle = $('#new-schedule-modal');
 				var form_handle = handle.find('.schedule-form');
 
@@ -53,7 +53,7 @@
 					console.log('new report created');
 					form_handle.trigger('reset');
 					handle.find('.new-schedule-button').attr('disabled', 'disabled');
-
+	
 					$('#new-schedule-group').before(data).ready( function(){
 						_l.setup_report_tab( $(this) );	
 					});

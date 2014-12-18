@@ -124,8 +124,8 @@
 
 		//handle update schedule button
 		handle.find('.update-schedule-button').click( function(){
-			var panel_handle = handle.closest('.panel');
-			var form_handle = handle.find('.schedule-form');
+			var panel_handle = $(this).closest('.panel');
+			var form_handle = panel_handle.find('.schedule-form');
 
 			console.log('update schedule clicked');
 			$.ajax( '/report_schedules/' + $(this).attr('data-id') + '.template', {
@@ -133,6 +133,8 @@
 					data: form_handle.serialize(),
 					success: function( data, textStatus, jqXHR){
 						//update the panel
+						console.log('panel_handle ' + panel_handle.attr('data-id') );
+						console.log('schedule-title-input: ' + form_handle.find('.schedule-title-input').val() );
 						panel_handle.find('.schedule-title').text( form_handle.find('.schedule-title-input').val() );
 						$(document).find('.flash-msg').append(data);
 					}
@@ -140,10 +142,11 @@
 		});
 
 		handle.find('.delete-schedule-button').click( function(){
+			panel_handle = $(this).closest('.panel');
 			$.ajax('/report_schedules/' + $(this).attr('data-id'), {
 					type: 'DELETE',
 					success: function( data, textStatus, jqXHR){
-						handle.closest('.panel').fadeOut();
+						panel_handle.fadeOut();
 					}
 			});
 		});

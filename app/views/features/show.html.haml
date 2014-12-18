@@ -7,7 +7,7 @@
 			%li #{ link_to 'Features', licserver_features_path(params[:licserver_id]) }
 			%li.active #{ params[:id] } Usage
 .row
-	.span12
+	.col-xs-12
 		.page-header
 			%h2 
 				- if ads_user_signed_in? then
@@ -16,5 +16,5 @@
 						:method => :post, :data => { :remote => true }, :id => 'watchlist'
 				= params[:id]
 .row
-	.span12
+	.col-xs-12
 		= render :template => "features/show.template"
