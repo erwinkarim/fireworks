@@ -12307,6 +12307,7 @@ var performFilters = function(filters, params){
 					nuke_alert_box.html('Nuking users of ' + handle.attr('data-feature') + '...');
 				} else {
 					console.log('incorrect answer');
+					confirmation_handle.val('');
 					nuke_alert_box.html('Wrong Answer');
 				}
 

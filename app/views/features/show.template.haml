@@ -45,6 +45,7 @@
 										.modal-body
 											%p.text-left <strong>Warning:</strong> This action will kill every users that is using this feature. To confirm that you really want to do this, please type the name of the feature in the input box below
 											.nuke-alert-box
+											.nuke-input-box
 												%input.form-control#nuke-confirmation-box{ :type => 'text' , :placeholder => 'Type feature name here...' }
 										.modal-footer
 											%a.btn.btn-default{ :href => '#', :data => { :dismiss => 'modal' }  } Close
