@@ -833,8 +833,8 @@ div.field, div.actions {
 
 @font-face {
   font-family: 'FontAwesome';
-  src: url('/assets/fontawesome-webfont.eot');
-  src: url('/assets/fontawesome-webfont.eot?#iefix') format('embedded-opentype'), url('/assets/fontawesome-webfont.woff') format('woff'), url('/assets/fontawesome-webfont.ttf') format('truetype'), url('/assets/fontawesome-webfont.svg#fontawesomeregular') format('svg');
+  src: url('/assets/fontawesome-webfont-9fee1569af36a30053bec172cdf5f01f.eot');
+  src: url('/assets/fontawesome-webfont-9fee1569af36a30053bec172cdf5f01f.eot?#iefix') format('embedded-opentype'), url('/assets/fontawesome-webfont-2b8b2ee0ed3826bc3df7a9824d73175e.woff') format('woff'), url('/assets/fontawesome-webfont-ecb929f3acb56dbf473db392dcac4591.ttf') format('truetype'), url('/assets/fontawesome-webfont-5fcaba92e7ec768278bbe601b9232391.svg#fontawesomeregular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
