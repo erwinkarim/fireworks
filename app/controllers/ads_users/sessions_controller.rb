@@ -1,5 +1,5 @@
 class AdsUsers::SessionsController < Devise::SessionsController
-# before_filter :configure_sign_in_params, only: [:create]
+ before_filter :configure_sign_in_params, only: [:create]
 
   # GET /resource/sign_in
   # def new
@@ -23,10 +23,14 @@ class AdsUsers::SessionsController < Devise::SessionsController
   #   super
   # end
 
-  # protected
+  protected
 
   # You can put the params you want to permit in the empty array.
-  # def configure_sign_in_params
-  #   devise_parameter_sanitizer.for(:sign_in) << :attribute
-  # end
+   def configure_sign_in_params
+     devise_parameter_sanitizer.for(:sign_in).push(:login, :domain)
+   end
+
+	def ads_user_params
+		params.rqeuire(:ads_user).permit( :login, :password, :password_confirmation, :remember_me, :email, :username, :domain )
+	end
 end

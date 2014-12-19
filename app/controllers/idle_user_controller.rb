@@ -33,4 +33,8 @@ class IdleUserController < ApplicationController
   def show
       @idleuser = IdleUser.all
   end
+
+	def idle_user_params
+		params.require(:idle_user_params).permit( :hostname, :idle, :user )
+	end
 end

@@ -1,5 +1,5 @@
 class IdleUser < ActiveRecord::Base
-  attr_accessible :hostname, :idle, :user
+  #attr_accessible :hostname, :idle, :user
   validates :hostname, :presence => true;
   validates :idle, :presence => true;
   validates :user, :presence => true;
