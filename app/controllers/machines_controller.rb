@@ -41,4 +41,8 @@ class MachinesController < ApplicationController
       }
     end
   end
+
+	def machine_feature_params
+		params.require(:machine_feature_params).permit( :machine_id, :feature_id )
+	end
 end

@@ -84,6 +84,10 @@ class WatchListsController < ApplicationController
     respond_with(@watch_list)
   end
 
+	def watch_list_params
+		params.require(:watch_list).permit( :model_id, :model_type, :note, :active )
+	end
+
   private
     def set_watch_list
 			@watch_list = AdsUser.where(:login => params[:ads_user_id]).first.watch_lists.find(params[:id])

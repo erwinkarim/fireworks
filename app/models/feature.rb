@@ -1,7 +1,7 @@
 class Feature < ActiveRecord::Base
   belongs_to :licserver
   belongs_to :feature_header
-  attr_accessible :current, :max, :name, :licserver_id
+  #attr_accessible :current, :max, :name, :licserver_id
   has_many :machine_features
   has_many :machines, :through => :machine_features
 

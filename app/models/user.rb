@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   #attr_accessible :email, :password, :password_confirmation, :remember_me
-  attr_accessible :name, :last_seen_at
+  #attr_accessible :name, :last_seen_at
   validates :name, :uniqueness => true, :presence => true
   has_many :machines, :dependent => :destroy
 
@@ -38,5 +38,9 @@ class User < ActiveRecord::Base
 
 	def password_required?
 		false
+	end
+
+	def user_params
+		params.require(:user).permit( :name, :last_seen_at )
 	end
 end

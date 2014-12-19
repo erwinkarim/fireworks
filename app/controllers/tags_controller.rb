@@ -92,4 +92,8 @@ class TagsController < ApplicationController
       format.json{ render :json => @licservers } 
     end
   end
+
+	def tag_params
+		params.rquire(:tag).permit(:title)
+	end
 end

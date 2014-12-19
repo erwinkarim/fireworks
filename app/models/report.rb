@@ -1,7 +1,7 @@
 class Report < ActiveRecord::Base
   require 'spreadsheet'
   belongs_to :report_schedule
-  attr_accessible :body, :title, :start_date, :end_date, :status
+  #attr_accessible :body, :title, :start_date, :end_date, :status
 
   def to_csv
     csv_string = String.new

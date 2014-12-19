@@ -223,4 +223,8 @@ class LicserversController < ApplicationController
       }
 		end
 	end
+
+	def licserver_params
+		params.require(:licserver).permit( :port, :server, :to_delete, :monitor_idle )
+	end
 end

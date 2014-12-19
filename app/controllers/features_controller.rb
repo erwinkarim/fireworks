@@ -186,4 +186,12 @@ class FeaturesController < ApplicationController
 				format.template
 			end
 	end
+
+	def feature_header_params
+		params.require(:feature_header).permit( :name, :licserver_id, :feature_id, :last_seen )
+	end
+
+	def feature_params
+		params.require(:feature).permit( :current, :max, :name, :licserver_id )
+	end
 end

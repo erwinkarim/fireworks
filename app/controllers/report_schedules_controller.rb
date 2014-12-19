@@ -104,4 +104,12 @@ class ReportSchedulesController < ApplicationController
       format.html{ render :partial => 'monitored_obj_listings', :locals => { :schedule => @schedule}  }
     end
   end
+
+	def report_schedule_params
+		params.require(:report_schedule).permit( :monitored_obj, :schedule, :title, :time_scope, :scheduled )
+	end
+
+	def report_params
+		params.require(:report).permit( :body, :title, :start_date, :end_date, :status )
+	end
 end

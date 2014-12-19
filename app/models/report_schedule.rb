@@ -1,5 +1,5 @@
 class ReportSchedule < ActiveRecord::Base
-  attr_accessible :monitored_obj, :schedule, :title, :time_scope, :scheduled
+  #attr_accessible :monitored_obj, :schedule, :title, :time_scope, :scheduled
   validates :title, :presence => true, :uniqueness => true
   has_many :reports, :dependent => :destroy
   TIME_SCOPE = { :yesterday => 'Yesterday', :last_week => 'Last Week', :last_month => 'Last Month' }

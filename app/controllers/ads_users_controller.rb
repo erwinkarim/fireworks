@@ -23,6 +23,10 @@ class AdsUsersController < ApplicationController
     end
   end
 
+	def ads_user_params
+		params.rqeuire(:ads_user).permit( :login, :password, :password_confirmation, :remember_me, :email, :username, :domain )
+	end
+
   private 
     def set_ads_user
       @ads_user = AdsUser.where(:login => params[:ads_user_id]).first

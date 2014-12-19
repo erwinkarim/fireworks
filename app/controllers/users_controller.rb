@@ -62,4 +62,8 @@ class UsersController < ApplicationController
       format.json { render :json => @user }
     end
   end
+
+	def machine_params
+		params.require(:machine).permit( :name )
+	end
 end

@@ -28,7 +28,7 @@
               //console.log('lazy load daily data');
               var chart_handle = this;
               var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 
-                handle.attr('data-feature') + '/get_data';
+                handle.attr('data-feature') + '/get_data.json';
               //since share common w/ tags/index, share this out
               function recursive_data_load(last_data_point){
                 if(last_data_point != 0 || last_data_point == null){
@@ -119,7 +119,7 @@
       handle.find('#load-older').click( function(){
 
         var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 
-          handle.attr('data-feature') + '/get_data';
+          handle.attr('data-feature') + '/get_data.json';
         chart_handle = handle.find('.graph').highcharts();
 
         $.ajax(data_load_path, { 
