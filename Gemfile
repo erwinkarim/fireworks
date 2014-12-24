@@ -4,7 +4,8 @@ gem 'rails', '4.0.12'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
-ruby '1.9.3'
+#ruby '1.9.3'
+ruby '2.1.5'
 
 gem 'sqlite3'
 gem 'yaml_db'
@@ -73,6 +74,7 @@ gem 'foreman'
 gem 'spreadsheet'
 
 #user authentication
-gem 'devise', '~> 3.0'
+gem 'devise'
+#gem 'devise', '~> 3.0'
 #gem 'devise_ldap_authenticatable'
 gem 'devise_ldap_authenticatable', :git => "https://github.com/cschiewek/devise_ldap_authenticatable.git"

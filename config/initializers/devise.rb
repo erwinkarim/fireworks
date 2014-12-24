@@ -13,22 +13,17 @@ Devise.setup do |config|
   
   # ==> LDAP Configuration 
   config.ldap_logger = true
-  # config.ldap_create_user = false
   config.ldap_create_user = true
-  # config.ldap_update_password = true
   config.ldap_update_password = false
-  # config.ldap_config = "#{Rails.root}/config/ldap.yml"
-  # config.ldap_check_group_membership = true
   config.ldap_check_group_membership = true
-  #config.ldap_check_attributes = true
   config.ldap_check_attributes = false
-  #config.ldap_use_admin_to_bind = false
   config.ldap_use_admin_to_bind = true
-  #config.ldap_check_group_membership_without_admin = true
   config.ldap_ad_group_check = true
   config.ldap_auth_username_builder = Proc.new() {|attribute, login, ldap| "#{login}" }
-  #config.ldap_auth_username_builder = Proc.new() {|attribute, login, ldap, domain| "#{login}@#{domain}" }
-  
+ 
+ 	config.warden do |manager|
+		manager.default_strategies( :scope => :ads_user).unshift :ldap_authenticatable
+	end 
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
   # confirmation, reset password and unlock tokens in the database.

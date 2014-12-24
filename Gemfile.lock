@@ -173,7 +173,7 @@ DEPENDENCIES
   coffee-rails (~> 4.1.0)
   daemons
   delayed_job_active_record
-  devise (~> 3.0)
+  devise
   devise_ldap_authenticatable!
   font-awesome-rails (= 4.2.0)
   foreman

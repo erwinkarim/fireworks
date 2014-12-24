@@ -1,5 +1,5 @@
 class AdsUsers::SessionsController < Devise::SessionsController
- before_filter :configure_sign_in_params, only: [:create]
+ before_filter :configure_sign_in_params
 
   # GET /resource/sign_in
   # def new
@@ -11,6 +11,7 @@ class AdsUsers::SessionsController < Devise::SessionsController
 	def create
 		# process the domain names and combine the user name for authentication
 		params[:ads_user][:username] = params[:ads_user][:login] + "@" + params[:ads_user][:domain]
+		logger.info "username = " + params[:ads_user][:username] 
 
 		#set the admin login as the user who is logging in...
 		ENV['devise_ldap_admin'] = params[:ads_user][:username]
@@ -23,6 +24,10 @@ class AdsUsers::SessionsController < Devise::SessionsController
   #   super
   # end
 
+	def ads_user_params
+		params.rqeuire(:ads_user).permit( :login, :password, :password_confirmation, :remember_me, :email, :username, :domain )
+	end
+
   protected
 
   # You can put the params you want to permit in the empty array.
@@ -30,7 +35,4 @@ class AdsUsers::SessionsController < Devise::SessionsController
      devise_parameter_sanitizer.for(:sign_in).push(:login, :domain)
    end
 
-	def ads_user_params
-		params.rqeuire(:ads_user).permit( :login, :password, :password_confirmation, :remember_me, :email, :username, :domain )
-	end
 end
