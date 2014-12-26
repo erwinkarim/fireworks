@@ -34,14 +34,14 @@ module Devise
 								:email => search_result[:mail].first, 
 								:name => search_result[:displayname].first, 
 								:username => search_result[:samaccountname].first, 
-								:password => params[:ads_user][:password] )
+								:password => params[:ads_user][:password], :domain => params[:ads_user][:domain] )
 							ads_user.save!
 							Rails.logger.info "ads_user is #{ads_user.inspect}"
-							params[:ads_user][:email] = search_result[:mail]
+							params[:ads_user][:email] = search_result[:mail].first
 						else
 							ads_user.update_attributes({ :email => search_result[:mail].first, 
 								:name => search_result[:displayname].first, 
-								:password => params[:ads_user][:password] } )
+								:password => params[:ads_user][:password], :domain => params[:ads_user][:domain] } )
 						end
 
 						success!(ads_user)
@@ -52,9 +52,9 @@ module Devise
 				end
 			end
 
-			def email
-				params[:ads_user][:username] + "@petronas.com.my"
-			end
+			#def email
+			#	params[:ads_user][:username] + "@petronas.com.my"
+			#end
 
 			def login
 				params[:ads_user][:username]
