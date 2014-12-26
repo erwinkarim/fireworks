@@ -75,6 +75,7 @@ gem 'spreadsheet'
 
 #user authentication
 gem 'devise'
+gem 'net-ldap', :git => 'https://github.com/ruby-ldap/ruby-net-ldap'
 #gem 'devise', '~> 3.0'
 #gem 'devise_ldap_authenticatable'
-gem 'devise_ldap_authenticatable', :git => "https://github.com/cschiewek/devise_ldap_authenticatable.git"
+#gem 'devise_ldap_authenticatable', :git => "https://github.com/cschiewek/devise_ldap_authenticatable.git"

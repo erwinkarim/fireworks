@@ -27,9 +27,9 @@ class ApplicationController < ActionController::Base
 		end 
 	end
 
-  rescue_from DeviseLdapAuthenticatable::LdapException do |exception|
-    render :text => exception, :status => 500
-  end
+  #rescue_from DeviseLdapAuthenticatable::LdapException do |exception|
+  #  render :text => exception, :status => 500
+  #end
 
   helper :all
   protect_from_forgery

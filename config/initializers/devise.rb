@@ -12,14 +12,14 @@ Devise.setup do |config|
   # config.ldap_ad_group_check = false
   
   # ==> LDAP Configuration 
-  config.ldap_logger = true
-  config.ldap_create_user = true
-  config.ldap_update_password = false
-  config.ldap_check_group_membership = true
-  config.ldap_check_attributes = false
-  config.ldap_use_admin_to_bind = true
-  config.ldap_ad_group_check = true
-  config.ldap_auth_username_builder = Proc.new() {|attribute, login, ldap| "#{login}" }
+  #config.ldap_logger = true
+  #config.ldap_create_user = true
+  #config.ldap_update_password = false
+  #config.ldap_check_group_membership = true
+  #config.ldap_check_attributes = false
+  #config.ldap_use_admin_to_bind = true
+  #config.ldap_ad_group_check = true
+  #config.ldap_auth_username_builder = Proc.new() {|attribute, login, ldap| "#{login}" }
  
  	config.warden do |manager|
 		manager.default_strategies( :scope => :ads_user).unshift :ldap_authenticatable

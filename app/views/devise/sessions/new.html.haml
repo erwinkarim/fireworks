@@ -9,13 +9,13 @@
 
 .row
 	.col-xs-10.col-xs-offset-1.col-md-4
-		= form_for(resource, as: resource_name, url: session_path(resource_name), :html => { :class => 'form-horizontal', :role =>'form' } ) do |f| 
+		= form_for(resource, as: resource_name, url: session_path(resource_name), :html => { :class => 'form-horizontal', :role =>'form', :method => :post } ) do |f| 
 			.form-group
-				= f.label :domain
-				= select_tag "ads_user[domain]", options_for_select(eval(ENV['devise_ldap_domains'])), :class =>'form-control' 
+				= #f.label :domain
+				= #select_tag "ads_user[domain]", options_for_select(eval(ENV['devise_ldap_domains'])), :class =>'form-control' 
 			.form-group
-				= f.label :login
-				= f.text_field :login, autofocus: true , :placeholder => "Your Username", :class =>'form-control' 
+				= f.label :username
+				= f.text_field :username, autofocus: true , :placeholder => "Your Username", :class =>'form-control' 
 			.form-group
 				= f.label :password
 				= f.password_field :password, autocomplete: "off", :placeholder => "password" , :class => 'form-control'

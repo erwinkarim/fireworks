@@ -1,10 +1,8 @@
 GIT
-  remote: https://github.com/cschiewek/devise_ldap_authenticatable.git
-  revision: 45a6143892bdc4539338555f932424f38fa009e7
+  remote: https://github.com/ruby-ldap/ruby-net-ldap
+  revision: a89d094a1c724c15933cf8cc42342c71dded32a4
   specs:
-    devise_ldap_authenticatable (0.8.3)
-      devise (>= 3.0)
-      net-ldap (>= 0.3.1, < 0.6.0)
+    net-ldap (0.10.1)
 
 GEM
   remote: https://rubygems.org/
@@ -88,7 +86,6 @@ GEM
     mime-types (2.4.3)
     minitest (4.7.5)
     multi_json (1.10.1)
-    net-ldap (0.5.1)
     orm_adapter (0.5.0)
     paloma (2.0.6)
       jquery-rails
@@ -174,7 +171,6 @@ DEPENDENCIES
   daemons
   delayed_job_active_record
   devise
-  devise_ldap_authenticatable!
   font-awesome-rails (= 4.2.0)
   foreman
   haml
@@ -182,6 +178,7 @@ DEPENDENCIES
   jquery-ui-rails
   less-rails (= 2.6.0)
   libv8
+  net-ldap!
   paloma (~> 2.0.6)
   rails (= 4.0.12)
   ruby-oci8 (~> 2.1.0)
