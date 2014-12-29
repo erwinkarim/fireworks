@@ -8,7 +8,7 @@ class AdsUser < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   #attr_accessible :login, :password, :password_confirmation, :remember_me, :email
   #attr_accessible :username, :domain
-	has_many :watch_lists
+	has_many :watch_lists, :dependent => :destroy
 
 	validates :username, presence: true, uniqueness: true
 
