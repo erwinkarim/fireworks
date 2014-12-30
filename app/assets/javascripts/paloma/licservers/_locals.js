@@ -76,6 +76,9 @@
 
 										status_handle.text('');
 										handle.find('.modal').modal('toggle');
+									}, 
+									error: function(jqXHR, textStatus, errorThrown){
+										status_handle.text(textStatus + ": " + errorThrown);
 									}
 								});
 

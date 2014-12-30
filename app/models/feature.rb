@@ -174,8 +174,9 @@ class Feature < ActiveRecord::Base
   def self.generate_monthly_stats(licserver_id, feature_id, office_hours)
   
     #generate default stats
-      features_list = Licserver.find(licserver_id).features.find(:all, 
-        :conditions => { :name => feature_id, :created_at => 30.days.ago..DateTime.now })
+      #features_list = Licserver.find(licserver_id).features.find(:all, 
+      #  :conditions => { :name => feature_id, :created_at => 30.days.ago..DateTime.now })
+      features_list = Licserver.find(licserver_id).features.where( :name => feature_id, :created_at => 30.days.ago..DateTime.now )
 
     if office_hours == true then
       #filter to office hours only
@@ -186,7 +187,7 @@ class Feature < ActiveRecord::Base
     end
 
     #do the countings
-    features_sorted = features_list.group_by{ |item| item.current }
+    features_sorted = features_list.group_by{ |item| item.current }.reject{ |k,v| k.nil? || k[0].nil? }
     sum = 0
     features = features_sorted.inject(Hash.new(0)) { |h,e| h[e[0]] = e[1].count; h }.to_a.sort.map {
       |x| [ x[0], sum += x[1] ] 

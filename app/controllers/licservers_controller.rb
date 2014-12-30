@@ -91,17 +91,23 @@ class LicserversController < ApplicationController
 
   # PUT /licservers/1
   # PUT /licservers/1.json
+	#  Parameters: {"server_id"=>"2", "server_info"=>"9500@PETHNTTAD01", "tags"=>"ofm volts capital planning", "id"=>"2"}
   def update
-    @licserver = Licserver.find(params[:id])
+    @licserver = Licserver.find(params[:server_id])
 	
-		#update taggings
+		port = params[:server_info].split('@').first.to_i
+		port = port == 0 ? nil : port
+		server = params[:server_info].split('@').last
 		
     respond_to do |format|
-      if @licserver.update_attributes(params[:licserver])
+      if @licserver.update!( :port => port, :server => server ) then
 				@licserver.update_tag_list(params[:tags])
-        format.html { render :partial => 'form', :locals => { :licserver => @licserver } }
+        #format.html { render :partial => 'form', :locals => { :licserver => @licserver } }
+        format.html { render status: :ok, nothing: true }
         format.json { head :no_content }
 				format.js
+			else
+				format.html { render status: :bad_request, plain: 'Error' }
       end
     end
   end
