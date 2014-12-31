@@ -1,24 +1,21 @@
 source 'https://rubygems.org'
 
-#gem 'rails', '4.0.12'
-gem 'rails', '4.1.7.1'
-
-# Bundle edge Rails instead:
-# gem 'rails', :git => 'git://github.com/rails/rails.git'
-#ruby '1.9.3'
 ruby '2.1.5'
 
-gem 'sqlite3'
+gem 'rails', '~> 4.1.7'
+
+
+#gem 'sqlite3'
 gem 'yaml_db'
 #gem 'mysql2'
-gem 'ruby-oci8', '~> 2.1.0'
+gem 'ruby-oci8', '~> 2.1.7'
 gem 'activerecord-oracle_enhanced-adapter', '~> 1.5.5'
 #gem 'activerecord-mysql2-adapter'
 
 
 # Gems used only for assets and not required
 # in production environments by default.
-#group :assets do
+group :development do
   gem 'sass-rails',   '~> 4.0.5'
   gem 'coffee-rails', '~> 4.1.0'
 
@@ -27,7 +24,8 @@ gem 'activerecord-oracle_enhanced-adapter', '~> 1.5.5'
 	gem 'libv8'
 
   gem 'uglifier', '>= 1.0.3'
-#end
+	gem 'web-console', '~> 2.0'
+end
 
 #for dev purpose only
 #group :development do
@@ -36,7 +34,6 @@ gem 'activerecord-oracle_enhanced-adapter', '~> 1.5.5'
 
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-#gem 'twitter-bootstrap-rails', '=2.2.7'
 gem 'font-awesome-rails', '=4.2.0'
 gem 'haml'
 #gem 'psych'
@@ -77,6 +74,3 @@ gem 'spreadsheet'
 #user authentication
 gem 'devise'
 gem 'net-ldap', :git => 'https://github.com/ruby-ldap/ruby-net-ldap'
-#gem 'devise', '~> 3.0'
-#gem 'devise_ldap_authenticatable'
-#gem 'devise_ldap_authenticatable', :git => "https://github.com/cschiewek/devise_ldap_authenticatable.git"
