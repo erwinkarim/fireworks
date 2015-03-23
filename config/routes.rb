@@ -19,7 +19,8 @@ Fireworks::Application.routes.draw do
 			get 'search'
 		end
     post 'update_settings'
-    resources :features, :constraints => { :id => /[^\/]+(?=\.html\z|\.json\z|\.xml\z)|[^\/]+/ } do
+    #resources :features, :constraints => { :id => /[^\/]+[^\/]+/ } do
+    resources :features, :constraints => { :id => /.*/ } do
       collection do
         get 'list'
 				get 'lic_info'

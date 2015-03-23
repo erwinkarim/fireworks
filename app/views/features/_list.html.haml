@@ -1,10 +1,11 @@
 - features.each do |feature|
-	.panel.panel-default{ :data => { :'init-features' => 'false' , :licserver => licserver.id, :feature => feature[:name] } }
+	.panel.panel-default{ :data => { :'init-features' => 'false' , :licserver => licserver.id, 
+		:feature => feature[:name] } }
 		.panel-heading{ :role => 'tab' }
 			%h4.panel-title
-				%a.accordion-toggle{ :data => { :toggle => 'collapse', :parent => '#licserver-' + licserver.id.to_s + '-features-listing' }, :href => '#licserver-' + licserver.id.to_s + '-features-' + feature[:name] }
+				%a.accordion-toggle{ :data => { :toggle => 'collapse', :parent => '#licserver-' + licserver.id.to_s + '-features-listing' }, :href => '#licserver-' + licserver.id.to_s + '-features-' + feature[:name].sub('/', '-') }
 					= feature[:name]
-		.panel-collapse.collapse{ :id => 'licserver-' + licserver.id.to_s + '-features-' + feature[:name] }
+		.panel-collapse.collapse{ :id => 'licserver-' + licserver.id.to_s + '-features-' + feature[:name].sub('/', '-')  }
 			.panel-body
 				.features-watch
 				.features-info

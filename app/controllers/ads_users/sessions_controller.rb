@@ -34,7 +34,7 @@ class AdsUsers::SessionsController < Devise::SessionsController
 
   # You can put the params you want to permit in the empty array.
    def configure_sign_in_params
-     devise_parameter_sanitizer.for(:sign_in).push(:login, :domain)
+     devise_parameter_sanitizer.for(:sign_in).push(:username, :login, :domain)
    end
 
 end

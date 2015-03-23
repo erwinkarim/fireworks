@@ -11,7 +11,8 @@ module Devise
 					ldap.port = 636
 					ldap.base = ENV['devise_ldap_base']
 					ldap.encryption :simple_tls
-					ldap.auth "#{login}@#{params[:ads_user][:domain]}", password
+					#ldap.auth "#{login}@#{params[:ads_user][:domain]}", password
+					ldap.auth "#{params[:ads_user][:username] }@#{params[:ads_user][:domain]}", password
 
 					valid_login = false
 					in_group = false
@@ -37,6 +38,7 @@ module Devise
 					end
 
 					if valid_login && in_group then
+						Rails.logger.info 'login is valid and login is in group'
 						#start looking for user or create a new one
 						ads_user = AdsUser.where(:login => params[:ads_user][:username]).first
 
@@ -56,6 +58,7 @@ module Devise
 
 						success!(ads_user)
 					else
+						Rails.logger.info 'Login failed!'
 						#somehow this doesn't work if the user have logon before so blank out username field
 						params[:ads_user][:username] = ""
 						return fail(:invalid)

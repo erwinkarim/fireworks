@@ -5,7 +5,7 @@
 #   gem 'sqlite3'
 development:
   adapter: oracle_enhanced
-  host: 10.1.14.232
+  host: 10.5.98.154
   port: 1521
   database: fw02dev
   username: fireworks
