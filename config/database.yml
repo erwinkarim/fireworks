@@ -43,7 +43,7 @@ test:
 
 production:
   adapter: oracle_enhanced
-  host: 10.1.14.232
+  host: cenpcsbpdmsdb01
   port: 1521
   database: fw02prod
   username: fireworks
