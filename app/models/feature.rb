@@ -10,13 +10,6 @@ class Feature < ActiveRecord::Base
     #update features here
     @licserver = Licserver.find(licserver_id)
     @fullname = @licserver.port.to_s + '@' + @licserver.server
-    #puts "update features for "+ @fullname
-    #output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} | grep "Users of" | grep -vi "error" | gawk '{ print substr($3,0, length($3)-1), $11, $6}'`
-    #output.each_line do |line|
-    #  @licserver.features.create(:name => line.split[0].gsub(/\//, '-'),
-    #     :current => line.split[1], :max => line.split[2])
-    # 
-    #end
     
     #new way to generate features,users and machine  data 
     output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} | grep -vi "error"`
@@ -34,9 +27,6 @@ class Feature < ActiveRecord::Base
           @licserver.feature_headers.create( :name => feature_name, :last_seen => DateTime.now ).save!
         end
         
-        #feature = @licserver.features.create( :name => feature_line.split(" ")[2].gsub(/:/, ''),
-        #  :current => feature_line.split[10], :max => feature_line.split[5]
-        #)
         feature = @licserver.feature_headers.where(:name => feature_name).first.features.create( 
           :name => feature_name, :current => feature_line.split[10], :max => feature_line.split[5],
           :licserver_id => @licserver.id
@@ -44,10 +34,17 @@ class Feature < ActiveRecord::Base
         @licserver.feature_headers.where(:name => feature_name).first.update_attribute(:last_seen, DateTime.now)
         feature.save!
       end
+
+			#collect user info
       user_lines = section.lines.grep(/start/)
       unless user_lines.nil? || user_lines.empty?
         user_lines.each do |user_line|
-          User.generate_features_data( user_line.split(" ")[0], user_line.split(" ")[1], feature.id)
+					user_line_array = user_line.scan(/\S+/)
+					version_index = user_line_array.index{ |x| x =~ /\(\S+\)/ }
+
+          User.generate_features_data( 
+						user_line_array[0..version_index-3].join(" "), user_line_array[version_index-2] , feature.id
+					)
         end
       end
     end
@@ -59,16 +56,21 @@ class Feature < ActiveRecord::Base
     @licserver = Licserver.find(licserver_id)
     @fullname = @licserver.port.to_s + '@' + @licserver.server
 
-    output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} -f #{features_id} | gawk '/start/ { print $1, $2, substr($5,2,length($5)) ,substr($6,1,length($6)-2),$9,gensub(/,/, "", "g", $10), $11 }'`
+    output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} -f #{features_id} | gawk '/start/ { print $0 }'`
 
     users = [] 
     output.each_line do |line|
-      splited = line.split
-      users << { :user => splited[0], :user_id => User.where(:name => splited[0]).map{|x| x.id }.first ,  :machine => splited[1],  
-        :host_id => splited[2].split('/')[0], 
-        :port_id => splited[2].split('/')[1], :handle => splited[3], 
-        :since => Time.parse(splited[4..5].reverse.join(" ")).to_datetime , 
-        :lic_count => splited[6] }
+			line_array = line.scan(/\S+/)
+			version_index = line_array.index{ |x| x =~ /\(\S+\)/ }
+      users << { :user => line_array[0..version_index-3].join(" "), 
+				:user_id => User.find_by_name( line_array[0..version_index-3].join(" ") ),
+				:machine => line_array[version_index-2],
+        :host_id => line_array[version_index+1].split('/')[0].gsub(/\(/, ''),
+        :port_id => line_array[version_index+1].split('/')[1],
+				:handle => line_array[version_index+2].gsub(/\)/, ''),
+        :since => Time.parse(line_array[version_index+4..version_index+6].reverse.join(" ")).to_datetime , 
+        :lic_count => line_array[version_index+7] 
+			}
     end
 
     return users
