@@ -56,7 +56,7 @@ class ReportSchedule < ActiveRecord::Base
     #build the actual reports
     if report_id.nil? then 
       new_report = self.reports.new( :title => self.title,
-        :body => report_text,
+        :body => report_text.to_yaml,
         :start_date => date_range.first, :end_date => date_range.last
       )
     else
@@ -64,7 +64,7 @@ class ReportSchedule < ActiveRecord::Base
       new_report = self.reports.find(report_id)
       new_report.update_attribute(:body ,nil)
       new_report.save!
-      new_report.update_attribute(:body ,report_text)
+      new_report.update_attribute(:body ,report_text.to_yaml)
       new_report.save!
       new_report.update_attributes( :title => self.title,
         :start_date => date_range.first, :end_date => date_range.last

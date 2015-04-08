@@ -7,10 +7,14 @@ class Feature < ActiveRecord::Base
 
   #update features
   def self.update_features(licserver_id)
+		# suppress sql output for a while
+		ActiveRecord::Base.logger = nil
+
     #update features here
     @licserver = Licserver.find(licserver_id)
     @fullname = @licserver.port.to_s + '@' + @licserver.server
     
+		Rails.logger.info "getting stats for #{@fullname} "
     #new way to generate features,users and machine  data 
     output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} | grep -vi "error"`
     header = /Users.*/

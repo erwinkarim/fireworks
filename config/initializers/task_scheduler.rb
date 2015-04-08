@@ -30,7 +30,7 @@ end
 
 #check if any reports needs to be generated
 scheduler.every("5m") do
-  ReportSchedule.where(:schedule => true).each do |rs|
+  ReportSchedule.where(:scheduled => true).each do |rs|
 		if rs.reports.last.nil? then
 			rs.generate_report
 		else
