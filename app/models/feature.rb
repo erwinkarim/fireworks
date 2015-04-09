@@ -46,6 +46,11 @@ class Feature < ActiveRecord::Base
 					user_line_array = user_line.scan(/\S+/)
 					version_index = user_line_array.index{ |x| x =~ /\(\S+\)/ }
 
+					#the version keyword is not in the string, so use the (server/port) keywork instead
+					if version_index.nil? then
+						version_index = user_line_array.index{ |x| x =~ /\(\S+/ }
+					end
+
           User.generate_features_data( 
 						user_line_array[0..version_index-3].join(" "), user_line_array[version_index-2] , feature.id
 					)
@@ -64,16 +69,22 @@ class Feature < ActiveRecord::Base
 
     users = [] 
     output.each_line do |line|
+			correction = 0
 			line_array = line.scan(/\S+/)
 			version_index = line_array.index{ |x| x =~ /\(\S+\)/ }
+			if version_index.nil? then
+				version_index = line_array.index{ |x| x =~ /\(\S+/ }
+				correction = -1
+			end
+			#need to handle cases where the version keyword is not there
       users << { :user => line_array[0..version_index-3].join(" "), 
 				:user_id => User.find_by_name( line_array[0..version_index-3].join(" ") ),
 				:machine => line_array[version_index-2],
-        :host_id => line_array[version_index+1].split('/')[0].gsub(/\(/, ''),
-        :port_id => line_array[version_index+1].split('/')[1],
-				:handle => line_array[version_index+2].gsub(/\)/, ''),
-        :since => Time.parse(line_array[version_index+4..version_index+6].reverse.join(" ")).to_datetime , 
-        :lic_count => line_array[version_index+7] 
+        :host_id => line_array[version_index+correction+1].split('/')[0].gsub(/\(/, ''),
+        :port_id => line_array[version_index+correction+1].split('/')[1],
+				:handle => line_array[version_index+correction+2].gsub(/\)/, ''),
+        :since => Time.parse(line_array[version_index+correction+4..version_index+correction+6].reverse.join(" ")).to_datetime , 
+        :lic_count => line_array[version_index+correction+7] 
 			}
     end
 
