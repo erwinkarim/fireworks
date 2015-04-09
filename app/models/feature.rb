@@ -11,8 +11,8 @@ class Feature < ActiveRecord::Base
 		ActiveRecord::Base.logger = nil
 
     #update features here
-    @licserver = Licserver.find(licserver_id)
-    @fullname = @licserver.port.to_s + '@' + @licserver.server
+    licserver = Licserver.find(licserver_id)
+    @fullname = licserver.port.to_s + '@' + licserver.server
     
 		Rails.logger.info "getting stats for #{@fullname} "
     #new way to generate features,users and machine  data 
@@ -27,15 +27,15 @@ class Feature < ActiveRecord::Base
       unless feature_line.nil? 
         #create new headers where necessary
         feature_name = feature_line.split(" ")[2].gsub(/:/, '')
-        if ( @licserver.feature_headers.where(:name => feature_name ).empty? ) then
-          @licserver.feature_headers.create( :name => feature_name, :last_seen => DateTime.now ).save!
+        if ( licserver.feature_headers.where(:name => feature_name ).empty? ) then
+          licserver.feature_headers.create( :name => feature_name, :last_seen => DateTime.now ).save!
         end
         
-        feature = @licserver.feature_headers.where(:name => feature_name).first.features.create( 
+        feature = licserver.feature_headers.where(:name => feature_name).first.features.create( 
           :name => feature_name, :current => feature_line.split[10], :max => feature_line.split[5],
-          :licserver_id => @licserver.id
+          :licserver_id => licserver.id
         )
-        @licserver.feature_headers.where(:name => feature_name).first.update_attribute(:last_seen, DateTime.now)
+        licserver.feature_headers.where(:name => feature_name).first.update_attribute(:last_seen, DateTime.now)
         feature.save!
       end
 
@@ -52,7 +52,7 @@ class Feature < ActiveRecord::Base
 					end
 
           User.generate_features_data( 
-						user_line_array[0..version_index-3].join(" "), user_line_array[version_index-2] , feature.id
+						user_line_array[0..zero_if_negative(version_index-3)].join(" "), user_line_array[version_index-2] , feature.id
 					)
         end
       end
@@ -62,8 +62,8 @@ class Feature < ActiveRecord::Base
 
   #get list of current users
   def self.current_users(licserver_id,features_id)
-    @licserver = Licserver.find(licserver_id)
-    @fullname = @licserver.port.to_s + '@' + @licserver.server
+    licserver = Licserver.find(licserver_id)
+    @fullname = licserver.port.to_s + '@' + licserver.server
 
     output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} -f #{features_id} | gawk '/start/ { print $0 }'`
 
@@ -77,7 +77,7 @@ class Feature < ActiveRecord::Base
 				correction = -1
 			end
 			#need to handle cases where the version keyword is not there
-      users << { :user => line_array[0..version_index-3].join(" "), 
+      users << { :user => line_array[0..zero_if_negative(version_index-3)].join(" "), 
 				:user_id => User.find_by_name( line_array[0..version_index-3].join(" ") ),
 				:machine => line_array[version_index-2],
         :host_id => line_array[version_index+correction+1].split('/')[0].gsub(/\(/, ''),
@@ -101,15 +101,15 @@ class Feature < ActiveRecord::Base
   #maintaince function:-
   # - remove features that somehow got updated here through update_features function
   def self.remove_old_f(licserver_id)
-    @licserver = Licserver.find(licserver_id) 
-    @lostFeatures = @licserver.features.select("name, count(name) as l_count").group("name").having("count(name) = 1")
+    licserver = Licserver.find(licserver_id) 
+    @lostFeatures = licserver.features.select("name, count(name) as l_count").group("name").having("count(name) = 1")
 
     #start killing them
     transaction do
       @lostFeatures.each do |lostF|
-        @lostFList = @licserver.features.where("name = ?", lostF.name)
+        @lostFList = licserver.features.where("name = ?", lostF.name)
         @lostFList.each do |lostFListDetail|
-          @fToDestory = @licserver.features.find(lostFListDetail.id)
+          @fToDestory = licserver.features.find(lostFListDetail.id)
           @fToDestory.destroy 
         end
       end 
@@ -139,8 +139,8 @@ class Feature < ActiveRecord::Base
   #find and kill idle users
   #return list of users that died
   def self.check_idle_users(licserver_id)
-    @licserver = Licserver.find(licserver_id)
-    @fullname = @licserver.port.to_s + '@' + @licserver.server
+    licserver = Licserver.find(licserver_id)
+    @fullname = licserver.port.to_s + '@' + licserver.server
     
     puts "Kill Idle users for " + @fullname
     #get list of current users and return a kill list
@@ -218,4 +218,11 @@ class Feature < ActiveRecord::Base
     csv_string = String.new
   
   end
+
+	private
+
+	# return zero if the number is negatie
+	def self.zero_if_negative the_number
+		return the_number < 0 ? 0 : the_number
+	end
 end
