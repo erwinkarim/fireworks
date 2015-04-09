@@ -82,7 +82,7 @@ class Feature < ActiveRecord::Base
 				:machine => line_array[version_index-2],
         :host_id => line_array[version_index+correction+1].split('/')[0].gsub(/\(/, ''),
         :port_id => line_array[version_index+correction+1].split('/')[1],
-				:handle => line_array[version_index+correction+2].gsub(/\)/, ''),
+				:handle => line_array[version_index+correction+2].gsub(/\)/, '').gsub(/,/, ''),
         :since => Time.parse(line_array[version_index+correction+4..version_index+correction+6].reverse.join(" ")).to_datetime , 
         :lic_count => line_array[version_index+correction+7] 
 			}

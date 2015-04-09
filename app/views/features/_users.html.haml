@@ -5,7 +5,7 @@
 	- users.each do |user|
 		%tr{ :user => { :id => user[:handle] }	}
 			%td
-				= link_to(user[:user], user[:user_id].nil? ? '#' : user_path(user[:user_id]) )	+ '@' + user[:machine] + ' since ' + user[:since].to_s + ( user[:lic_count].nil? ? '' : ( ' (' + user[:lic_count] + ' licenses)' ) )
+				= link_to(user[:user], user[:user_id].nil? ? '#' : user_path(user[:user_id]) )	+ '@' + user[:machine] + ' since ' + user[:since].strftime("%A, %l:%M%P %d-%b-%Y (%Z)") + ( user[:lic_count].nil? ? '' : ( ' (' + user[:lic_count] + ' licenses)' ) )
 			- if ads_user_signed_in? then
 				%td
 					= link_to "X", licserver_feature_kill_path( licserver, feature , :handle => user[:handle], 
