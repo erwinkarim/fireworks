@@ -43,8 +43,8 @@ test:
 
 production:
   adapter: oracle_enhanced
-  host: cenpcsbpdmsdb01
-  port: 1525
+  host: pww.oracle.ep.petronas.com.my
+  port: 1521
   database: fw02prod
   username: fireworks
   password: fireworks
