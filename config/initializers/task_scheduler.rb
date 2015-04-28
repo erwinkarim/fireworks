@@ -49,3 +49,8 @@ scheduler.every("5m") do
 		end
   end #each
 end
+
+#enforce unique user for selected License Feature
+scheduler.every("2m") do
+	UniqueUserKillList.enforce_unique
+end

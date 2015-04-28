@@ -5,11 +5,11 @@
 #   gem 'sqlite3'
 development:
   adapter: oracle_enhanced
-  host: 10.5.98.154
+  host: pww.oracle.ep.petronas.com.my
   port: 1521
-  database: fw02dev
-  username: fireworks
-  password: fireworks
+  database: fw02prod
+  username: fireworks_dev
+  password: fireworks_dev
   pool: 20
   #adapter: oracle_enhanced
   #host: pcsblinuxsv01

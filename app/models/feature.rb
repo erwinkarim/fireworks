@@ -219,6 +219,29 @@ class Feature < ActiveRecord::Base
   
   end
 
+	# kill users which holding more than one license
+	def self.kill_dup_users(licserver_id, feature_name)
+		#get licserver full name
+		licserver = Licserver.find(1)
+		licserver_name = [licserver.port, licserver.server].join('@')
+
+		#get list of current users
+		current_users = self.current_users(licserver_id, feature_name)
+
+		#get dup users
+		dup_list = current_users.select{ |e| current_users.count{ |x| x[:user] == e[:user] } > 1 }	
+
+		#kill the latest sessions
+		dup_list.each.with_index do |e,i|
+			if i != 0 && e[:user] == dup_list[i-1][:user] then
+				puts "killing #{ e[:user] } @ #{ e[:since] }"
+				#self.kill_user(licserver_id, feature_name, e[:host_id], e[:port_id], e[:handle])
+				output = `#{Rails.root}/lib/myplugin/lmutil lmremove -c #{licserver_name} -h #{feature_name} #{e[:host_id] } #{e[:port_id]} #{e[:handle]}`
+			end
+		end
+		
+	end
+
 	private
 
 	# return zero if the number is negatie

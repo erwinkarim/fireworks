@@ -1,5 +1,13 @@
 .row
 	.col-xs-12
+		%h3 Options
+		%form
+			.checkbox
+				%label
+					%input{ :type => 'checkbox' } Unique Users: Automatically kill users that uses multiple seats of this license
+			%button.btn.btn-primary{ :type => 'button' } Update
+.row
+	.col-xs-12
 		%h3 Monthly Frequency
 		.monthly-graph{ :data => { :licserver => @licserver.id, :feature => params[:id] } }
 .row
