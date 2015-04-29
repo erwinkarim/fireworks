@@ -1,5 +1,7 @@
 Fireworks::Application.routes.draw do
 
+  get 'unique_user_kill_lists/toggle'
+
   get "feature_headers/accordion_group"
 
   #devise_for :ads_users, controllers: { sessions: "ads_users/sessions" }
@@ -31,6 +33,7 @@ Fireworks::Application.routes.draw do
       get 'users'
       get 'data_dump'
       get 'historical_users'
+			post 'toggle_uniq_users'
     end
     resources :tags
   end
@@ -89,6 +92,7 @@ Fireworks::Application.routes.draw do
     collection do
       get 'get_more'
       get 'search'
+			get 'uniq_exempted'
     end
     resources :machines do
       member do

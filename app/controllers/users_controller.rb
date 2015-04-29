@@ -63,6 +63,13 @@ class UsersController < ApplicationController
     end
   end
 
+	#maintain a list of users that is unique exempted
+	#  GET    /users/uniq_exempted
+	def uniq_exempted
+		@users = User.where(:uniq_exempt => true)
+
+	end
+
 	def machine_params
 		params.require(:machine).permit( :name )
 	end

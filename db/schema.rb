@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150428081658) do
+ActiveRecord::Schema.define(version: 20150429071645) do
 
   create_table "ads_users", force: true do |t|
     t.string   "name"
@@ -58,6 +58,7 @@ ActiveRecord::Schema.define(version: 20150428081658) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.datetime "last_seen"
+    t.boolean  "uniq_users",   precision: 1,  scale: 0
   end
 
   add_index "feature_headers", ["feature_id"], name: "i_feature_headers_feature_id"
@@ -370,9 +371,10 @@ ActiveRecord::Schema.define(version: 20150428081658) do
 
   create_table "users", force: true do |t|
     t.string   "name"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
     t.datetime "last_seen_at"
+    t.boolean  "uniq_exempt",  precision: 1, scale: 0
   end
 
   create_table "watch_lists", force: true do |t|

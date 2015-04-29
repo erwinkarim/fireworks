@@ -52,5 +52,7 @@ end
 
 #enforce unique user for selected License Feature
 scheduler.every("2m") do
-	UniqueUserKillList.enforce_unique
+	FeatureHeader.where(:uniq_users => true). each do |feature|
+		Feature.kill_dup_users(feature.licserver_id, feature.name)
+	end
 end

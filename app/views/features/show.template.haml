@@ -1,11 +1,12 @@
-.row
-	.col-xs-12
-		%h3 Options
-		%form
-			.checkbox
-				%label
-					%input{ :type => 'checkbox' } Unique Users: Automatically kill users that uses multiple seats of this license
-			%button.btn.btn-primary{ :type => 'button' } Update
+- if ads_user_signed_in? then
+	.row
+		.col-xs-12
+			%h3 Options
+			%form{:method => 'post', :action => licserver_feature_toggle_uniq_users_path(@licserver.id, params[:id]) }
+				.checkbox
+					%label
+						%input{ :type => 'checkbox', :checked => @single_users } Unique Users: Automatically kill users that uses multiple seats of this license
+				%button.btn.btn-primary{ :type => 'submit' } Update
 .row
 	.col-xs-12
 		%h3 Monthly Frequency

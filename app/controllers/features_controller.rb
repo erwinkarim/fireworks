@@ -26,14 +26,18 @@ class FeaturesController < ApplicationController
   # GET    /licservers/:licserver_id/features/list(.:format)
   # list all features that params[:licserver_id] recently have
   def list
-    #in the future, would retrive from FeaturesSummary table which detect features headers instead of raw data as current format
+    #in the future, would retrive from FeaturesSummary table which detect features headers 
+		#instead of raw data as current format
     @licserver = Licserver.find(params[:licserver_id])
-    #@features = @licserver.features.order('created_at desc').limit(200).pluck(:name).uniq.map{ |item| {:name => item}}
-    #@features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| { :name => item.name } }
-    @features = @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.map{ |item| { :name => item.name, :id => item.id } }
+    @features = @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.map{ 
+			|item| { :name => item.name, :id => item.id } 
+		}
     
     respond_to do |format|
-      format.html { render :partial => 'list', :locals => { :features => @features, :licserver => @licserver, :watched => @watched } }
+      format.html { 
+				render :partial => 'list', 
+				:locals => { :features => @features, :licserver => @licserver, :watched => @watched } 
+			}
       format.json{ render json: @features }
     end
   end
@@ -46,7 +50,7 @@ class FeaturesController < ApplicationController
     if ads_user_signed_in? then
       @watched = current_ads_user.watch_lists.where(:model_type => 'FeatureHeader', :model_id => @feature.id ).first
     end
-    #@users = Feature.current_users(params[:licserver_id], params[:id])
+		@single_users = FeatureHeader.where(:licserver_id => @licserver.id, :name => @feature.name).first.uniq_users
 
     respond_to do |format|
       format.html 
@@ -185,6 +189,19 @@ class FeaturesController < ApplicationController
 			respond_to do |format|
 				format.template
 			end
+	end
+
+	#  POST   /licservers/:licserver_id/features/:feature_id/toggle_uniq_users(.:format)
+	def toggle_uniq_users
+		feature = FeatureHeader.where(:licserver_id => params[:licserver_id], :name => params[:feature_id]).first 
+
+		if feature.update_attribute(:uniq_users, !feature.uniq_users) then
+			flash[:notice] = 'Uniq User policy updated'
+		else
+			flash[:error] = 'Failed to update Uniq User Policy'
+		end
+
+		redirect_to licserver_feature_path(params[:licserver_id], params[:feature_id])
 	end
 
 	def feature_header_params
