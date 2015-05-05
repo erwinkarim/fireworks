@@ -80,10 +80,12 @@ class UsersController < ApplicationController
 			end
 		elsif params[:intent] == 'delete' then
 			#delete 
-			params[:userid].each do |userid|
-				user = User.find_by_id(userid)
-				unless user.nil?
-					user.update_attribute(:uniq_exempt, false)
+			unless params[:userid].nil? 
+				params[:userid].each do |userid|
+					user = User.find_by_id(userid)
+					unless user.nil?
+						user.update_attribute(:uniq_exempt, false)
+					end
 				end
 			end
 		end
@@ -99,6 +101,9 @@ class UsersController < ApplicationController
 	#  GET    /users/uniq_exempted
 	def uniq_exempted
 		@users = User.where(:uniq_exempt => true)
+	end
+
+	def top_users
 	end
 
 	def machine_params

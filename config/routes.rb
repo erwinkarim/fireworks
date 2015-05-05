@@ -92,6 +92,7 @@ Fireworks::Application.routes.draw do
       get 'search'
 			get 'uniq_exempted'
 			post 'uniq_exempted' => 'users#update_uniq_exempted'
+			get 'top_users'
     end
     resources :machines do
       member do

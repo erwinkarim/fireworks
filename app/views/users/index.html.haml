@@ -1,7 +1,7 @@
 .row
 	.col-xs-12.col-md-10.col-md-offset-1
-		.page-header
-			%h2 Users
+		%h2.page-header Users
+			
 .row
 	.col-xs-12.col-md-10.col-md-offset-1
 		%form{ :role => 'form' }
@@ -14,3 +14,24 @@
 .row
 	.col-xs-12.col-md-10.col-md-offset-1
 		%button.btn.btn-primary#load-more-users{ :type => 'button',  :data => { :mode => 'default'}  } Load More Users
+- if ads_user_signed_in? then
+	.row
+		.col-xs-12.col-md-10.col-md-offset-1
+			%h3.page-header Options
+			.row
+				.col-xs-6.col-md-3
+					.thumbnail
+						%img{ :src => 'http://placehold.it/128x128' }
+						.caption
+							%h3 Uniqness Exempted
+							%p List/Edit users who are exempted from unique users in features policy
+							%p
+								%a.btn.btn-default{ :href => uniq_exempted_users_path } Show
+				.col-xs-6.col-md-3
+					.thumbnail
+						%img{ :src => 'http://placehold.it/128x128' }
+						.caption
+							%h3 Top Users
+							%p Show top users
+							%p
+								%a.btn.btn-default{ :href => top_users_users_path } Show
