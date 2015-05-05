@@ -4,9 +4,7 @@ Fireworks::Application.routes.draw do
 
   get "feature_headers/accordion_group"
 
-  #devise_for :ads_users, controllers: { sessions: "ads_users/sessions" }
   devise_for :ads_users
-  #devise_for :users
   
 	resources :ads_users, :ads_user_id => /[^\/]+/ , only: [ :show ]  do
     post 'toggle_watch'
@@ -93,6 +91,7 @@ Fireworks::Application.routes.draw do
       get 'get_more'
       get 'search'
 			get 'uniq_exempted'
+			post 'uniq_exempted' => 'users#update_uniq_exempted'
     end
     resources :machines do
       member do

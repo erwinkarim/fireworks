@@ -63,11 +63,42 @@ class UsersController < ApplicationController
     end
   end
 
+	#update uniq_exempt status
+	# POST   /users/:user_id/uniq_exempt
+	#  required parameter 
+	#  		action			=> add or delete
+	#  		if add
+	#  			username		=> username to uniq, send notification if already there
+	#  		if delete
+	#  			userlist => list of ids that needs to be deleted
+	def update_uniq_exempted
+		if params[:intent] == 'add' then
+			#add users
+			user = User.find_by_name(params[:username])
+			unless user.nil? 
+				user.update_attribute(:uniq_exempt, true)
+			end
+		elsif params[:intent] == 'delete' then
+			#delete 
+			params[:userid].each do |userid|
+				user = User.find_by_id(userid)
+				unless user.nil?
+					user.update_attribute(:uniq_exempt, false)
+				end
+			end
+		end
+
+		respond_to do |format|
+			format.html{ 
+				redirect_to uniq_exempted_users_path
+			}
+		end
+	end
+	 
 	#maintain a list of users that is unique exempted
 	#  GET    /users/uniq_exempted
 	def uniq_exempted
 		@users = User.where(:uniq_exempt => true)
-
 	end
 
 	def machine_params

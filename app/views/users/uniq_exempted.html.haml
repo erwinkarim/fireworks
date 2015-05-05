@@ -2,17 +2,24 @@
 	.col-xs-12
 		%h1.page-header Feature Uniquess Exempted
 	.col-xs-12
-		.form
+		= form_tag uniq_exempted_users_path, :method => :post do
 			%table.table.table-striped
 				%thead
 					%tr
 						%th.col-xs-1 Select
 						%th.col-xs-11 Username
 				%tbody
-			%button.btn.btn-danger{ :type => 'button' } Delete
+					- @users.each do	|user|
+						%tr
+							%td 
+								%input{ :type => 'checkbox', :name=> 'userid[]', :value => user.id }
+							%td #{user.name} 
+			%input{ :type => 'hidden', :name => 'intent', :value => 'delete' }
+			%button.btn.btn-danger{ :type => 'submit' } Delete
 	.col-xs-12
 		%h3.page-header Add User
-		%form
+		= form_tag uniq_exempted_users_path, :method => :post do
 			.form-group
-				%input#search-users.form-control{ :type => 'text', :placeholder => 'Type Username to exempt' }
-			%button.btn.btn-primary{ :type => 'button' } Add
+				%input{ :type => 'hidden', :name => 'intent', :value => 'add' }
+				%input#search-users.form-control{ :name => 'username', :type => 'text', :placeholder => 'Type Username to exempt' }
+			%button.btn.btn-primary{ :type => 'submit' } Add

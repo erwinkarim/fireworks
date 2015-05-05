@@ -227,6 +227,7 @@ class Feature < ActiveRecord::Base
 
 		#get list of current users
 		current_users = self.current_users(licserver_id, feature_name)
+		current_users = current_users.select{ |u| u[:uniq_exempt] == false || u[:uniq_exempt].nil? }
 
 		#get dup users
 		dup_list = current_users.select{ |e| current_users.count{ |x| x[:user] == e[:user] } > 1 }	
