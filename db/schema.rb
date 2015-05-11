@@ -104,8 +104,7 @@ ActiveRecord::Schema.define(version: 20150429071645) do
   add_index "machine_feature_data", ["feature_id"], name: "i_mac_fea_dat_fea_id"
   add_index "machine_feature_data", ["machine_id"], name: "i_mac_fea_dat_mac_id"
 
-  create_table "machine_features", id: false, force: true do |t|
-    t.integer  "id",         precision: 38, scale: 0, null: false
+  create_table "machine_features", force: true do |t|
     t.integer  "machine_id", precision: 38, scale: 0
     t.integer  "feature_id", precision: 38, scale: 0
     t.datetime "created_at",                          null: false
@@ -247,7 +246,7 @@ ActiveRecord::Schema.define(version: 20150429071645) do
 
   add_index "sys_export_schema_01", ["base_process_order"], name: "sys_mtable_00001dec1_ind_2"
   add_index "sys_export_schema_01", ["object_schema", "object_name", "object_type"], name: "sys_mtable_00001dec1_ind_1"
-  add_index "sys_export_schema_01", ["process_order", "duplicate"], name: "sys_c0021059", unique: true
+  add_index "sys_export_schema_01", ["process_order", "duplicate"], name: "sys_c0021190", unique: true
 
   create_table "sys_import_schema_01", id: false, force: true do |t|
     t.decimal  "process_order"
@@ -349,7 +348,7 @@ ActiveRecord::Schema.define(version: 20150429071645) do
 
   add_index "sys_import_schema_01", ["base_process_order"], name: "sys_mtable_00001df75_ind_2"
   add_index "sys_import_schema_01", ["object_schema", "object_name", "object_type"], name: "sys_mtable_00001df75_ind_1"
-  add_index "sys_import_schema_01", ["process_order", "duplicate"], name: "sys_c0021060", unique: true
+  add_index "sys_import_schema_01", ["process_order", "duplicate"], name: "sys_c0021191", unique: true
 
   create_table "tags", force: true do |t|
     t.string   "title"

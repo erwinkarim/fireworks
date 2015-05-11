@@ -1,6 +1,10 @@
 .row
 	.col-xs-12
 		%h1.page-header Feature Uniquess Exempted
+		%ul.breadcrumb
+			%li #{ link_to "Users", users_path }
+			%li.active Uniquess Exempted
+		%p Below is the list of users that if exempted from being killed when the seat uniquess policy is enforced on a license feature. To add a user, you need to ensure that the user has already used the license feature a least once, then type the user name in the "Add User" section of this page.
 	.col-xs-12
 		= form_tag uniq_exempted_users_path, :method => :post do
 			%table.table.table-striped

@@ -1,0 +1,10 @@
+%table.table
+	%thead
+		%tr
+			%th Name
+			%th Observered
+	%tbody
+		- @machines.each do |machine|
+			%tr
+				%td #{link_to machine[0].user.name, user_path(machine[0].user.id) }@#{machine[0].name}
+				%td #{machine[1]}

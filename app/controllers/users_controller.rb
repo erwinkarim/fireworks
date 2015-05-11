@@ -104,6 +104,32 @@ class UsersController < ApplicationController
 	end
 
 	def top_users
+		#get list of machine in past 1 hour (testing)
+
+
+		respond_to do |format|
+			format.html
+			format.template{
+				start_date = 1.hour.ago
+				if params.has_key? :interval then
+					case params[:interval]
+					when "month"
+						start_date=1.month.ago
+					when "week"
+						start_date=1.week.ago
+					when "day"
+						start_date=1.day.ago
+					else
+						start_date=1.hour.ago
+					end
+				end
+				@machines = MachineFeature.where{ created_at.gt start_date }.
+					select("machine_id, count(*) as count").
+					group(:machine_id).order("count desc").
+					limit(10).map{ |x| [Machine.find_by_id(x[:machine_id]), x[:count] ] }
+			}
+			
+		end
 	end
 
 	def machine_params
