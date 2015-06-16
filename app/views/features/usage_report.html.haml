@@ -1,0 +1,15 @@
+.row
+	.col-xs-12
+		%ol.breadcrumb
+			%li #{ link_to 'Fireworks', tags_path }
+			%li #{ link_to 'Servers', licservers_path }
+			%li #{ link_to @licserver.port.to_s + '@' + @licserver.server, licserver_path( params[:licserver_id] ) } 
+			%li #{ link_to 'Features', licserver_features_path(params[:licserver_id]) }
+			%li #{ link_to params[:feature_id], licserver_feature_path(params[:licserver_id], params[:feature_id]) } 
+			%li.active Usage Report
+.row
+	.col-xs-12
+		%h2 Usage Reports
+		%p
+			Display Usage report by department
+		#usage-report-chart

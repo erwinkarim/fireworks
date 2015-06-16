@@ -15,3 +15,9 @@
 
 body { padding-top: 70px; }
 
+#front-jumbotron{ 
+	background-image: url("/wall_e_and_eve-1920x1080.jpg"); 
+	background-size: cover; 
+	height:720px; 
+	color:white;
+}

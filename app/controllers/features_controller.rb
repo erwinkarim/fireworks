@@ -204,6 +204,55 @@ class FeaturesController < ApplicationController
 		redirect_to licserver_feature_path(params[:licserver_id], params[:feature_id])
 	end
 
+	# get usage report by department
+	# GET    /licservers/:licserver_id/features/:feature_id/usage_report(.:format)
+	# works well if you past 24 hours, but doesn't scale well
+	def usage_report
+		@licserver = Licserver.find_by_id(params[:licserver_id])
+		
+		respond_to do |format|
+			format.html
+			format.json {
+				#get feature header id
+				feature_header = FeatureHeader.where(:licserver_id => params[:licserver_id], :name => params[:feature_id]).last
+
+				#get machinefeature connected with this
+				user_list = MachineFeature.select("machine_id, count(*) as machine_count").where(
+					:feature_id => Feature.where(
+						:created_at => 1.day.ago..DateTime.now, :feature_header_id => feature_header.id).map{ |x| x.id }  
+					).group(:machine_id).map do |x|
+						user = Machine.find_by_id(x.machine_id).user
+						ads_user = AdsUser.find_by_id(user.ads_user_id)
+						ads_department = ads_user.nil? ? 0 : ads_user.ads_department_id 
+						{ 
+							:ads_department => ads_department, :ads_user => user.ads_user_id, 
+							#:user => user, 
+							:machine_count => x.machine_count 
+						}
+					end
+				
+				#start populating department list
+				department_list = Array.new
+				user_list.each do |user|
+					department = department_list.select{ |x| x[:ads_department] == user[:ads_department] }.first
+					if department.nil? then
+						department_list << { 
+							:ads_department => (user[:ads_department]),
+							:ads_department_name => ( user[:ads_department] == 0 ? "Unknown" : AdsDepartment.find_by_id(user[:ads_department]).name ),
+							:machine_count => user[:machine_count] 
+						}
+					else
+						department[:machine_count] += user[:machine_count]
+					end
+				end
+
+
+				render :json => department_list
+			}
+			format.js
+		end	
+	end
+
 	def feature_header_params
 		params.require(:feature_header).permit( :name, :licserver_id, :feature_id, :last_seen )
 	end

@@ -32,6 +32,7 @@ Fireworks::Application.routes.draw do
       get 'data_dump'
       get 'historical_users'
 			post 'toggle_uniq_users'
+			get 'usage_report'
     end
     resources :tags
   end

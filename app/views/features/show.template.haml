@@ -7,6 +7,8 @@
 					%label
 						%input{ :type => 'checkbox', :checked => @single_users } Unique Users: Automatically kill users that uses multiple seats of this license
 				%button.btn.btn-primary{ :type => 'submit' } Update
+			%p
+				%a.btn.btn-default{ :href => licserver_feature_usage_report_path(@licserver.id, params[:id]) } Usage Report
 .row
 	.col-xs-12
 		%h3 Monthly Frequency

@@ -11,7 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150429071645) do
+ActiveRecord::Schema.define(version: 20150616022459) do
+
+  create_table "ads_departments", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "company_name"
+  end
 
   create_table "ads_users", force: true do |t|
     t.string   "name"
@@ -30,8 +37,10 @@ ActiveRecord::Schema.define(version: 20150429071645) do
     t.string   "username"
     t.string   "email"
     t.string   "domain"
+    t.integer  "ads_department_id",      precision: 38, scale: 0
   end
 
+  add_index "ads_users", ["ads_department_id"], name: "i_ads_users_ads_department_id"
   add_index "ads_users", ["reset_password_token"], name: "i_ads_use_res_pas_tok", unique: true
   add_index "ads_users", ["username"], name: "index_ads_users_on_username"
 
@@ -370,11 +379,14 @@ ActiveRecord::Schema.define(version: 20150429071645) do
 
   create_table "users", force: true do |t|
     t.string   "name"
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
     t.datetime "last_seen_at"
-    t.boolean  "uniq_exempt",  precision: 1, scale: 0
+    t.boolean  "uniq_exempt",  precision: 1,  scale: 0
+    t.integer  "ads_user_id",  precision: 38, scale: 0
   end
+
+  add_index "users", ["ads_user_id"], name: "index_users_on_ads_user_id"
 
   create_table "watch_lists", force: true do |t|
     t.integer  "ads_user_id", precision: 38, scale: 0

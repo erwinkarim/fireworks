@@ -9,6 +9,7 @@ class AdsUser < ActiveRecord::Base
   #attr_accessible :login, :password, :password_confirmation, :remember_me, :email
   #attr_accessible :username, :domain
 	has_many :watch_lists, :dependent => :destroy
+	belongs_to :ads_department 
 
 	validates :username, presence: true, uniqueness: true
 
