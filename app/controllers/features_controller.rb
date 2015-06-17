@@ -232,26 +232,25 @@ class FeaturesController < ApplicationController
 				and users.ads_user_id = ads_users.id
 				and ads_users.ads_department_id = ads_departments.id
 				group by
-				ads_departments.company_name, ads_departments.name").rows.map{ |x| 
-					{ :company_name => x[0], :department_name => x[1],  :machine_count => x[2] } 
-				}
-
-				results << ActiveRecord::Base.connection.exec_query("select count(machines.id) from
+				ads_departments.company_name, ads_departments.name
+				union
+				select 'no company' as company_name, 'no department' as name, count(machines.id) from
 				feature_headers
 				, features
 				, machine_Features
 				, machines
 				, users
 				where
-				feature_headers.name = 'Root5.8.5' AND feature_headers.licserver_id = 7
+				feature_headers.name = '#{params[:feature_id]}' AND feature_headers.licserver_id = #{params[:licserver_id]}
 				and features.feature_header_id = feature_headers.id
 				and features.created_at > sysdate - 30 and features.created_at < sysdate
 				and machine_features.feature_id = features.id
 				and machine_features.machine_id = machines.id
 				and machines.user_id = users.id
-				and users.ads_user_id is null").rows.map{ |x| 
-					{  :company_name => 'No Company', :department_name => 'No Department', :machine_count => x[0] } 
-				}.first
+				and users.ads_user_id is null
+				").rows.map{ |x| 
+					{ :company_name => x[0], :department_name => x[1],  :machine_count => x[2] } 
+				}
 
 				render :json => results
 			}
