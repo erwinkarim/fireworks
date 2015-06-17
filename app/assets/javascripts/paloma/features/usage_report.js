@@ -22,19 +22,24 @@
 		console.log('features/usage_report loaded');
 
 		var chart_options = {
-			chart: { type: 'bar', renderTo: 'usage-report-chart' },
-			title: { text: 'Feature Usage by department' },
+			chart: { type: 'column', renderTo: 'usage-report-chart' },
+			title: { text: 'Last 30 days Feature Usage by Company/Department' },
 			xAxis: { 
-				categories: ['Last 24 Hours']
+				type: 'category', labels: { rotation: 45 }
 			},
 			yAxis: {
-				min: 0, title: { text:'Lic Count percentage' }
+				min: 0, title: { text:'Lic Count observered' },
+				stackLabels:{
+					enabled: true
+				}
 			},
-			plotOptions: { series: { stacking: 'percent' } },
 			tooltip: {
-				pointFormat: '<span style="color:{series:color}">{series.name}</span>: <b>{point.y}</b> ( {point.percentage:.2f}%)</br>', 
+				//pointFormat: '<span style="color:{series:color}">{series.name}</span>: 
+				//<b>{point.y}</b> ( {point.percentage:.2f}%)</br>', 
+				pointFormat: '<span style="color:{series:color}">{series.name}</span>: <b>{point.y}</b> <br />', 
 			},
-			series: []
+			series: [ { name:"Company", colorByPoint: true, data: [] } ],
+			drilldown: { series: [] }
 		}
 
 		//display the chart
@@ -42,8 +47,32 @@
 		$.getJSON(location.href + '.json', function(data) {
 			//populate data in the series
 			$.each(data, function(index,value){
-				chart_options.series.push( { name:value.ads_department_name, data:[value.machine_count] } )
-			});
+				//chart_options.series.push( { name:value.company_name, data:[value.machine_count] } )
+				//try to find the company name in chart_options.series index
+				var inArray = false;
+				$.each(chart_options.series[0].data, function(index,series_value){
+					if( series_value.name == value.company_name) {
+						series_value.y += value.machine_count;
+						//find the drill down and add the data
+						$.each(chart_options.drilldown.series, function(index, drilldown_series_value){
+							if(drilldown_series_value.name == value.company_name){
+									drilldown_series_value.data.push( [value.department_name, value.machine_count] );
+							};
+						});
+						inArray = true;
+					} 
+				}); // $.each(chart_options.series, function(index,series_value){
+
+				//data is not found at series level
+				if( inArray == false){
+					chart_options.series[0].data.push( 
+						{ name:value.company_name, drilldown:value.company_name, y:value.machine_count } 
+					);
+					chart_options.drilldown.series.push( 
+						{ name:value.company_name, id:value.company_name, data:[ [value.department_name, value.machine_count ] ] } 
+					);
+				};
+			}); // $.each(data, function(index,value){
 			console.log(chart_options);
 			var usage_chart = new Highcharts.Chart(chart_options);
 		});

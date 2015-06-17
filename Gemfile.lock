@@ -64,7 +64,7 @@ GEM
     dotenv (1.0.2)
     erubis (2.7.0)
     execjs (2.2.2)
-    font-awesome-rails (4.2.0.0)
+    font-awesome-rails (4.3.0.0)
       railties (>= 3.2, < 5.0)
     foreman (0.76.0)
       dotenv (~> 1.0.2)
@@ -183,7 +183,7 @@ DEPENDENCIES
   daemons
   delayed_job_active_record
   devise
-  font-awesome-rails (= 4.2.0)
+  font-awesome-rails (= 4.3.0)
   foreman
   haml
   jquery-rails

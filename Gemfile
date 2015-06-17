@@ -34,7 +34,7 @@ end
 
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-gem 'font-awesome-rails', '=4.2.0'
+gem 'font-awesome-rails', '=4.3.0'
 gem 'haml'
 #gem 'psych'
 

@@ -213,41 +213,47 @@ class FeaturesController < ApplicationController
 		respond_to do |format|
 			format.html
 			format.json {
-				#get feature header id
-				feature_header = FeatureHeader.where(:licserver_id => params[:licserver_id], :name => params[:feature_id]).last
+				results = ActiveRecord::Base.connection.exec_query("select 
+				ads_departments.company_name, ads_departments.name, count(machines.id) from 
+				feature_headers 
+				, features
+				, machine_Features
+				, machines
+				, users
+				, ads_users
+				, ads_departments
+				where 
+				feature_headers.name = '#{params[:feature_id]}' AND feature_headers.licserver_id = #{params[:licserver_id]}
+				and features.feature_header_id = feature_headers.id
+				and features.created_at > sysdate - 30 and features.created_at < sysdate
+				and machine_features.feature_id = features.id
+				and machine_features.machine_id = machines.id
+				and machines.user_id = users.id
+				and users.ads_user_id = ads_users.id
+				and ads_users.ads_department_id = ads_departments.id
+				group by
+				ads_departments.company_name, ads_departments.name").rows.map{ |x| 
+					{ :company_name => x[0], :department_name => x[1],  :machine_count => x[2] } 
+				}
 
-				#get machinefeature connected with this
-				user_list = MachineFeature.select("machine_id, count(*) as machine_count").where(
-					:feature_id => Feature.where(
-						:created_at => 1.day.ago..DateTime.now, :feature_header_id => feature_header.id).map{ |x| x.id }  
-					).group(:machine_id).map do |x|
-						user = Machine.find_by_id(x.machine_id).user
-						ads_user = AdsUser.find_by_id(user.ads_user_id)
-						ads_department = ads_user.nil? ? 0 : ads_user.ads_department_id 
-						{ 
-							:ads_department => ads_department, :ads_user => user.ads_user_id, 
-							#:user => user, 
-							:machine_count => x.machine_count 
-						}
-					end
-				
-				#start populating department list
-				department_list = Array.new
-				user_list.each do |user|
-					department = department_list.select{ |x| x[:ads_department] == user[:ads_department] }.first
-					if department.nil? then
-						department_list << { 
-							:ads_department => (user[:ads_department]),
-							:ads_department_name => ( user[:ads_department] == 0 ? "Unknown" : AdsDepartment.find_by_id(user[:ads_department]).name ),
-							:machine_count => user[:machine_count] 
-						}
-					else
-						department[:machine_count] += user[:machine_count]
-					end
-				end
+				results << ActiveRecord::Base.connection.exec_query("select count(machines.id) from
+				feature_headers
+				, features
+				, machine_Features
+				, machines
+				, users
+				where
+				feature_headers.name = 'Root5.8.5' AND feature_headers.licserver_id = 7
+				and features.feature_header_id = feature_headers.id
+				and features.created_at > sysdate - 30 and features.created_at < sysdate
+				and machine_features.feature_id = features.id
+				and machine_features.machine_id = machines.id
+				and machines.user_id = users.id
+				and users.ads_user_id is null").rows.map{ |x| 
+					{  :company_name => 'No Company', :department_name => 'No Department', :machine_count => x[0] } 
+				}.first
 
-
-				render :json => department_list
+				render :json => results
 			}
 			format.js
 		end	
