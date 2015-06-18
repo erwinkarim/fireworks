@@ -225,7 +225,7 @@ class FeaturesController < ApplicationController
 				where 
 				feature_headers.name = '#{params[:feature_id]}' AND feature_headers.licserver_id = #{params[:licserver_id]}
 				and features.feature_header_id = feature_headers.id
-				and features.created_at > sysdate - 30 and features.created_at < sysdate
+				and features.created_at > sysdate - 2 and features.created_at < sysdate
 				and machine_features.feature_id = features.id
 				and machine_features.machine_id = machines.id
 				and machines.user_id = users.id
@@ -243,7 +243,7 @@ class FeaturesController < ApplicationController
 				where
 				feature_headers.name = '#{params[:feature_id]}' AND feature_headers.licserver_id = #{params[:licserver_id]}
 				and features.feature_header_id = feature_headers.id
-				and features.created_at > sysdate - 30 and features.created_at < sysdate
+				and features.created_at > sysdate - 2 and features.created_at < sysdate
 				and machine_features.feature_id = features.id
 				and machine_features.machine_id = machines.id
 				and machines.user_id = users.id
@@ -251,6 +251,15 @@ class FeaturesController < ApplicationController
 				").rows.map{ |x| 
 					{ :company_name => x[0], :department_name => x[1],  :machine_count => x[2] } 
 				}
+
+				<<-EOF
+				results = [ 
+					{ :company_name => 'test1', :department_name => 'test_department1', :machine_count => 100 },
+					{ :company_name => 'test1', :department_name => 'test_department2', :machine_count => 50 } ,
+					{ :company_name => 'test2', :department_name => 'test_department3', :machine_count => 75 },
+					{ :company_name => 'test2', :department_name => 'test_department4', :machine_count => 25 }
+				]
+				EOF
 
 				render :json => results
 			}

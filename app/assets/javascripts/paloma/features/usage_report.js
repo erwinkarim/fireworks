@@ -21,9 +21,16 @@
     // Do something here.
 		console.log('features/usage_report loaded');
 
+		var datasum = 0;
 		var chart_options = {
-			chart: { type: 'column', renderTo: 'usage-report-chart' },
+			chart: { 
+				type: 'column', renderTo: 'usage-report-chart' ,
+				height: 800,
+				panning: true, panKey: 'shift',
+				zoomType: 'x'
+			},
 			title: { text: 'Last 30 days Feature Usage by Company/Department' },
+			subtitle: { text: 'Graph is drillable and zoomable. Use the shift key to pan' },
 			xAxis: { 
 				type: 'category', labels: { rotation: 45 }
 			},
@@ -31,6 +38,23 @@
 				min: 0, title: { text:'Lic Count observered' },
 				stackLabels:{
 					enabled: true
+				},
+				labels: {
+					formatter: function(){
+						var pcnt =  (this.value / datasum) * 100;
+						return Highcharts.numberFormat(pcnt, 0, ',') + '%';
+					}
+				}
+			},
+			plotOptions: {
+				series: {
+					dataLabels: {
+						enabled:true,
+						formatter: function(){
+							var pcnt = (this.y / datasum ) * 100;
+							return Highcharts.numberFormat(pcnt) + '%';
+						}
+					}
 				}
 			},
 			tooltip: {
@@ -50,6 +74,7 @@
 				//chart_options.series.push( { name:value.company_name, data:[value.machine_count] } )
 				//try to find the company name in chart_options.series index
 				var inArray = false;
+				datasum += value.machine_count;
 				$.each(chart_options.series[0].data, function(index,series_value){
 					if( series_value.name == value.company_name) {
 						series_value.y += value.machine_count;
@@ -75,6 +100,10 @@
 			}); // $.each(data, function(index,value){
 			console.log(chart_options);
 			var usage_chart = new Highcharts.Chart(chart_options);
+		}).fail( function(jqXHR, textStatus){
+			$('#usage-report-chart').empty().append(
+				textStatus + ' Refresh page.'
+			);
 		});
   };
 })();
