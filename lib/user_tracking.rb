@@ -29,8 +29,9 @@ module UserTracking
 							:username => result[:userprincipalname].first, 
 							:domain => result[:userprincipalname].first.split('@').last )
 						puts ads_user.inspect
-						#if ads_user.valid? then
-						if ads_user.save! then
+						if ads_user.valid? then
+						#if ads_user.save! then
+							ads_user.save!
 							#user is a valid ads user
 							#check for department
 							department = AdsDepartment.find_by_name(result[:department].first)
