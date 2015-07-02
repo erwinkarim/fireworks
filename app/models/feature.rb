@@ -236,7 +236,7 @@ class Feature < ActiveRecord::Base
 		#kill the latest sessions
 		dup_list.each.with_index do |e,i|
 			if i != 0 && e[:user] == dup_list[i-1][:user] then
-				puts "killing #{ e[:user] } @ #{ e[:since] }"
+				Rails.logger.info "#{ DateTime.now.strftime } : Killing #{ e[:user] }@#{e[:machine]}, #{ e[:since] } for holding multiple #{feature_name} seats"
 				#self.kill_user(licserver_id, feature_name, e[:host_id], e[:port_id], e[:handle])
 				output = `#{Rails.root}/lib/myplugin/lmutil lmremove -c #{licserver_name} -h #{feature_name} #{e[:host_id] } #{e[:port_id]} #{e[:handle]}`
 			end

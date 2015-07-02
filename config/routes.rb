@@ -5,7 +5,7 @@ Fireworks::Application.routes.draw do
   get "feature_headers/accordion_group"
 
   devise_for :ads_users
-  
+
 	resources :ads_users, :ads_user_id => /[^\/]+/ , only: [ :show ]  do
     post 'toggle_watch'
 		resources :watch_lists, only: [:index, :show]
@@ -33,6 +33,7 @@ Fireworks::Application.routes.draw do
       get 'historical_users'
 			post 'toggle_uniq_users'
 			get 'usage_report'
+      post 'mail'
     end
     resources :tags
   end
@@ -61,7 +62,7 @@ Fireworks::Application.routes.draw do
   #  match '/reports/schedule/configure' => :schedule_configure, :via => :get, :as => 'schedule_configure'
   #  match '/reports/schedule' => :schedule, :via => :get, :as => 'reports_schedules'
   #  match '/reports/schedule/:schedule_id' => :reports_schedule, :via => :get, :as => 'reports_schedule'
-  #  match '/reports/schedule/:schedule_id/reports' => :reports_schedule_detail, 
+  #  match '/reports/schedule/:schedule_id/reports' => :reports_schedule_detail,
   #    :via => :get, :as => 'reports_schedule_detail'
   #  match '/reports/configure/new' => :schedule_new, :via => :get, :as => 'reports_schedule_new'
   #  match '/reports/configure/new' => :schedule_create, :via => :post, :as => 'reports_schedule_create'
@@ -72,7 +73,7 @@ Fireworks::Application.routes.draw do
 
   resources :report_schedules do
     get 'accordion'
-    collection do 
+    collection do
       get 'gen_monitored_obj_listings'
     end
     resources :reports do

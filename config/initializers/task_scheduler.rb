@@ -1,3 +1,4 @@
+require 'user_tracking'
 scheduler = Rufus::Scheduler.new
 
 scheduler.every("11m") do
@@ -5,8 +6,8 @@ scheduler.every("11m") do
   @licserver = Licserver.where{ to_delete.eq false }
   @licserver.each do |lic|
     Feature.update_features(lic.id)
-  end 
-end 
+  end
+end
 
 # remove errenous featurse everyday at 10
 # every day of the week at 22:00 (10pm)
@@ -15,6 +16,11 @@ scheduler.cron('0 22 * * *') do
     @licserver.each do |lic|
       Feature.remove_old_f(lic.id)
     end
+end
+
+# link new user to ad
+scheduler.cron('0 22 * * *') do
+  UserTracking.link_user_to_ad ENV['ads_user'], ENV['ads_password']
 end
 
 # check and kill idle/unregistered users (if setted)

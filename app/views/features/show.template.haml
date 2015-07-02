@@ -32,9 +32,9 @@
 					%i.fa.fa-bar-chart-o
 					Load all Data
 				%button#load-older.btn.btn-default{ :disabled => true }
-					%i.fa.fa-fast-backward 
+					%i.fa.fa-fast-backward
 					Load Older Data
-				= link_to fa_icon('download', :text => 'Download XML Data'), 
+				= link_to fa_icon('download', :text => 'Download XML Data'),
 					licserver_feature_data_dump_path(@licserver.id, params[:id], :format => :xml) , :class => 'btn btn-default', :format => :xml
 		%br
 .row
@@ -53,14 +53,14 @@
 							%i.fa.fa-refresh
 							Refresh
 						- if ads_user_signed_in? then
-							%button#nuke-users.btn.btn-danger{ :type => 'button', :disabled => 'disabled', :data => { :toggle => 'modal', 
+							%button#nuke-users.btn.btn-danger{ :type => 'button', :disabled => 'disabled', :data => { :toggle => 'modal',
 								:target => '#nuke-' + @licserver.id.to_s + '-' + params[:id] } }
-								= fa_icon('bomb', { :text => 'Nuke\'em' }) 
+								= fa_icon('bomb', { :text => 'Nuke\'em' })
 							.modal.fade{ :id => 'nuke-' + @licserver.id.to_s + '-' + params[:id] }
 								.modal-dialog
 									.modal-content
 										.modal-header
-											%button.close{ :type => 'button',	:data => { :dismiss => 'modal' }, :'aria-hidden' => 'true' } &times; 
+											%button.close{ :type => 'button',	:data => { :dismiss => 'modal' }, :'aria-hidden' => 'true' } &times;
 											%h4.modal-title Nuke'em
 										.modal-body
 											%p.text-left <strong>Warning:</strong> This action will kill every users that is using this feature. To confirm that you really want to do this, please type the name of the feature in the input box below
@@ -70,18 +70,37 @@
 										.modal-footer
 											%a.btn.btn-default{ :href => '#', :data => { :dismiss => 'modal' }  } Close
 											%a.btn.btn-danger#really-nuk-em{ :href => '#', :data => { :feature => params[:id] } } #{ fa_icon('bomb', {:text => 'Nuke\'em' }) }
+							%button.btn.btn-info{:type => 'button', :data => { :toggle => 'modal', :target => '#mass-email'}}
+								%i.fa.fa-envelope
+								Mail
+							.modal.fade#mass-email
+								.modal-dialog
+									.modal-content
+										.modal-header
+											%button.close{ :type => 'button', :data => { :dismiss => 'modal' } }
+											%h4.modal-title Send Message to all users
+										.modal-body
+											= form_tag licserver_feature_mail_path(@licserver, params[:id]), :id => 'mail-form' do
+												%textarea.form-control{ :placeholder => 'Type Message Here', :rows => 10}
+										.modal-footer
+											%a.btn.btn-default{ :href => '#', :data => { :dismiss => 'modal'}} Close
+											%a.btn.btn-primary#send-message{ :href => '#'} Send Message
+
 						#user-list-last-update
+						#user-count
 					%thead
 						%tr
 							%th User Info
+							%th Department
+							%th Company
 							- if ads_user_signed_in? then
 								%th Kill?
 					%tbody
 						%tr
-							%td.loading-users( colspan=2 )
+							%td.loading-users( colspan=4 )
 								%i.fa.fa-cog.fa-spin.fa-4x
 			.tab-pane#historical-users
-				%table#historical-user-listings.table.table-striped.table-hover{ :data => { :licserver => @licserver.id, 
+				%table#historical-user-listings.table.table-striped.table-hover{ :data => { :licserver => @licserver.id,
 					:feature => params[:id] } }
 					%caption
 						%strong Historical User Listing

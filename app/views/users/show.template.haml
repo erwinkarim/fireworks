@@ -9,17 +9,27 @@
 				%dt Last Seen:
 				%dd
 					= @user.last_seen_at.nil? ? 'Unknown' : @user.last_seen_at.localtime
+				- if !@user.ads_user.nil? then
+					%dt Real Name:
+					%dd #{@user.ads_user.name}
+					%dt Email:
+					%dd #{@user.ads_user.email}
+					- if !@user.ads_user.ads_department.nil? then
+						%dt Department Name
+						%dd #{@user.ads_user.ads_department.name}
+						%dt Company Name
+						%dd #{@user.ads_user.ads_department.company_name}
 .row-fluid
 	.span12
 		.user-machines{ :data => { :init => "false" } }
 			%ul.nav.nav-tabs{ :id => 'user' + @user.id.to_s + '-tabs' }
 				- @user.machines.each do |machine|
 					%li
-						%a{ :href => '#user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
-							:data => { :toggle => 'tab', :'user-id' => @user.id, :'user-name' => @user.name, :'machine-id' => machine.id, 
+						%a{ :href => '#user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s,
+							:data => { :toggle => 'tab', :'user-id' => @user.id, :'user-name' => @user.name, :'machine-id' => machine.id,
 								:init => "false", :'machine-name' => machine.name } }
 							= machine.name
 			.tab-content
 				- @user.machines.each do |machine|
-					.tab-pane{ :id => 'user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
+					.tab-pane{ :id => 'user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s,
 						:data => { :'machine-id' => machine.id, :'user-id' => @user.id , :'user-name' => @user.name, :'machine-name' => machine.name} }

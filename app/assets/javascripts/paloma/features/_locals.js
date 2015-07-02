@@ -10,13 +10,13 @@
   var locals = Paloma.locals['features'] = {};
 
   // ~> Start local definitions here and remove this line.
-	
+
 	// load daily_grpah into a handle
 	// requirements:
 	// 		handle must have the following attributes:-
 	// 		data-feature			The name of the feature
 	// 		data-licserver		the licserver id
-	// 		data-last_data_point 
+	// 		data-last_data_point
   locals.load_daily_graph = function( handle){
 			//setup the graph
 			graph_handle = handle.find('.graph');
@@ -27,7 +27,7 @@
             load: function(){
               //console.log('lazy load daily data');
               var chart_handle = this;
-              var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 
+              var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' +
                 handle.attr('data-feature') + '/get_data.json';
               //since share common w/ tags/index, share this out
               function recursive_data_load(last_data_point){
@@ -42,7 +42,7 @@
                     dataType:'json', data:data_header
                   }).done( function(data, textStatus, jqXHR){
                     //console.log('load data into the graph upto id ' + data['last_id'] )
-              
+
                     //add current data
                     //better wayt load 10000 data points at a time
                     for(i=0; i < data['data'][0]['data'].length; i++){
@@ -70,7 +70,7 @@
                   });
                 };
               }
-    
+
               recursive_data_load(null);
               chart_handle.redraw();
             }
@@ -78,11 +78,11 @@
         },
         rangeSelector: {
           buttons: [
-            { type: 'hour', count: 1, text: '1h' }, 
-            { type: 'day', count: 1, text: '1d' }, 
-            { type: 'week', count: 1, text: '1w' }, 
-            { type: 'month', count: 1, text: '1m' }, 
-            { type: 'year', count: 1, text: '1y' }, 
+            { type: 'hour', count: 1, text: '1h' },
+            { type: 'day', count: 1, text: '1d' },
+            { type: 'week', count: 1, text: '1w' },
+            { type: 'month', count: 1, text: '1m' },
+            { type: 'year', count: 1, text: '1y' },
             { type: 'all', text: 'All' }
           ], selected : 2 // all
         } ,
@@ -96,11 +96,11 @@
             events:{
               click:function(e){
                 //console.log(e.point.x);
-              
-                //load new users when historical user listing is active 
+
+                //load new users when historical user listing is active
                 if( $('#historical-users').hasClass('active')  ){
                   $('#historical-user-listings').empty();
-                  load_path = '/licservers/' + handle.attr('data-licserver') +  '/features/' + 
+                  load_path = '/licservers/' + handle.attr('data-licserver') +  '/features/' +
                     handle.attr('data-feature') + '/historical_users';
                   $.get( load_path, { time_id:e.point.x } , function(data,textStatus,jqXHR){
                     $('#historical-user-listings').append(data).ready( function(){
@@ -114,17 +114,17 @@
       }); // handle.highcharts('StockChart', {
 
 			//setup the buttons
-			
+
       //load more data into the graph
       handle.find('#load-older').click( function(){
 
-        var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 
+        var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' +
           handle.attr('data-feature') + '/get_data.json';
         chart_handle = handle.find('.graph').highcharts();
 
-        $.ajax(data_load_path, { 
+        $.ajax(data_load_path, {
           data: {start_id:handle.attr('data-last-point') },
-          dataType:'json', 
+          dataType:'json',
           beforeSend: function(){
             handle.find('#load-older').attr('disabled', 'disabled');
             handle.find('#dump-everything').attr('disabled', 'disabled');
@@ -144,12 +144,12 @@
           }
           handle.attr('data-last-point', data['last_id']);
         });
-      
+
       }); // handle.find('#load-older').click( function(){
 
       //dump eveyrthing into the graph (this can take a while)
       handle.find('#dump-everything').click( function(){
-        var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 
+        var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' +
           handle.attr('data-feature') + '/data_dump';
         chart_handle = handle.find('.graph').highcharts();
 
@@ -168,7 +168,7 @@
         }).done( function(data, textStatus, jqXHR){
           chart_handle.series[0].setData(data['data'][0]['data'], true);
           chart_handle.series[1].setData(data['data'][1]['data'], true);
-        }); 
+        });
       }); // handle.find('#dump-everything').click( function(){
     }; // locals.load_daily_graph = function( handle){
 
@@ -205,7 +205,7 @@
         series: [
           { name:'Office Hours', data:[] },
           { name:'All Hours', data:[] }
-  
+
         ]
       });
     }; // locals.load_monthly_histogram = function( handle ) {
@@ -231,7 +231,10 @@
 					$('#user-list-last-update').empty().append(
 						$.parseHTML('Updated: ' + (new Date( $.now()).toLocaleString() ) )
 					);
-				}, 'html' ); 
+          $('#user-count').empty().append(
+              handle.find('tbody').find('tr').length + ' User(s)'
+          )
+				}, 'html' );
 			};
 
       //refresh user listings
@@ -266,7 +269,7 @@
 					handle.closest('.tab-content').find('.kill-user').each( function(index){
 						$(this).click();
 					});
-					
+
 					//reset the form and hide
 					confirmation_handle.val('');
 					modal_handle.modal('hide');
