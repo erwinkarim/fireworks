@@ -13,7 +13,7 @@
   // Access locals for the current scope through the _l object.
   //
   // Example:
-  // _l.localMethod(); 
+  // _l.localMethod();
   var _l = _L['features'];
 
   Paloma.callbacks['features']['show'] = function(params){
@@ -29,7 +29,8 @@
       _l.load_daily_graph( $('.daily-graph:first') );
       _l.load_monthly_histogram( $('.monthly-graph:first') );
       _l.load_users( $('#user-listings') );
-			_l.nuke_users( $('#really-nuk-em') );
+			_l.nuke_users( $('#really-nuk-em'));
+      _l.mail_users( $('#send-message'));
 
 
       $('#watchlist').on('ajax:success', function(data, status, xhr){

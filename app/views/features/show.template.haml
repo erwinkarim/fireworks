@@ -70,15 +70,16 @@
 										.modal-footer
 											%a.btn.btn-default{ :href => '#', :data => { :dismiss => 'modal' }  } Close
 											%a.btn.btn-danger#really-nuk-em{ :href => '#', :data => { :feature => params[:id] } } #{ fa_icon('bomb', {:text => 'Nuke\'em' }) }
-							%button.btn.btn-info{:type => 'button', :data => { :toggle => 'modal', :target => '#mass-email'}}
+							%button.btn.btn-info{:type => 'button',
+								:data => { :toggle => 'modal', :target => "#mass-email-#{@licserver.id.to_s}-#{params[:id]}"}}
 								%i.fa.fa-envelope
 								Mail
-							.modal.fade#mass-email
+							.modal.fade{ :id => "mass-email-#{@licserver.id.to_s}-#{params[:id]}"}
 								.modal-dialog
 									.modal-content
 										.modal-header
 											%button.close{ :type => 'button', :data => { :dismiss => 'modal' } }
-											%h4.modal-title Send Message to all users
+											%h4.modal-title Send Message to all users of #{params[:id]}
 										.modal-body
 											= form_tag licserver_feature_mail_path(@licserver, params[:id]), :id => 'mail-form' do
 												%textarea.form-control{ :placeholder => 'Type Message Here', :rows => 10}

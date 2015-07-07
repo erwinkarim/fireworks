@@ -283,6 +283,17 @@
 			});
 		};
 
+    //send mail to all users
+    locals.mail_users = function(handle){
+      handle.on('click', function(){
+        console.log('mail button pressed')
+
+        var form_handle = handle.closest('.modal').find('form');
+        form_handle.submit();
+        //
+
+      });
+    };
   // Remove this line if you don't want to inherit locals defined
   // on parent's _locals.js
   Paloma.inheritLocals({from : '/', to : 'features'});

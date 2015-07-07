@@ -13,7 +13,7 @@
   // Access locals for the current scope through the _l object.
   //
   // Example:
-  // _l.localMethod(); 
+  // _l.localMethod();
   var _l = _L['watch_lists'];
 
 
@@ -40,6 +40,7 @@
 											_L.features.load_monthly_histogram( handle.find('.monthly-graph') );
 											_L.features.load_users( handle.find('#user-listings') );
 											_L.features.nuke_users( handle.find('#really-nuk-em') );
+                      // for mail
 										} else if (handle.attr('data-model-type') == 'Licserver'){
 											console.log('load Licserver scripts');
 											handle.find('.content').attr('data-licserver', handle.attr('data-model-id') );
