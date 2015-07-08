@@ -270,7 +270,10 @@ class FeaturesController < ApplicationController
 	#  POST   /licservers/:licserver_id/features/:feature_id/mail(.:format)
 	# mass email users in the feature
 	def mail
-		FireworksMailer.address_feature_users Licserver.find(params[:licserver_id]), params[:feature_id]
+		FireworksMailer.address_feature_users(
+			Licserver.find(params[:licserver_id]), params[:feature_id], params[:message], current_ads_user.email
+		).deliver
+
 		# send mail, and give back status report
 		respond_to do |format|
 			format.html{
@@ -278,6 +281,8 @@ class FeaturesController < ApplicationController
 				head :ok, content_type => 'text/html'
 			}
 		end
+
+		js false
 	end
 
 	def feature_header_params

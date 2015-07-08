@@ -289,7 +289,14 @@
         console.log('mail button pressed')
 
         var form_handle = handle.closest('.modal').find('form');
-        form_handle.submit();
+        $.post(form_handle.attr('action'), form_handle.serialize() , function(data, textStatus, jqXHR){
+            console.log(textStatus);
+            //send alert everything has been sent
+            //reset dismiss the modal
+            form_handle.find('textarea').val('');
+            handle.closest('.modal').modal('hide');
+        });
+        //form_handle.submit();
         //
 
       });

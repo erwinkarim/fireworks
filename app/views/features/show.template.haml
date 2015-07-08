@@ -82,7 +82,7 @@
 											%h4.modal-title Send Message to all users of #{params[:id]}
 										.modal-body
 											= form_tag licserver_feature_mail_path(@licserver, params[:id]), :id => 'mail-form' do
-												%textarea.form-control{ :placeholder => 'Type Message Here', :rows => 10}
+												%textarea.form-control{ :name => 'message', :placeholder => 'Type Message Here', :rows => 10}
 										.modal-footer
 											%a.btn.btn-default{ :href => '#', :data => { :dismiss => 'modal'}} Close
 											%a.btn.btn-primary#send-message{ :href => '#'} Send Message

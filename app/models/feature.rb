@@ -13,25 +13,25 @@ class Feature < ActiveRecord::Base
     #update features here
     licserver = Licserver.find(licserver_id)
     @fullname = licserver.port.to_s + '@' + licserver.server
-    
+
 		Rails.logger.info "getting stats for #{@fullname} "
-    #new way to generate features,users and machine  data 
+    #new way to generate features,users and machine  data
     output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} | grep -vi "error"`
     header = /Users.*/
-  
+
     #split the output into headers of "Users of <feature name>...."
     #sections = output.scan(/(?m)#{header}.*?(?=#{header})|\Z/)
     sections = output.force_encoding("ISO-8859-1").encode("utf-8", replace: nil).scan(/(?m)#{header}.*?(?=#{header})|\Z/)
     sections.each do |section|
       feature_line = section.lines.grep(/Users/).first
-      unless feature_line.nil? 
+      unless feature_line.nil?
         #create new headers where necessary
         feature_name = feature_line.split(" ")[2].gsub(/:/, '')
         if ( licserver.feature_headers.where(:name => feature_name ).empty? ) then
           licserver.feature_headers.create( :name => feature_name, :last_seen => DateTime.now ).save!
         end
-        
-        feature = licserver.feature_headers.where(:name => feature_name).first.features.create( 
+
+        feature = licserver.feature_headers.where(:name => feature_name).first.features.create(
           :name => feature_name, :current => feature_line.split[10], :max => feature_line.split[5],
           :licserver_id => licserver.id
         )
@@ -51,13 +51,13 @@ class Feature < ActiveRecord::Base
 						version_index = user_line_array.index{ |x| x =~ /\(\S+/ }
 					end
 
-          User.generate_features_data( 
+          User.generate_features_data(
 						user_line_array[0..zero_if_negative(version_index-3)].join(" "), user_line_array[version_index-2] , feature.id
 					)
         end
       end
     end
-    
+
   end
 
   #get list of current users
@@ -67,7 +67,7 @@ class Feature < ActiveRecord::Base
 
     output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} -f #{features_id} | gawk '/start/ { print $0 }'`
 
-    users = [] 
+    users = []
     output.each_line do |line|
 			correction = 0
 			line_array = line.scan(/\S+/)
@@ -77,14 +77,14 @@ class Feature < ActiveRecord::Base
 				correction = -1
 			end
 			#need to handle cases where the version keyword is not there
-      users << { :user => line_array[0..zero_if_negative(version_index-3)].join(" "), 
+      users << { :user => line_array[0..zero_if_negative(version_index-3)].join(" "),
 				:user_id => User.find_by_name( line_array[0..version_index-3].join(" ") ),
 				:machine => line_array[version_index-2],
         :host_id => line_array[version_index+correction+1].split('/')[0].gsub(/\(/, ''),
         :port_id => line_array[version_index+correction+1].split('/')[1],
 				:handle => line_array[version_index+correction+2].gsub(/\)/, '').gsub(/,/, ''),
-        :since => Time.parse(line_array[version_index+correction+4..version_index+correction+6].reverse.join(" ")).to_datetime , 
-        :lic_count => line_array[version_index+correction+7] 
+        :since => Time.parse(line_array[version_index+correction+4..version_index+correction+6].reverse.join(" ")).to_datetime ,
+        :lic_count => line_array[version_index+correction+7]
 			}
     end
 
@@ -101,7 +101,7 @@ class Feature < ActiveRecord::Base
   #maintaince function:-
   # - remove features that somehow got updated here through update_features function
   def self.remove_old_f(licserver_id)
-    licserver = Licserver.find(licserver_id) 
+    licserver = Licserver.find(licserver_id)
     @lostFeatures = licserver.features.select("name, count(name) as l_count").group("name").having("count(name) = 1")
 
     #start killing them
@@ -110,9 +110,9 @@ class Feature < ActiveRecord::Base
         @lostFList = licserver.features.where("name = ?", lostF.name)
         @lostFList.each do |lostFListDetail|
           @fToDestory = licserver.features.find(lostFListDetail.id)
-          @fToDestory.destroy 
+          @fToDestory.destroy
         end
-      end 
+      end
     end
   end
 
@@ -121,14 +121,14 @@ class Feature < ActiveRecord::Base
   def self.build_feature_headers
     #rebuild 1000 at a time
     while Feature.where(:feature_header_id => nil).count != 0
-      transaction do 
+      transaction do
         Feature.where(:feature_header_id => nil).order('id desc').limit(5000).each do |f|
           #find the feature header, otherwise, built a new one
           fh = Licserver.find(f.licserver_id).feature_headers.where(:name => f.name).first
           if fh.nil? then
             fh = Licserver.find(f.licserver_id).feature_headers.new( :name => f.name)
             fh.save!
-          end 
+          end
 
           f.update_attribute(:feature_header_id, fh.id)
         end
@@ -141,18 +141,18 @@ class Feature < ActiveRecord::Base
   def self.check_idle_users(licserver_id)
     licserver = Licserver.find(licserver_id)
     @fullname = licserver.port.to_s + '@' + licserver.server
-    
+
     puts "Kill Idle users for " + @fullname
     #get list of current users and return a kill list
     lm_output =`#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} | gawk '/Users/ { print $0 } /start/ { print $1, $2, $5, $6, $8, $9, $10 }'`
-      
+
     output = Array.new
     feature = String.new
-    lm_output.each_line do | line | 
+    lm_output.each_line do | line |
       if line.include? 'Users of' then
         feature = line.split[2].gsub(':', '')
         #next
-      else 
+      else
         lineSplit = line.split
         user = lineSplit[0]
         client_host = lineSplit[1]
@@ -169,9 +169,9 @@ class Feature < ActiveRecord::Base
             server_host = lineSplit[2].split('/')[0].sub('(', '')
             port_host = lineSplit[2].split('/')[1].to_i
             server_handle = lineSplit[3].to_i
-            
+
             temp = { :feature => feature, :user => user, :client_host => client_host, :server_host => server_host,
-              :port_host => port_host, :server_handle => server_handle , :start_time => start_time} 
+              :port_host => port_host, :server_handle => server_handle , :start_time => start_time}
 
             output.push temp
         end #@idleUser.nil?
@@ -179,8 +179,8 @@ class Feature < ActiveRecord::Base
     end #each_line
 
     #kill them
-    output.each do | thisUser | 
-      Feature.kill_user @fullname, thisUser[:feature], thisUser[:server_host], 
+    output.each do | thisUser |
+      Feature.kill_user @fullname, thisUser[:feature], thisUser[:server_host],
         thisUser[:port_host], thisUser[:server_handle]
     end
 
@@ -189,9 +189,9 @@ class Feature < ActiveRecord::Base
 
   #generate last 30 days stats
   def self.generate_monthly_stats(licserver_id, feature_id, office_hours)
-  
+
     #generate default stats
-      #features_list = Licserver.find(licserver_id).features.find(:all, 
+      #features_list = Licserver.find(licserver_id).features.find(:all,
       #  :conditions => { :name => feature_id, :created_at => 30.days.ago..DateTime.now })
       features_list = Licserver.find(licserver_id).features.where( :name => feature_id, :created_at => 30.days.ago..DateTime.now )
 
@@ -207,7 +207,7 @@ class Feature < ActiveRecord::Base
     features_sorted = features_list.group_by{ |item| item.current }.reject{ |k,v| k.nil? || k[0].nil? }
     sum = 0
     features = features_sorted.inject(Hash.new(0)) { |h,e| h[e[0]] = e[1].count; h }.to_a.sort.map {
-      |x| [ x[0], sum += x[1] ] 
+      |x| [ x[0], sum += x[1] ]
     }
 
     return features
@@ -216,7 +216,7 @@ class Feature < ActiveRecord::Base
   # generate csv from features of licserver_id bearing the feature_name
   def self.to_csv(licserver_id, feature_name)
     csv_string = String.new
-  
+
   end
 
 	# kill users which holding more than one license
@@ -231,7 +231,7 @@ class Feature < ActiveRecord::Base
 		current_users = current_users - current_users.select{ |x| x[:user_id].uniq_exempt == true }
 
 		#get dup users
-		dup_list = current_users.select{ |e| current_users.count{ |x| x[:user] == e[:user] } > 1 }	
+		dup_list = current_users.select{ |e| current_users.count{ |x| x[:user] == e[:user] } > 1 }
 
 		#kill the latest sessions
 		dup_list.each.with_index do |e,i|
@@ -241,8 +241,23 @@ class Feature < ActiveRecord::Base
 				output = `#{Rails.root}/lib/myplugin/lmutil lmremove -c #{licserver_name} -h #{feature_name} #{e[:host_id] } #{e[:port_id]} #{e[:handle]}`
 			end
 		end
-		
+
 	end
+
+  def self.get_mailing_list(licserver_id, feature_name)
+    # get list of current users
+		current_users = self.current_users(licserver_id, feature_name)
+
+    mailing_list = Array.new
+
+    current_users.each do |user|
+      if !user[:user_id].ads_user.nil? then
+        mailing_list << user[:user_id].ads_user.email
+      end
+    end
+
+    return mailing_list
+  end
 
 	private
 
