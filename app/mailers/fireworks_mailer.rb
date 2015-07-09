@@ -2,8 +2,8 @@ class FireworksMailer < ActionMailer::Base
   default from: ENV["mailer_reply_address"]
   layout 'mailer'
 
-  def test_mail
-      mail(subject: "Test Mail")
+  def test_mail email
+      mail(to: email, subject: "Test Mail")
   end
 
   def address_feature_users licserver, feature_name, message, sender_email
