@@ -5,7 +5,7 @@ Fireworks! is a Flex LM license monitor. Fireworks will collect data on usage of
 == Idle Time client
 Firworks comes with idle time client to help manage your precious features usage. This works by downloading the idle client to your client machine and register the client to your fireworks server. The client will send updates to server telling the server how idle the client it.
 
-If the license server is set to be managed by fireworks, fireworks will kill unregistered user who has been using the license feature for more than 2 hours, while killing registered idle user after an idle time of 30 minutes. Idle time here means no keyboard/mouse event on the machine for 30 minutes. 
+If the license server is set to be managed by fireworks, fireworks will kill unregistered user who has been using the license feature for more than 2 hours, while killing registered idle user after an idle time of 30 minutes. Idle time here means no keyboard/mouse event on the machine for 30 minutes.
 
 == Installation
 To install, follow these steps:-
@@ -22,6 +22,9 @@ devise_ldap_domains={"domain" => "fqdn"}
 devise_ldap_base=<your ldap base>
 devise_req_groups=<your req group distinguished name. just one group only>
 devise_check_group=<true or false. true if you want to allow a certain group to access>
+ads_user=<the user that will be used to link up with ad in the format username@DOMAINNAME.COM>
+ads_password=<the user's password>
+mailer_reply_address=<the address that will be used when sending out email>
 
 Please note that this app uses an external program lmutil which is currently on run on linux_amd64. So it won't work on Mac/Windows yet or linux 32-bit
 
@@ -37,7 +40,7 @@ The following packages needed to be installed to ensure the lmutil program can r
 ==Common Issues
 * The license server is alive but firefox is not picking up any features
 
-Solution: You need to ensure that the license server hostname is resolvable. You might need to add an entry in /etc/hosts to ensure that the hostname is resolvable. 
+Solution: You need to ensure that the license server hostname is resolvable. You might need to add an entry in /etc/hosts to ensure that the hostname is resolvable.
 
 You can test the connection by running the library
 /path/lib/myplugin/lmutil lmstat -a -c <port@server>
