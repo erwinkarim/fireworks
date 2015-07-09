@@ -40,6 +40,7 @@
 											_L.features.load_monthly_histogram( handle.find('.monthly-graph') );
 											_L.features.load_users( handle.find('#user-listings') );
 											_L.features.nuke_users( handle.find('#really-nuk-em') );
+                      _L.features.mail_users( handle.find('#send-message'))
                       // for mail
 										} else if (handle.attr('data-model-type') == 'Licserver'){
 											console.log('load Licserver scripts');

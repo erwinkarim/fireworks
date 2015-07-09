@@ -5,35 +5,35 @@
 		%meta{ :http => { :equiv => "X-UA-Compatible" }, :content => "IE=Edge,chrome=1"  }
 		%meta{ :name => "viewport" , :content => "width=device-width, initial-scale=1.0"}
 		%title
-			= content_for?(:title) ? yield(:title) : "Fireworks" 
+			= content_for?(:title) ? yield(:title) : "Fireworks"
 
-		/ javascript include tag here 
-		= csrf_meta_tags 
-		= stylesheet_link_tag "application", :media => "all" 
+		/ javascript include tag here
+		= csrf_meta_tags
+		= stylesheet_link_tag "application", :media => "all"
 
-		/ For third-generation iPad with high-resolution Retina display: 
-		/ Size should be 144 x 144 pixels 
-		= favicon_link_tag 'images/apple-touch-icon-144x144-precomposed.png', :rel => 'apple-touch-icon-precomposed', 
-			:type => 'image/png', :sizes => '144x144' 
+		/ For third-generation iPad with high-resolution Retina display:
+		/ Size should be 144 x 144 pixels
+		= favicon_link_tag 'images/apple-touch-icon-144x144-precomposed.png', :rel => 'apple-touch-icon-precomposed',
+			:type => 'image/png', :sizes => '144x144'
 
 		/ For iPhone with high-resolution Retina display:
 		/ Size should be 114 x 114 pixels
-		= favicon_link_tag 'images/apple-touch-icon-114x114-precomposed.png', :rel => 'apple-touch-icon-precomposed', 
-			:type => 'image/png', :sizes => '114x114' 
+		= favicon_link_tag 'images/apple-touch-icon-114x114-precomposed.png', :rel => 'apple-touch-icon-precomposed',
+			:type => 'image/png', :sizes => '114x114'
 
 		/ For first- and second-generation iPad:
 		/ Size should be 72 x 72 pixels
-		= favicon_link_tag 'images/apple-touch-icon-72x72-precomposed.png', :rel => 'apple-touch-icon-precomposed', 
-			:type => 'image/png', :sizes => '72x72' 
+		= favicon_link_tag 'images/apple-touch-icon-72x72-precomposed.png', :rel => 'apple-touch-icon-precomposed',
+			:type => 'image/png', :sizes => '72x72'
 
 		/ For non-Retina iPhone, iPod Touch, and Android 2.1+ devices:
 		/ Size should be 57 x 57 pixels
-		= favicon_link_tag 'images/apple-touch-icon-precomposed.png', :rel => 'apple-touch-icon-precomposed', 
-			:type => 'image/png' 
+		= favicon_link_tag 'images/apple-touch-icon-precomposed.png', :rel => 'apple-touch-icon-precomposed',
+			:type => 'image/png'
 
 		/ For all other devices
 		/ Size should be 32 x 32 pixels
-		= favicon_link_tag 'images/favicon.ico', :rel => 'shortcut icon' 
+		= favicon_link_tag 'images/favicon.ico', :rel => 'shortcut icon'
 	%body
 		.navbar.navbar-default.navbar-fixed-top{ :role => 'navigation' }
 			.container-fluid
@@ -73,7 +73,7 @@
 						%li
 							- if ads_user_signed_in? then
 								%a.dropdown-toggle#drop-ads-user{ :href => '#', :data => { :toggle => 'dropdown' } }
-									= current_ads_user.name 
+									= current_ads_user.name
 									%b.caret
 								%ul.dropdown-menu{ :role => 'menu', :aria => { :labelledby => 'drop-ads-user' } }
 									%li #{ link_to 'My Watch List', ads_user_watch_lists_path(current_ads_user.login) }
@@ -83,6 +83,11 @@
 								= link_to 'Sign In', ads_user_session_path
 
 		.container.flash-msg
+			- flash.each do |name,msg|
+				.div.alert{ :class => "alert-#{flash_class(name)}"} 
+					#{msg}
+					%button.close{ :type => 'button', :'data-dismiss' => 'alert'}
+						%span{ :'aria-hidden' => true} &times;
 			/ put flash messages here
 		.container.yield_div
 			= yield
@@ -90,11 +95,11 @@
 		.container
 			%footer
 				%p
-					&copy; Fireworks 2012-2014 
+					&copy; Fireworks 2012-2014
 					= link_to 'Disclaimer', welcome_disclaimer_path
 
 		/ Javascripts
 		/ ================================================== -
-		/ Placed at the end of the document so the pages load faster 
-		= javascript_include_tag "application" 
-		= yield :other_javascript 
+		/ Placed at the end of the document so the pages load faster
+		= javascript_include_tag "application"
+		= yield :other_javascript
