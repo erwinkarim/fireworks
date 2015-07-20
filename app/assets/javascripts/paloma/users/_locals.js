@@ -9,8 +9,10 @@
   // locals.localMethod = function(){};
   var locals = Paloma.locals['users'] = {};
 
+  var colors = ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'];
+
   //recursively load data into the chart
-  var data_load_recursive = function( load_path, chart_handle, last_data_point, countdown ){
+  var data_load_recursive = function( load_path, chart_handle, last_data_point, countdown, module_name ){
     if(countdown != 0 && last_data_point != 0){
       var extra_info = null;
       if(last_data_point != null){
@@ -20,10 +22,20 @@
       $.get(load_path, extra_info, function(data){
         chart_handle.series.data = [];
         $.each(data['graph_data'], function(index, value){
-          chart_handle.series[0].addPoint({ x:value.data[0][0], y:value.data[0][1], name:value.name, color:'#13AFA8'}, false);
+          //select the color
+          var selected_color = colors[0];
+          var module_name_index = $.inArray(value.name, module_name);
+          if( module_name_index ){
+              module_name.push(value.name)
+              selected_color = colors[(module_name.length-1) % colors.length ];
+          }else{
+              selected_color = colors[module_name_index % colors.length ];
+          };
+
+          chart_handle.series[0].addPoint({ x:value.data[0][0], y:value.data[0][1], name:value.name, color:selected_color}, false);
         });
         chart_handle.redraw();
-        data_load_recursive( load_path, chart_handle, data['last_data_point'], countdown-1);
+        data_load_recursive( load_path, chart_handle, data['last_data_point'], countdown-1, module_name);
       }, 'json');
     };
   };
@@ -91,7 +103,8 @@
           type:'scatter',
           events:{
             load: function(){
-              data_load_recursive( data_load_path, this, null, 10)
+              console.log(this.colors);
+              data_load_recursive( data_load_path, this, null, 10, [])
             }
           }
         }
