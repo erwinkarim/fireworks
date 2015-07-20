@@ -11397,7 +11397,37 @@ var performFilters = function(filters, params){
   // locals.localMethod = function(){};
   var locals = Paloma.locals['users'] = {};
 
-  
+  var colors = ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'];
+
+  //recursively load data into the chart
+  var data_load_recursive = function( load_path, chart_handle, last_data_point, countdown, module_name ){
+    if(countdown != 0 && last_data_point != 0){
+      var extra_info = null;
+      if(last_data_point != null){
+            extra_info = { start_id:last_data_point};
+      };
+
+      $.get(load_path, extra_info, function(data){
+        chart_handle.series.data = [];
+        $.each(data['graph_data'], function(index, value){
+          //select the color
+          var selected_color = colors[0];
+          var module_name_index = $.inArray(value.name, module_name);
+          if( module_name_index ){
+              module_name.push(value.name)
+              selected_color = colors[(module_name.length-1) % colors.length ];
+          }else{
+              selected_color = colors[module_name_index % colors.length ];
+          };
+
+          chart_handle.series[0].addPoint({ x:value.data[0][0], y:value.data[0][1], name:value.name, color:selected_color}, false);
+        });
+        chart_handle.redraw();
+        data_load_recursive( load_path, chart_handle, data['last_data_point'], countdown-1, module_name);
+      }, 'json');
+    };
+  };
+
   // ~> Start local definitions here and remove this line.
 	/* setup the tabs
 	 * handles must have these stucture:-
@@ -11405,25 +11435,20 @@ var performFilters = function(filters, params){
 			%ul.nav.nav-tabs{ :id => 'user' + @user.id.to_s + '-tabs' }
 				- @user.machines.each do |machine|
 					%li
-						%a{ :href => '#user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
+						%a{ :href => '#user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s,
 							:data => { :toggle => 'tab', :'user-id' => @user.id, :'machine-id' => machine.id } }
 							= machine.name
 			.tab-content
 				- @user.machines.each do |machine|
-					.tab-pane{ :id => 'user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s, 
+					.tab-pane{ :id => 'user' + @user.id.to_s + '-' + 'machine' + machine.id.to_s,
 						:data => { :'machine-id' => machine.id, :'user-id' => @user.id } }
-	 * 			
 	 *
-	*/ 	
+	 *
+	*/
 	//setup accordion body
   locals.setup_accordion_body = function( handle) {
     handle.find('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
 			//don't load if the data has been loaded
-			/*
-			var anchor_handle = handle.find('.nav-tabs').find(
-				'a[data-machine-id="' + e.target.attributes['data-machine-id'] + '"][data-user-id="' + e.target.attributes['data-user-id'] + '"]'
-				); 
-			*/
 			var anchor_handle = handle.find('.nav-tabs').find( "a[data-machine-id='" + e.target.attributes['data-machine-id'].value + "']" );
 			if(anchor_handle.attr('data-init') != 'false' ){
 					console.log('data loaded, skip loading');
@@ -11431,94 +11456,53 @@ var performFilters = function(filters, params){
 			};
 
       //when clicked, start gather features data
-      $('.tab-pane[data-machine-id="' + e.target.attributes['data-machine-id'].value + 
+      $('.tab-pane[data-machine-id="' + e.target.attributes['data-machine-id'].value +
         '"][data-user-id="' + e.target.attributes['data-user-id'].value + '"]').append(
         $.parseHTML('<i class="fa fa-cog fa-spin fa-4x"></i>')
       );
 
       //show the thing is being loaded
-
-      var data_load_path = '/users/' + e.target.attributes['data-user-id'].value + 
+      var data_load_path = '/users/' + e.target.attributes['data-user-id'].value +
         '/machines/' + e.target.attributes['data-machine-id'].value + '/gen_features';
 
-			var tab_handle = handle.find('.tab-pane[data-machine-id="' + e.target.attributes['data-machine-id'].value + 
+			var tab_handle = handle.find('.tab-pane[data-machine-id="' + e.target.attributes['data-machine-id'].value +
           '"][data-user-id="' + e.target.attributes['data-user-id'].value + '"]');
-      //load the chart
-      $.ajax( data_load_path, {
-        dataType:'json'
-      }).done( function(data, textStatus, jqXHR){
-        tab_handle.highcharts('StockChart', {
-          //setup the chart
-          title: { text: 'Features usage by ' + tab_handle.attr('data-user-name') + '@' + tab_handle.attr('data-machine-name') },
-          chart: {
-            events : {
-              load: function(){
-                var chart_handle = this;
-                function recursive_data_load(last_data_point){
-                  //only call ajax if there's more data to load in the graph
-                  if(last_data_point != 0){
-                    $.ajax( data_load_path, {
-                      dataType:'json',
-                      data:{ start_id:last_data_point}
-                    }).done( function(data, textStatus, jqXHR) {
-                      if( data['graph_data'].length != 0){
-                        //load data from matched series, otherwise add new series to the graph
-                        $.each( data['graph_data'], function( index, value){
 
-                          var new_series = true;
-                          $.each( chart_handle.series, function( chart_index, serie){
-                            if( serie.name == value['name']) {
-                              new_series = false;
-                              $.each( value['data'], function( data_index, data_value ) {
-                                serie.addPoint( data_value , false, false);
-                              });
-                            }
-                          });
-
-                          //if the it's a new series, create a new one and then add data points
-                          if(new_series){
-                            chart_handle.addSeries(value, true);
-                          }
-                        });
-                        chart_handle.redraw();
-                      };
-                      recursive_data_load(data['last_data_point']);
-                    });
-                  }
-                };
-  
-                recursive_data_load(data['last_data_point']);
-              },
-              click: function(e){
-                console.log(e);
-              }
-            }
-          },
-          rangeSelector: {
+     Highcharts.setOptions({ global: {useUTC:false}});
+      tab_handle.highcharts('StockChart', {
+        title: { text: 'Features usage by ' + tab_handle.attr('data-user-name') + '@' + tab_handle.attr('data-machine-name') },
+        rangeSelector: {
             buttons: [
-              { type: 'hour', count: 1, text: '1h' }, 
-              { type: 'day', count: 1, text: '1d' }, 
-              { type: 'week', count: 1, text: '1w' }, 
-              { type: 'month', count: 1, text: '1m' }, 
-              { type: 'year', count: 1, text: '1y' }, 
-              { type: 'all', text: 'All' }
-            ], selected : 2 // all
-          }, 
-          series: data['graph_data']
-        });
-      }).fail( function(jqXHR, textStatus, errorThrown){
-				tab_handle.empty().append(
-					'failed to load: ' + textStatus
-				);
-					
-			}); // $.ajax( 
+              { type: 'hour', count:1, text: '1h'},
+              { type: 'day', count:1, text: '1d'},
+              { type: 'week', count:1, text: '1w'},
+              { type: 'month', count:1, text: '1m'},
+              { type: 'all', text: 'all'}
+          ]
+        },
+        tooltip:{
+          pointFormat:'{point.x:%e-%b-%Y %H:%M:%S}<br/><span style="color:{point.color}"></span> {point.name}: <b>{point.y}</b><br/>'
+        },
+        series: [{
+          name:'Module Used',
+          data:[]
+        }],
+        chart: {
+          type:'scatter',
+          events:{
+            load: function(){
+              console.log(this.colors);
+              data_load_recursive( data_load_path, this, null, 10, [])
+            }
+          }
+        }
+      });
 
       //remove the spinner
 			anchor_handle.attr('data-init', 'true' );
     }); // handle.find('a[data-toggle="tab"]').on('shown', function(e){
     handle.attr('data-init', 'true');
   }; // setup_accordion_body = function( handle) {
-
 
   // Remove this line if you don't want to inherit locals defined
   // on parent's _locals.js
@@ -11707,6 +11691,90 @@ var performFilters = function(filters, params){
 			$('#user-info').find('a[data-toggle="tab"]:first').click();
 		});
   }; // Paloma.callbacks['users']['show'] = function(params){
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['users'];
+
+
+  Paloma.callbacks['users']['top_users'] = function(params){
+    // Do something here.
+		//
+		$(document).ready( function(){
+			$.get('/users/top_users.template', null, function(data){
+				$('#hour').empty().append(data);
+			});
+
+			//get the data when tab changed
+			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+				target = e.target.attributes['href'].value;
+				if ( $(target).is(':empty') ){
+					$(target).empty().append( $.parseHTML( '<i class="fa fa-cog fa-spin fa-4x"></i>' ) );
+					$.get('/users/top_users.template', { interval:e.target.attributes['data-interval'].value }, function(data){
+						$(target).empty().append(data);
+					});
+				}
+			});
+		});
+  };
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['users'];
+
+
+  Paloma.callbacks['users']['uniq_exempted'] = function(params){
+    // Do something here.
+		//
+		$(document).ready( function(){
+			console.log('users/uniq_exempted loaded');
+
+			$('#search-users').typeahead({
+				source: function(query, process){
+					return $.get('/users/search/', {
+						query:query
+					}, function(data, textStatus, jqXHR){
+							return process(data.options);
+					}, 'json')
+				}
+			}).bind( 'keypress', function(e){
+				var code = e.keyCode || e.which;
+				if(code == 13){
+					e.preventDefault();
+
+					//find the user than add the user to the exempt list
+				}
+			});
+		});
+  };
 })();
 
 
@@ -12044,13 +12112,13 @@ var performFilters = function(filters, params){
   var locals = Paloma.locals['features'] = {};
 
   // ~> Start local definitions here and remove this line.
-	
+
 	// load daily_grpah into a handle
 	// requirements:
 	// 		handle must have the following attributes:-
 	// 		data-feature			The name of the feature
 	// 		data-licserver		the licserver id
-	// 		data-last_data_point 
+	// 		data-last_data_point
   locals.load_daily_graph = function( handle){
 			//setup the graph
 			graph_handle = handle.find('.graph');
@@ -12061,7 +12129,7 @@ var performFilters = function(filters, params){
             load: function(){
               //console.log('lazy load daily data');
               var chart_handle = this;
-              var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 
+              var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' +
                 handle.attr('data-feature') + '/get_data.json';
               //since share common w/ tags/index, share this out
               function recursive_data_load(last_data_point){
@@ -12076,7 +12144,7 @@ var performFilters = function(filters, params){
                     dataType:'json', data:data_header
                   }).done( function(data, textStatus, jqXHR){
                     //console.log('load data into the graph upto id ' + data['last_id'] )
-              
+
                     //add current data
                     //better wayt load 10000 data points at a time
                     for(i=0; i < data['data'][0]['data'].length; i++){
@@ -12104,7 +12172,7 @@ var performFilters = function(filters, params){
                   });
                 };
               }
-    
+
               recursive_data_load(null);
               chart_handle.redraw();
             }
@@ -12112,11 +12180,11 @@ var performFilters = function(filters, params){
         },
         rangeSelector: {
           buttons: [
-            { type: 'hour', count: 1, text: '1h' }, 
-            { type: 'day', count: 1, text: '1d' }, 
-            { type: 'week', count: 1, text: '1w' }, 
-            { type: 'month', count: 1, text: '1m' }, 
-            { type: 'year', count: 1, text: '1y' }, 
+            { type: 'hour', count: 1, text: '1h' },
+            { type: 'day', count: 1, text: '1d' },
+            { type: 'week', count: 1, text: '1w' },
+            { type: 'month', count: 1, text: '1m' },
+            { type: 'year', count: 1, text: '1y' },
             { type: 'all', text: 'All' }
           ], selected : 2 // all
         } ,
@@ -12130,14 +12198,14 @@ var performFilters = function(filters, params){
             events:{
               click:function(e){
                 //console.log(e.point.x);
-              
-                //load new users when historical user listing is active 
+
+                //load new users when historical user listing is active
                 if( $('#historical-users').hasClass('active')  ){
-                  $('#historical-user-listings').empty();
-                  load_path = '/licservers/' + handle.attr('data-licserver') +  '/features/' + 
+                  $('#historical-user-listings').empty().append('<i class="fa fa-cog fa-4x fa-spin"></i>');
+                  load_path = '/licservers/' + handle.attr('data-licserver') +  '/features/' +
                     handle.attr('data-feature') + '/historical_users';
                   $.get( load_path, { time_id:e.point.x } , function(data,textStatus,jqXHR){
-                    $('#historical-user-listings').append(data).ready( function(){
+                    $('#historical-user-listings').empty().append(data).ready( function(){
                     });
                   }, 'html' );
                 }
@@ -12148,17 +12216,17 @@ var performFilters = function(filters, params){
       }); // handle.highcharts('StockChart', {
 
 			//setup the buttons
-			
+
       //load more data into the graph
       handle.find('#load-older').click( function(){
 
-        var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 
+        var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' +
           handle.attr('data-feature') + '/get_data.json';
         chart_handle = handle.find('.graph').highcharts();
 
-        $.ajax(data_load_path, { 
+        $.ajax(data_load_path, {
           data: {start_id:handle.attr('data-last-point') },
-          dataType:'json', 
+          dataType:'json',
           beforeSend: function(){
             handle.find('#load-older').attr('disabled', 'disabled');
             handle.find('#dump-everything').attr('disabled', 'disabled');
@@ -12178,12 +12246,12 @@ var performFilters = function(filters, params){
           }
           handle.attr('data-last-point', data['last_id']);
         });
-      
+
       }); // handle.find('#load-older').click( function(){
 
       //dump eveyrthing into the graph (this can take a while)
       handle.find('#dump-everything').click( function(){
-        var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' + 
+        var data_load_path = '/licservers/' + handle.attr('data-licserver') + '/features/' +
           handle.attr('data-feature') + '/data_dump';
         chart_handle = handle.find('.graph').highcharts();
 
@@ -12202,7 +12270,7 @@ var performFilters = function(filters, params){
         }).done( function(data, textStatus, jqXHR){
           chart_handle.series[0].setData(data['data'][0]['data'], true);
           chart_handle.series[1].setData(data['data'][1]['data'], true);
-        }); 
+        });
       }); // handle.find('#dump-everything').click( function(){
     }; // locals.load_daily_graph = function( handle){
 
@@ -12239,7 +12307,7 @@ var performFilters = function(filters, params){
         series: [
           { name:'Office Hours', data:[] },
           { name:'All Hours', data:[] }
-  
+
         ]
       });
     }; // locals.load_monthly_histogram = function( handle ) {
@@ -12265,7 +12333,10 @@ var performFilters = function(filters, params){
 					$('#user-list-last-update').empty().append(
 						$.parseHTML('Updated: ' + (new Date( $.now()).toLocaleString() ) )
 					);
-				}, 'html' ); 
+          $('#user-count').empty().append(
+              handle.find('tbody').find('tr').length + ' User(s)'
+          )
+				}, 'html' );
 			};
 
       //refresh user listings
@@ -12300,7 +12371,7 @@ var performFilters = function(filters, params){
 					handle.closest('.tab-content').find('.kill-user').each( function(index){
 						$(this).click();
 					});
-					
+
 					//reset the form and hide
 					confirmation_handle.val('');
 					modal_handle.modal('hide');
@@ -12314,6 +12385,24 @@ var performFilters = function(filters, params){
 			});
 		};
 
+    //send mail to all users
+    locals.mail_users = function(handle){
+      handle.on('click', function(){
+        console.log('mail button pressed')
+
+        var form_handle = handle.closest('.modal').find('form');
+        $.post(form_handle.attr('action'), form_handle.serialize() , function(data, textStatus, jqXHR){
+            console.log(textStatus);
+            //send alert everything has been sent
+            //reset dismiss the modal
+            form_handle.find('textarea').val('');
+            handle.closest('.modal').modal('hide');
+        });
+        //form_handle.submit();
+        //
+
+      });
+    };
   // Remove this line if you don't want to inherit locals defined
   // on parent's _locals.js
   Paloma.inheritLocals({from : '/', to : 'features'});
@@ -12400,7 +12489,7 @@ var performFilters = function(filters, params){
   // Access locals for the current scope through the _l object.
   //
   // Example:
-  // _l.localMethod(); 
+  // _l.localMethod();
   var _l = _L['features'];
 
   Paloma.callbacks['features']['show'] = function(params){
@@ -12416,7 +12505,8 @@ var performFilters = function(filters, params){
       _l.load_daily_graph( $('.daily-graph:first') );
       _l.load_monthly_histogram( $('.monthly-graph:first') );
       _l.load_users( $('#user-listings') );
-			_l.nuke_users( $('#really-nuk-em') );
+			_l.nuke_users( $('#really-nuk-em'));
+      _l.mail_users( $('#send-message'));
 
 
       $('#watchlist').on('ajax:success', function(data, status, xhr){
@@ -12426,6 +12516,115 @@ var performFilters = function(filters, params){
 
     });
   }; // Paloma.callbacks['features']['show'] = function(params){
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['features'];
+
+
+  Paloma.callbacks['features']['usage_report'] = function(params){
+    // Do something here.
+		console.log('features/usage_report loaded');
+
+		var datasum = 0;
+		var chart_options = {
+			chart: { 
+				type: 'column', renderTo: 'usage-report-chart' ,
+				height: 800,
+				panning: true, panKey: 'shift',
+				zoomType: 'x'
+			},
+			title: { text: 'Last 30 days Feature Usage by Company/Department' },
+			subtitle: { text: 'Graph is drillable and zoomable. Use the shift key to pan' },
+			xAxis: { 
+				type: 'category', labels: { rotation: 45 }
+			},
+			yAxis: {
+				min: 0, title: { text:'Lic Count observered' },
+				stackLabels:{
+					enabled: true
+				},
+				labels: {
+					formatter: function(){
+						var pcnt =  (this.value / datasum) * 100;
+						return Highcharts.numberFormat(pcnt, 0, ',') + '%';
+					}
+				}
+			},
+			plotOptions: {
+				series: {
+					dataLabels: {
+						enabled:true,
+						formatter: function(){
+							var pcnt = (this.y / datasum ) * 100;
+							return Highcharts.numberFormat(pcnt) + '%';
+						}
+					}
+				}
+			},
+			tooltip: {
+				//pointFormat: '<span style="color:{series:color}">{series.name}</span>: 
+				//<b>{point.y}</b> ( {point.percentage:.2f}%)</br>', 
+				pointFormat: '<span style="color:{series:color}">{series.name}</span>: <b>{point.y}</b> <br />', 
+			},
+			series: [ { name:"Company", colorByPoint: true, data: [] } ],
+			drilldown: { series: [] }
+		}
+
+		//display the chart
+		console.log('fetching json data');
+		$.getJSON(location.href + '.json', function(data) {
+			//populate data in the series
+			$.each(data, function(index,value){
+				//chart_options.series.push( { name:value.company_name, data:[value.machine_count] } )
+				//try to find the company name in chart_options.series index
+				var inArray = false;
+				datasum += value.machine_count;
+				$.each(chart_options.series[0].data, function(index,series_value){
+					if( series_value.name == value.company_name) {
+						series_value.y += value.machine_count;
+						//find the drill down and add the data
+						$.each(chart_options.drilldown.series, function(index, drilldown_series_value){
+							if(drilldown_series_value.name == value.company_name){
+									drilldown_series_value.data.push( [value.department_name, value.machine_count] );
+							};
+						});
+						inArray = true;
+					} 
+				}); // $.each(chart_options.series, function(index,series_value){
+
+				//data is not found at series level
+				if( inArray == false){
+					chart_options.series[0].data.push( 
+						{ name:value.company_name, drilldown:value.company_name, y:value.machine_count } 
+					);
+					chart_options.drilldown.series.push( 
+						{ name:value.company_name, id:value.company_name, data:[ [value.department_name, value.machine_count ] ] } 
+					);
+				};
+			}); // $.each(data, function(index,value){
+			console.log(chart_options);
+			var usage_chart = new Highcharts.Chart(chart_options);
+		}).fail( function(jqXHR, textStatus){
+			$('#usage-report-chart').empty().append(
+				textStatus + ' Refresh page.'
+			);
+		});
+  };
 })();
 
 
@@ -12912,7 +13111,7 @@ var performFilters = function(filters, params){
   // Access locals for the current scope through the _l object.
   //
   // Example:
-  // _l.localMethod(); 
+  // _l.localMethod();
   var _l = _L['watch_lists'];
 
 
@@ -12939,6 +13138,8 @@ var performFilters = function(filters, params){
 											_L.features.load_monthly_histogram( handle.find('.monthly-graph') );
 											_L.features.load_users( handle.find('#user-listings') );
 											_L.features.nuke_users( handle.find('#really-nuk-em') );
+                      _L.features.mail_users( handle.find('#send-message'))
+                      // for mail
 										} else if (handle.attr('data-model-type') == 'Licserver'){
 											console.log('load Licserver scripts');
 											handle.find('.content').attr('data-licserver', handle.attr('data-model-id') );
@@ -13083,6 +13284,66 @@ var performFilters = function(filters, params){
     // Do something here.
   };
 })();
+
+
+
+(function(){
+  // Initializes callbacks container for the this specific scope.
+  Paloma.callbacks['unique_user_kill_lists'] = {};
+
+  // Initializes locals container for this specific scope.
+  // Define a local by adding property to 'locals'.
+  //
+  // Example:
+  // locals.localMethod = function(){};
+  var locals = Paloma.locals['unique_user_kill_lists'] = {};
+
+  
+  // ~> Start local definitions here and remove this line.
+
+
+  // Remove this line if you don't want to inherit locals defined
+  // on parent's _locals.js
+  Paloma.inheritLocals({from : '/', to : 'unique_user_kill_lists'});
+})();
+(function(){ 
+  // Initializes the main container for all filters and skippers for this
+  // specific scope.
+  var filter = new Paloma.FilterScope('unique_user_kill_lists');
+  
+  // The _x object is also available on callbacks.
+  // You can make a variable visible on callbacks by using _x here.
+  //
+  // Example:
+  // _x.visibleOnCallback = "I'm a shared variable"
+  var _x = Paloma.variableContainer;
+
+  // ~> Start definitions here and remove this line.
+})();
+(function(){
+  // You access variables from before/around filters from _x object.
+  // You can also share variables to after/around filters through _x object.
+  var _x = Paloma.variableContainer;
+
+  // We are using _L as an alias for the locals container.
+  // Use either of the two to access locals from other scopes.
+  //
+  // Example:
+  // _L.otherController.localVariable = 100;
+  var _L = Paloma.locals;
+
+  // Access locals for the current scope through the _l object.
+  //
+  // Example:
+  // _l.localMethod(); 
+  var _l = _L['unique_user_kill_lists'];
+
+
+  Paloma.callbacks['unique_user_kill_lists']['toggle'] = function(params){
+    // Do something here.
+  };
+})();
+
 
 
 
@@ -14502,100 +14763,211 @@ var performFilters = function(filters, params){
 	});
 
 }( window.jQuery ));
-/* TINY SORT modified according to this https://github.com/Sjeiti/TinySort/pull/51*/
+/**
+ * TinySort is a small script that sorts HTML elements. It sorts by text- or attribute value, or by that of one of it's children.
+ * @summary A nodeElement sorting script.
+ * @version 2.2.0
+ * @license MIT/GPL
+ * @author Ron Valstar <ron@ronvalstar.nl>
+ * @copyright Ron Valstar <ron@ronvalstar.nl>
+ * @namespace tinysort
+ */
 
-(function (e, t) { function h(e) { return e && e.toLowerCase ? e.toLowerCase() : e } function p(e, t) { for (var r = 0, i = e.length; r < i; r++) if (e[r] == t) return !n; return n } var n = !1, r = null, i = parseFloat, s = Math.min, o = /(-?\d+\.?\d*)$/g, u = /(\d+\.?\d*)$/g, a = [], f = [], l = function (e) { return typeof e == "string" }, c = Array.prototype.indexOf || function (e) { var t = this.length, n = Number(arguments[1]) || 0; n = n < 0 ? Math.ceil(n) : Math.floor(n); if (n < 0) n += t; for (; n < t; n++) { if (n in this && this[n] === e) return n } return -1 }; e.tinysort = { id: "TinySort", version: "1.5.2", copyright: "Copyright (c) 2008-2013 Ron Valstar", uri: "http://tinysort.sjeiti.com/", licensed: { MIT: "http://www.opensource.org/licenses/mit-license.php", GPL: "http://www.gnu.org/licenses/gpl.html" }, plugin: function () { var e = function (e, t) { a.push(e); f.push(t) }; e.indexOf = c; return e }(), defaults: { order: "asc", attr: r, data: r, useVal: n, place: "start", returns: n, cases: n, forceStrings: n, ignoreDashes: n, sortFunction: r } }; e.fn.extend({ tinysort: function () { var d, v, m = this, g = [], y = [], b = [], w = [], E = 0, S, x = [], T = [], N = function (t) { e.each(a, function (e, n) { n.call(n, t) }) }, C = function (t, r) { var s = 0; if (E !== 0) E = 0; while (s === 0 && E < S) { var a = w[E], c = a.oSettings, p = c.ignoreDashes ? u : o; N(c); if (c.sortFunction) { s = c.sortFunction(t, r) } else if (c.order == "rand") { s = Math.random() < .5 ? 1 : -1 } else { var d = n, v = !c.cases ? h(t.s[E]) : t.s[E], m = !c.cases ? h(r.s[E]) : r.s[E]; v = v.replace(/^\s*/i, "").replace(/\s*$/i, ""); m = m.replace(/^\s*/i, "").replace(/\s*$/i, ""); if (!A.forceStrings) { var g = l(v) ? v && v.match(p) : n, y = l(m) ? m && m.match(p) : n; if (g && y) { var b = v.substr(0, v.length - g[0].length), x = m.substr(0, m.length - y[0].length); if (b == x) { d = !n; v = i(g[0]); m = i(y[0]) } } } s = a.iAsc * (v < m ? -1 : v > m ? 1 : 0) } e.each(f, function (e, t) { s = t.call(t, d, v, m, s) }); if (s === 0) E++ } return s }; for (d = 0, v = arguments.length; d < v; d++) { var k = arguments[d]; if (l(k)) { if (x.push(k) - 1 > T.length) T.length = x.length - 1 } else { if (T.push(k) > x.length) x.length = T.length } } if (x.length > T.length) T.length = x.length; S = x.length; if (S === 0) { S = x.length = 1; T.push({}) } for (d = 0, v = S; d < v; d++) { var L = x[d], A = e.extend({}, e.tinysort.defaults, T[d]), O = !(!L || L == ""), M = O && L[0] == ":"; w.push({ sFind: L, oSettings: A, bFind: O, bAttr: !(A.attr === r || A.attr == ""), bData: A.data !== r, bFilter: M, $Filter: M ? m.filter(L) : m, fnSort: A.sortFunction, iAsc: A.order == "asc" ? 1 : -1 }) } m.each(function (n, r) { var i = e(r), s = i.parent().get(0), o, u = []; for (j = 0; j < S; j++) { var a = w[j], f = a.bFind ? a.bFilter ? a.$Filter.filter(r) : i.find(a.sFind) : i; u.push(a.bData ? f.data(a.oSettings.data) : a.bAttr ? f.attr(a.oSettings.attr) : a.oSettings.useVal ? f.val() : f.text()); if (o === t) o = f } var l = c.call(b, s); if (l < 0) { l = b.push(s) - 1; y[l] = { s: [], n: [] } } if (o.length > 0) y[l].s.push({ s: u, e: i, n: n }); else y[l].n.push({ e: i, n: n }) }); e.each(y, function (e, t) { t.s.sort(C) }); e.each(y, function (t, r) { var i = r.s.length, o = [], u = i, a = [0, 0]; switch (A.place) { case "first": e.each(r.s, function (e, t) { u = s(u, t.n) }); break; case "org": e.each(r.s, function (e, t) { o.push(t.n) }); break; case "end": u = r.n.length; break; default: u = 0 } for (d = 0; d < i; d++) { var f = p(o, d) ? !n : d >= u && d < u + r.s.length, l = (f ? r.s : r.n)[a[f ? 0 : 1]].e; l.parent().append(l); if (f || !A.returns) g.push(l.get(0)); a[f ? 0 : 1]++ } }); m.length = 0; Array.prototype.push.apply(m, g); return m } }); e.fn.TinySort = e.fn.Tinysort = e.fn.tsort = e.fn.tinysort })(jQuery);
-// moment.js
-// version : 2.0.0
-// author : Tim Wood
-// license : MIT
-// momentjs.com
-(function (e) { function O(e, t) { return function (n) { return j(e.call(this, n), t) } } function M(e) { return function (t) { return this.lang().ordinal(e.call(this, t)) } } function _() { } function D(e) { H(this, e) } function P(e) { var t = this._data = {}, n = e.years || e.year || e.y || 0, r = e.months || e.month || e.M || 0, i = e.weeks || e.week || e.w || 0, s = e.days || e.day || e.d || 0, o = e.hours || e.hour || e.h || 0, u = e.minutes || e.minute || e.m || 0, a = e.seconds || e.second || e.s || 0, f = e.milliseconds || e.millisecond || e.ms || 0; this._milliseconds = f + a * 1e3 + u * 6e4 + o * 36e5, this._days = s + i * 7, this._months = r + n * 12, t.milliseconds = f % 1e3, a += B(f / 1e3), t.seconds = a % 60, u += B(a / 60), t.minutes = u % 60, o += B(u / 60), t.hours = o % 24, s += B(o / 24), s += i * 7, t.days = s % 30, r += B(s / 30), t.months = r % 12, n += B(r / 12), t.years = n } function H(e, t) { for (var n in t) t.hasOwnProperty(n) && (e[n] = t[n]); return e } function B(e) { return e < 0 ? Math.ceil(e) : Math.floor(e) } function j(e, t) { var n = e + ""; while (n.length < t) n = "0" + n; return n } function F(e, t, n) { var r = t._milliseconds, i = t._days, s = t._months, o; r && e._d.setTime(+e + r * n), i && e.date(e.date() + i * n), s && (o = e.date(), e.date(1).month(e.month() + s * n).date(Math.min(o, e.daysInMonth()))) } function I(e) { return Object.prototype.toString.call(e) === "[object Array]" } function q(e, t) { var n = Math.min(e.length, t.length), r = Math.abs(e.length - t.length), i = 0, s; for (s = 0; s < n; s++) ~~e[s] !== ~~t[s] && i++; return i + r } function R(e, t) { return t.abbr = e, s[e] || (s[e] = new _), s[e].set(t), s[e] } function U(e) { return e ? (!s[e] && o && require("./lang/" + e), s[e]) : t.fn._lang } function z(e) { return e.match(/\[.*\]/) ? e.replace(/^\[|\]$/g, "") : e.replace(/\\/g, "") } function W(e) { var t = e.match(a), n, r; for (n = 0, r = t.length; n < r; n++) A[t[n]] ? t[n] = A[t[n]] : t[n] = z(t[n]); return function (i) { var s = ""; for (n = 0; n < r; n++) s += typeof t[n].call == "function" ? t[n].call(i, e) : t[n]; return s } } function X(e, t) { function r(t) { return e.lang().longDateFormat(t) || t } var n = 5; while (n-- && f.test(t)) t = t.replace(f, r); return C[t] || (C[t] = W(t)), C[t](e) } function V(e) { switch (e) { case "DDDD": return p; case "YYYY": return d; case "YYYYY": return v; case "S": case "SS": case "SSS": case "DDD": return h; case "MMM": case "MMMM": case "dd": case "ddd": case "dddd": case "a": case "A": return m; case "X": return b; case "Z": case "ZZ": return g; case "T": return y; case "MM": case "DD": case "YY": case "HH": case "hh": case "mm": case "ss": case "M": case "D": case "d": case "H": case "h": case "m": case "s": return c; default: return new RegExp(e.replace("\\", "")) } } function $(e, t, n) { var r, i, s = n._a; switch (e) { case "M": case "MM": s[1] = t == null ? 0 : ~~t - 1; break; case "MMM": case "MMMM": r = U(n._l).monthsParse(t), r != null ? s[1] = r : n._isValid = !1; break; case "D": case "DD": case "DDD": case "DDDD": t != null && (s[2] = ~~t); break; case "YY": s[0] = ~~t + (~~t > 68 ? 1900 : 2e3); break; case "YYYY": case "YYYYY": s[0] = ~~t; break; case "a": case "A": n._isPm = (t + "").toLowerCase() === "pm"; break; case "H": case "HH": case "h": case "hh": s[3] = ~~t; break; case "m": case "mm": s[4] = ~~t; break; case "s": case "ss": s[5] = ~~t; break; case "S": case "SS": case "SSS": s[6] = ~~(("0." + t) * 1e3); break; case "X": n._d = new Date(parseFloat(t) * 1e3); break; case "Z": case "ZZ": n._useUTC = !0, r = (t + "").match(x), r && r[1] && (n._tzh = ~~r[1]), r && r[2] && (n._tzm = ~~r[2]), r && r[0] === "+" && (n._tzh = -n._tzh, n._tzm = -n._tzm) } t == null && (n._isValid = !1) } function J(e) { var t, n, r = []; if (e._d) return; for (t = 0; t < 7; t++) e._a[t] = r[t] = e._a[t] == null ? t === 2 ? 1 : 0 : e._a[t]; r[3] += e._tzh || 0, r[4] += e._tzm || 0, n = new Date(0), e._useUTC ? (n.setUTCFullYear(r[0], r[1], r[2]), n.setUTCHours(r[3], r[4], r[5], r[6])) : (n.setFullYear(r[0], r[1], r[2]), n.setHours(r[3], r[4], r[5], r[6])), e._d = n } function K(e) { var t = e._f.match(a), n = e._i, r, i; e._a = []; for (r = 0; r < t.length; r++) i = (V(t[r]).exec(n) || [])[0], i && (n = n.slice(n.indexOf(i) + i.length)), A[t[r]] && $(t[r], i, e); e._isPm && e._a[3] < 12 && (e._a[3] += 12), e._isPm === !1 && e._a[3] === 12 && (e._a[3] = 0), J(e) } function Q(e) { var t, n, r, i = 99, s, o, u; while (e._f.length) { t = H({}, e), t._f = e._f.pop(), K(t), n = new D(t); if (n.isValid()) { r = n; break } u = q(t._a, n.toArray()), u < i && (i = u, r = n) } H(e, r) } function G(e) { var t, n = e._i; if (w.exec(n)) { e._f = "YYYY-MM-DDT"; for (t = 0; t < 4; t++) if (S[t][1].exec(n)) { e._f += S[t][0]; break } g.exec(n) && (e._f += " Z"), K(e) } else e._d = new Date(n) } function Y(t) { var n = t._i, r = u.exec(n); n === e ? t._d = new Date : r ? t._d = new Date(+r[1]) : typeof n == "string" ? G(t) : I(n) ? (t._a = n.slice(0), J(t)) : t._d = n instanceof Date ? new Date(+n) : new Date(n) } function Z(e, t, n, r, i) { return i.relativeTime(t || 1, !!n, e, r) } function et(e, t, n) { var i = r(Math.abs(e) / 1e3), s = r(i / 60), o = r(s / 60), u = r(o / 24), a = r(u / 365), f = i < 45 && ["s", i] || s === 1 && ["m"] || s < 45 && ["mm", s] || o === 1 && ["h"] || o < 22 && ["hh", o] || u === 1 && ["d"] || u <= 25 && ["dd", u] || u <= 45 && ["M"] || u < 345 && ["MM", r(u / 30)] || a === 1 && ["y"] || ["yy", a]; return f[2] = t, f[3] = e > 0, f[4] = n, Z.apply({}, f) } function tt(e, n, r) { var i = r - n, s = r - e.day(); return s > i && (s -= 7), s < i - 7 && (s += 7), Math.ceil(t(e).add("d", s).dayOfYear() / 7) } function nt(e) { var n = e._i, r = e._f; return n === null || n === "" ? null : (typeof n == "string" && (e._i = n = U().preparse(n)), t.isMoment(n) ? (e = H({}, n), e._d = new Date(+n._d)) : r ? I(r) ? Q(e) : K(e) : Y(e), new D(e)) } function rt(e, n) { t.fn[e] = t.fn[e + "s"] = function (e) { var t = this._isUTC ? "UTC" : ""; return e != null ? (this._d["set" + t + n](e), this) : this._d["get" + t + n]() } } function it(e) { t.duration.fn[e] = function () { return this._data[e] } } function st(e, n) { t.duration.fn["as" + e] = function () { return +this / n } } var t, n = "2.0.0", r = Math.round, i, s = {}, o = typeof module != "undefined" && module.exports, u = /^\/?Date\((\-?\d+)/i, a = /(\[[^\[]*\])|(\\)?(Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|YYYYY|YYYY|YY|a|A|hh?|HH?|mm?|ss?|SS?S?|X|zz?|ZZ?|.)/g, f = /(\[[^\[]*\])|(\\)?(LT|LL?L?L?|l{1,4})/g, l = /([0-9a-zA-Z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)/gi, c = /\d\d?/, h = /\d{1,3}/, p = /\d{3}/, d = /\d{1,4}/, v = /[+\-]?\d{1,6}/, m = /[0-9]*[a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF]+\s*?[\u0600-\u06FF]+/i, g = /Z|[\+\-]\d\d:?\d\d/i, y = /T/i, b = /[\+\-]?\d+(\.\d{1,3})?/, w = /^\s*\d{4}-\d\d-\d\d((T| )(\d\d(:\d\d(:\d\d(\.\d\d?\d?)?)?)?)?([\+\-]\d\d:?\d\d)?)?/, E = "YYYY-MM-DDTHH:mm:ssZ", S = [["HH:mm:ss.S", /(T| )\d\d:\d\d:\d\d\.\d{1,3}/], ["HH:mm:ss", /(T| )\d\d:\d\d:\d\d/], ["HH:mm", /(T| )\d\d:\d\d/], ["HH", /(T| )\d\d/]], x = /([\+\-]|\d\d)/gi, T = "Month|Date|Hours|Minutes|Seconds|Milliseconds".split("|"), N = { Milliseconds: 1, Seconds: 1e3, Minutes: 6e4, Hours: 36e5, Days: 864e5, Months: 2592e6, Years: 31536e6 }, C = {}, k = "DDD w W M D d".split(" "), L = "M D H h m s w W".split(" "), A = { M: function () { return this.month() + 1 }, MMM: function (e) { return this.lang().monthsShort(this, e) }, MMMM: function (e) { return this.lang().months(this, e) }, D: function () { return this.date() }, DDD: function () { return this.dayOfYear() }, d: function () { return this.day() }, dd: function (e) { return this.lang().weekdaysMin(this, e) }, ddd: function (e) { return this.lang().weekdaysShort(this, e) }, dddd: function (e) { return this.lang().weekdays(this, e) }, w: function () { return this.week() }, W: function () { return this.isoWeek() }, YY: function () { return j(this.year() % 100, 2) }, YYYY: function () { return j(this.year(), 4) }, YYYYY: function () { return j(this.year(), 5) }, a: function () { return this.lang().meridiem(this.hours(), this.minutes(), !0) }, A: function () { return this.lang().meridiem(this.hours(), this.minutes(), !1) }, H: function () { return this.hours() }, h: function () { return this.hours() % 12 || 12 }, m: function () { return this.minutes() }, s: function () { return this.seconds() }, S: function () { return ~~(this.milliseconds() / 100) }, SS: function () { return j(~~(this.milliseconds() / 10), 2) }, SSS: function () { return j(this.milliseconds(), 3) }, Z: function () { var e = -this.zone(), t = "+"; return e < 0 && (e = -e, t = "-"), t + j(~~(e / 60), 2) + ":" + j(~~e % 60, 2) }, ZZ: function () { var e = -this.zone(), t = "+"; return e < 0 && (e = -e, t = "-"), t + j(~~(10 * e / 6), 4) }, X: function () { return this.unix() } }; while (k.length) i = k.pop(), A[i + "o"] = M(A[i]); while (L.length) i = L.pop(), A[i + i] = O(A[i], 2); A.DDDD = O(A.DDD, 3), _.prototype = { set: function (e) { var t, n; for (n in e) t = e[n], typeof t == "function" ? this[n] = t : this["_" + n] = t }, _months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"), months: function (e) { return this._months[e.month()] }, _monthsShort: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"), monthsShort: function (e) { return this._monthsShort[e.month()] }, monthsParse: function (e) { var n, r, i, s; this._monthsParse || (this._monthsParse = []); for (n = 0; n < 12; n++) { this._monthsParse[n] || (r = t([2e3, n]), i = "^" + this.months(r, "") + "|^" + this.monthsShort(r, ""), this._monthsParse[n] = new RegExp(i.replace(".", ""), "i")); if (this._monthsParse[n].test(e)) return n } }, _weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"), weekdays: function (e) { return this._weekdays[e.day()] }, _weekdaysShort: "Sun_Mon_Tue_Wed_Thu_Fri_Sat".split("_"), weekdaysShort: function (e) { return this._weekdaysShort[e.day()] }, _weekdaysMin: "Su_Mo_Tu_We_Th_Fr_Sa".split("_"), weekdaysMin: function (e) { return this._weekdaysMin[e.day()] }, _longDateFormat: { LT: "h:mm A", L: "MM/DD/YYYY", LL: "MMMM D YYYY", LLL: "MMMM D YYYY LT", LLLL: "dddd, MMMM D YYYY LT" }, longDateFormat: function (e) { var t = this._longDateFormat[e]; return !t && this._longDateFormat[e.toUpperCase()] && (t = this._longDateFormat[e.toUpperCase()].replace(/MMMM|MM|DD|dddd/g, function (e) { return e.slice(1) }), this._longDateFormat[e] = t), t }, meridiem: function (e, t, n) { return e > 11 ? n ? "pm" : "PM" : n ? "am" : "AM" }, _calendar: { sameDay: "[Today at] LT", nextDay: "[Tomorrow at] LT", nextWeek: "dddd [at] LT", lastDay: "[Yesterday at] LT", lastWeek: "[last] dddd [at] LT", sameElse: "L" }, calendar: function (e, t) { var n = this._calendar[e]; return typeof n == "function" ? n.apply(t) : n }, _relativeTime: { future: "in %s", past: "%s ago", s: "a few seconds", m: "a minute", mm: "%d minutes", h: "an hour", hh: "%d hours", d: "a day", dd: "%d days", M: "a month", MM: "%d months", y: "a year", yy: "%d years" }, relativeTime: function (e, t, n, r) { var i = this._relativeTime[n]; return typeof i == "function" ? i(e, t, n, r) : i.replace(/%d/i, e) }, pastFuture: function (e, t) { var n = this._relativeTime[e > 0 ? "future" : "past"]; return typeof n == "function" ? n(t) : n.replace(/%s/i, t) }, ordinal: function (e) { return this._ordinal.replace("%d", e) }, _ordinal: "%d", preparse: function (e) { return e }, postformat: function (e) { return e }, week: function (e) { return tt(e, this._week.dow, this._week.doy) }, _week: { dow: 0, doy: 6 } }, t = function (e, t, n) { return nt({ _i: e, _f: t, _l: n, _isUTC: !1 }) }, t.utc = function (e, t, n) { return nt({ _useUTC: !0, _isUTC: !0, _l: n, _i: e, _f: t }) }, t.unix = function (e) { return t(e * 1e3) }, t.duration = function (e, n) { var r = t.isDuration(e), i = typeof e == "number", s = r ? e._data : i ? {} : e, o; return i && (n ? s[n] = e : s.milliseconds = e), o = new P(s), r && e.hasOwnProperty("_lang") && (o._lang = e._lang), o }, t.version = n, t.defaultFormat = E, t.lang = function (e, n) { var r; if (!e) return t.fn._lang._abbr; n ? R(e, n) : s[e] || U(e), t.duration.fn._lang = t.fn._lang = U(e) }, t.langData = function (e) { return e && e._lang && e._lang._abbr && (e = e._lang._abbr), U(e) }, t.isMoment = function (e) { return e instanceof D }, t.isDuration = function (e) { return e instanceof P }, t.fn = D.prototype = { clone: function () { return t(this) }, valueOf: function () { return +this._d }, unix: function () { return Math.floor(+this._d / 1e3) }, toString: function () { return this.format("ddd MMM DD YYYY HH:mm:ss [GMT]ZZ") }, toDate: function () { return this._d }, toJSON: function () { return t.utc(this).format("YYYY-MM-DD[T]HH:mm:ss.SSS[Z]") }, toArray: function () { var e = this; return [e.year(), e.month(), e.date(), e.hours(), e.minutes(), e.seconds(), e.milliseconds()] }, isValid: function () { return this._isValid == null && (this._a ? this._isValid = !q(this._a, (this._isUTC ? t.utc(this._a) : t(this._a)).toArray()) : this._isValid = !isNaN(this._d.getTime())), !!this._isValid }, utc: function () { return this._isUTC = !0, this }, local: function () { return this._isUTC = !1, this }, format: function (e) { var n = X(this, e || t.defaultFormat); return this.lang().postformat(n) }, add: function (e, n) { var r; return typeof e == "string" ? r = t.duration(+n, e) : r = t.duration(e, n), F(this, r, 1), this }, subtract: function (e, n) { var r; return typeof e == "string" ? r = t.duration(+n, e) : r = t.duration(e, n), F(this, r, -1), this }, diff: function (e, n, r) { var i = this._isUTC ? t(e).utc() : t(e).local(), s = (this.zone() - i.zone()) * 6e4, o, u; return n && (n = n.replace(/s$/, "")), n === "year" || n === "month" ? (o = (this.daysInMonth() + i.daysInMonth()) * 432e5, u = (this.year() - i.year()) * 12 + (this.month() - i.month()), u += (this - t(this).startOf("month") - (i - t(i).startOf("month"))) / o, n === "year" && (u /= 12)) : (o = this - i - s, u = n === "second" ? o / 1e3 : n === "minute" ? o / 6e4 : n === "hour" ? o / 36e5 : n === "day" ? o / 864e5 : n === "week" ? o / 6048e5 : o), r ? u : B(u) }, from: function (e, n) { return t.duration(this.diff(e)).lang(this.lang()._abbr).humanize(!n) }, fromNow: function (e) { return this.from(t(), e) }, calendar: function () { var e = this.diff(t().startOf("day"), "days", !0), n = e < -6 ? "sameElse" : e < -1 ? "lastWeek" : e < 0 ? "lastDay" : e < 1 ? "sameDay" : e < 2 ? "nextDay" : e < 7 ? "nextWeek" : "sameElse"; return this.format(this.lang().calendar(n, this)) }, isLeapYear: function () { var e = this.year(); return e % 4 === 0 && e % 100 !== 0 || e % 400 === 0 }, isDST: function () { return this.zone() < t([this.year()]).zone() || this.zone() < t([this.year(), 5]).zone() }, day: function (e) { var t = this._isUTC ? this._d.getUTCDay() : this._d.getDay(); return e == null ? t : this.add({ d: e - t }) }, startOf: function (e) { e = e.replace(/s$/, ""); switch (e) { case "year": this.month(0); case "month": this.date(1); case "week": case "day": this.hours(0); case "hour": this.minutes(0); case "minute": this.seconds(0); case "second": this.milliseconds(0) } return e === "week" && this.day(0), this }, endOf: function (e) { return this.startOf(e).add(e.replace(/s?$/, "s"), 1).subtract("ms", 1) }, isAfter: function (e, n) { return n = typeof n != "undefined" ? n : "millisecond", +this.clone().startOf(n) > +t(e).startOf(n) }, isBefore: function (e, n) { return n = typeof n != "undefined" ? n : "millisecond", +this.clone().startOf(n) < +t(e).startOf(n) }, isSame: function (e, n) { return n = typeof n != "undefined" ? n : "millisecond", +this.clone().startOf(n) === +t(e).startOf(n) }, zone: function () { return this._isUTC ? 0 : this._d.getTimezoneOffset() }, daysInMonth: function () { return t.utc([this.year(), this.month() + 1, 0]).date() }, dayOfYear: function (e) { var n = r((t(this).startOf("day") - t(this).startOf("year")) / 864e5) + 1; return e == null ? n : this.add("d", e - n) }, isoWeek: function (e) { var t = tt(this, 1, 4); return e == null ? t : this.add("d", (e - t) * 7) }, week: function (e) { var t = this.lang().week(this); return e == null ? t : this.add("d", (e - t) * 7) }, lang: function (t) { return t === e ? this._lang : (this._lang = U(t), this) } }; for (i = 0; i < T.length; i++) rt(T[i].toLowerCase().replace(/s$/, ""), T[i]); rt("year", "FullYear"), t.fn.days = t.fn.day, t.fn.weeks = t.fn.week, t.fn.isoWeeks = t.fn.isoWeek, t.duration.fn = P.prototype = { weeks: function () { return B(this.days() / 7) }, valueOf: function () { return this._milliseconds + this._days * 864e5 + this._months * 2592e6 }, humanize: function (e) { var t = +this, n = et(t, !e, this.lang()); return e && (n = this.lang().pastFuture(t, n)), this.lang().postformat(n) }, lang: t.fn.lang }; for (i in N) N.hasOwnProperty(i) && (st(i, N[i]), it(i.toLowerCase())); st("Weeks", 6048e5), t.lang("en", { ordinal: function (e) { var t = e % 10, n = ~~(e % 100 / 10) === 1 ? "th" : t === 1 ? "st" : t === 2 ? "nd" : t === 3 ? "rd" : "th"; return e + n } }), o && (module.exports = t), typeof ender == "undefined" && (this.moment = t), typeof define == "function" && define.amd && define("moment", [], function () { return t }) }).call(this);
+!function (a, b) { "use strict"; function c() { return b } "function" == typeof define && define.amd ? define("tinysort", c) : a.tinysort = b }(this, function () { "use strict"; function a(a, f) { function j() { 0 === arguments.length ? s({}) : d(arguments, function (a) { s(c(a) ? { selector: a } : a) }), p = D.length } function s(a) { var b = !!a.selector, c = b && ":" === a.selector[0], d = e(a || {}, r); D.push(e({ hasSelector: b, hasAttr: !(d.attr === i || "" === d.attr), hasData: d.data !== i, hasFilter: c, sortReturnNumber: "asc" === d.order ? 1 : -1 }, d)) } function t() { d(a, function (a, b) { y ? y !== a.parentNode && (E = !1) : y = a.parentNode; var c = D[0], d = c.hasFilter, e = c.selector, f = !e || d && a.matchesSelector(e) || e && a.querySelector(e), g = f ? B : C, h = { elm: a, pos: b, posn: g.length }; A.push(h), g.push(h) }), x = B.slice(0) } function u() { B.sort(v) } function v(a, e) { var f = 0; for (0 !== q && (q = 0) ; 0 === f && p > q;) { var i = D[q], j = i.ignoreDashes ? n : m; if (d(o, function (a) { var b = a.prepare; b && b(i) }), i.sortFunction) f = i.sortFunction(a, e); else if ("rand" == i.order) f = Math.random() < .5 ? 1 : -1; else { var k = h, r = b(a, i), s = b(e, i), t = "" === r || r === g, u = "" === s || s === g; if (r === s) f = 0; else if (i.emptyEnd && (t || u)) f = t && u ? 0 : t ? 1 : -1; else { if (!i.forceStrings) { var v = c(r) ? r && r.match(j) : h, w = c(s) ? s && s.match(j) : h; if (v && w) { var x = r.substr(0, r.length - v[0].length), y = s.substr(0, s.length - w[0].length); x == y && (k = !h, r = l(v[0]), s = l(w[0])) } } f = r === g || s === g ? 0 : s > r ? -1 : r > s ? 1 : 0 } } d(o, function (a) { var b = a.sort; b && (f = b(i, k, r, s, f)) }), f *= i.sortReturnNumber, 0 === f && q++ } return 0 === f && (f = a.pos > e.pos ? 1 : -1), f } function w() { var a = B.length === A.length; E && a ? F ? B.forEach(function (a, b) { a.elm.style.order = b }) : (B.forEach(function (a) { z.appendChild(a.elm) }), y.appendChild(z)) : (B.forEach(function (a) { var b = a.elm, c = k.createElement("div"); a.ghost = c, b.parentNode.insertBefore(c, b) }), B.forEach(function (a, b) { var c = x[b].ghost; c.parentNode.insertBefore(a.elm, c), c.parentNode.removeChild(c) })) } c(a) && (a = k.querySelectorAll(a)), 0 === a.length && console.warn("No elements to sort"); var x, y, z = k.createDocumentFragment(), A = [], B = [], C = [], D = [], E = !0, F = a.length && (f === g || f.useFlex !== !1) && -1 !== getComputedStyle(a[0].parentNode, null).display.indexOf("flex"); return j.apply(i, Array.prototype.slice.call(arguments, 1)), t(), u(), w(), B.map(function (a) { return a.elm }) } function b(a, b) { var d, e = a.elm; return b.selector && (b.hasFilter ? e.matchesSelector(b.selector) || (e = i) : e = e.querySelector(b.selector)), b.hasAttr ? d = e.getAttribute(b.attr) : b.useVal ? d = e.value || e.getAttribute("value") : b.hasData ? d = e.getAttribute("data-" + b.data) : e && (d = e.textContent), c(d) && (b.cases || (d = d.toLowerCase()), d = d.replace(/\s+/g, " ")), d } function c(a) { return "string" == typeof a } function d(a, b) { for (var c, d = a.length, e = d; e--;) c = d - e - 1, b(a[c], c) } function e(a, b, c) { for (var d in b) (c || a[d] === g) && (a[d] = b[d]); return a } function f(a, b, c) { o.push({ prepare: a, sort: b, sortBy: c }) } var g, h = !1, i = null, j = window, k = j.document, l = parseFloat, m = /(-?\d+\.?\d*)\s*$/g, n = /(\d+\.?\d*)\s*$/g, o = [], p = 0, q = 0, r = { selector: i, order: "asc", attr: i, data: i, useVal: h, place: "start", returns: h, cases: h, forceStrings: h, ignoreDashes: h, sortFunction: i, useFlex: h, emptyEnd: h }; return j.Element && function (a) { a.matchesSelector = a.matchesSelector || a.mozMatchesSelector || a.msMatchesSelector || a.oMatchesSelector || a.webkitMatchesSelector || function (a) { for (var b = this, c = (b.parentNode || b.document).querySelectorAll(a), d = -1; c[++d] && c[d] != b;); return !!c[d] } }(Element.prototype), e(f, { loop: d }), e(a, { plugin: f, defaults: r }) }());
 
 (function ($) {
 
     var $document = $(document),
-        bsSort = [],
-    	lastSort;
+        signClass,
+        sortEngine;
 
-    $.bootstrapSortable = function (applyLast) {
-        // set attributes needed for sorting
+    $.bootstrapSortable = function (applyLast, sign, customSort) {
+
+        // Check if moment.js is available
+        var momentJsAvailable = (typeof moment !== 'undefined');
+
+        // Set class based on sign parameter
+        signClass = !sign ? "arrow" : sign;
+
+        // Set sorting algorithm
+        if (customSort == 'default')
+            customSort = defaultSortEngine;
+        sortEngine = customSort || sortEngine || defaultSortEngine;
+
+        // Set attributes needed for sorting
         $('table.sortable').each(function () {
             var $this = $(this);
             applyLast = (applyLast === true);
-            $this.find('span.arrow').remove();
-            $this.find('thead th').each(function (index) {
-                $(this).attr('data-sortkey', index);
+            $this.find('span.sign').remove();
+
+            // Add placeholder cells for colspans
+            $this.find('thead [colspan]').each(function () {
+                var colspan = parseFloat($(this).attr('colspan'));
+                for (var i = 1; i < colspan; i++) {
+                    $(this).after('<th class="colspan-compensate">');
+                }
             });
+
+            // Add placeholder cells for rowspans
+            $this.find('thead [rowspan]').each(function () {
+                var $cell = $(this);
+                var rowspan = parseFloat($cell.attr('rowspan'));
+                for (var i = 1; i < rowspan; i++) {
+                    var parentRow = $cell.parent('tr');
+                    var nextRow = parentRow.next('tr');
+                    var index = parentRow.children().index($cell);
+                    nextRow.children().eq(index).before('<th class="rowspan-compensate">');
+                }
+            });
+
+            // Set indexes to header cells
+            $this.find('thead tr').each(function (rowIndex) {
+                $(this).find('th').each(function (columnIndex) {
+                    var $this = $(this);
+                    $this.addClass('nosort').removeClass('up down');
+                    $this.attr('data-sortcolumn', columnIndex);
+                    $this.attr('data-sortkey', columnIndex + '-' + rowIndex);
+                });
+            });
+
+            // Cleanup placeholder cells
+            $this.find('thead .rowspan-compensate, .colspan-compensate').remove();
+
+            // Initialize sorting values
             $this.find('td').each(function () {
                 var $this = $(this);
-                if ($this.attr('data-dateformat') != undefined) {
+                if ($this.attr('data-dateformat') !== undefined && momentJsAvailable) {
                     $this.attr('data-value', moment($this.text(), $this.attr('data-dateformat')).format('YYYY/MM/DD/HH/mm/ss'));
                 }
                 else {
                     $this.attr('data-value') === undefined && $this.attr('data-value', $this.text());
                 }
             });
-            $this.find('thead th').each(function (index) {
+
+            var context = lookupSortContext($this),
+                bsSort = context.bsSort;
+
+            $this.find('thead th[data-defaultsort!="disabled"]').each(function (index) {
                 var $this = $(this);
-                if ($this.attr('data-defaultsort') == "disabled") { return; }
-                lastSort = applyLast ? lastSort : -1;
-                bsSort[index] = applyLast ? bsSort[index] : $this.attr('data-defaultsort');
-                if (bsSort[index] != null && (applyLast == (index == lastSort))) {
-                    bsSort[index] = bsSort[index] == 'asc' ? 'desc' : 'asc';
-                    doSort($this, $this.parents('table.sortable'))
+                var $sortTable = $this.closest('table.sortable');
+                $this.data('sortTable', $sortTable);
+                var sortKey = $this.attr('data-sortkey');
+                var thisLastSort = applyLast ? context.lastSort : -1;
+                bsSort[sortKey] = applyLast ? bsSort[sortKey] : $this.attr('data-defaultsort');
+                if (bsSort[sortKey] !== undefined && (applyLast === (sortKey === thisLastSort))) {
+                    bsSort[sortKey] = bsSort[sortKey] === 'asc' ? 'desc' : 'asc';
+                    doSort($this, $sortTable);
                 }
             });
             $this.trigger('sorted');
         });
     };
 
-    // add click event to table header
-    $document.on('click', 'table.sortable thead th', function (e) {
-        var $this = $(this), $table = $this.parents('table.sortable');
+    // Add click event to table header
+    $document.on('click', 'table.sortable thead th[data-defaultsort!="disabled"]', function (e) {
+        var $this = $(this), $table = $this.data('sortTable') || $this.closest('table.sortable');
+        $table.trigger('before-sort');
         doSort($this, $table);
         $table.trigger('sorted');
     });
 
-    //Sorting mechanism separated
+    // Look up sorting data appropriate for the specified table (jQuery element).
+    // This allows multiple tables on one page without collisions.
+    function lookupSortContext($table) {
+        var context = $table.data("bootstrap-sortable-context");
+        if (context === undefined) {
+            context = { bsSort: [], lastSort: undefined };
+            $table.find('thead th[data-defaultsort!="disabled"]').each(function (index) {
+                var $this = $(this);
+                var sortKey = $this.attr('data-sortkey');
+                context.bsSort[sortKey] = $this.attr('data-defaultsort');
+                if (context.bsSort[sortKey] !== undefined) {
+                    context.lastSort = sortKey;
+                }
+            });
+            $table.data("bootstrap-sortable-context", context);
+        }
+        return context;
+    }
+
+    function defaultSortEngine(rows, sortingParams) {
+        tinysort(rows, sortingParams);
+    }
+
+    // Sorting mechanism separated
     function doSort($this, $table) {
-        if ($this.attr('data-defaultsort') == "disabled") { return; }
+        var sortColumn = parseFloat($this.attr('data-sortcolumn')),
+            context = lookupSortContext($table),
+            bsSort = context.bsSort;
+
+        var colspan = $this.attr('colspan');
+        if (colspan) {
+            var mainSort = parseFloat($this.data('mainsort')) || 0;
+            var rowIndex = parseFloat($this.data('sortkey').split('-').pop());
+
+            // If there is one more row in header, delve deeper
+            if ($table.find('thead tr').length - 1 > rowIndex) {
+                doSort($table.find('[data-sortkey="' + (sortColumn + mainSort) + '-' + (rowIndex + 1) + '"]'), $table);
+                return;
+            }
+            // Otherwise, just adjust the sortColumn
+            sortColumn = sortColumn + mainSort;
+        }
+
+        var localSignClass = $this.attr('data-defaultsign') || signClass;
 
         // update arrow icon
+        $table.find('th').each(function () {
+            $(this).removeClass('up').removeClass('down').addClass('nosort');
+        });
+
         if ($.browser.mozilla) {
             var moz_arrow = $table.find('div.mozilla');
-            if (moz_arrow != null) {
-                moz_arrow.parent().html(moz_arrow.text());
+            if (moz_arrow !== undefined) {
+                moz_arrow.find('.sign').remove();
+                moz_arrow.parent().html(moz_arrow.html());
             }
             $this.wrapInner('<div class="mozilla"></div>');
-            $this.children().eq(0).append('<span class="arrow"></span>');
+            $this.children().eq(0).append('<span class="sign ' + localSignClass + '"></span>');
         }
         else {
-            $table.find('span.arrow').remove();
-            $this.append('<span class="arrow"></span>');
+            $table.find('span.sign').remove();
+            $this.append('<span class="sign ' + localSignClass + '"></span>');
         }
 
         // sort direction
-        var nr = $this.attr('data-sortkey');
-        lastSort = nr;
-        bsSort[nr] = bsSort[nr] == 'asc' ? 'desc' : 'asc';
-        if (bsSort[nr] == 'desc') { $this.find('span.arrow').addClass('up'); }
+        var sortKey = $this.attr('data-sortkey');
+        var initialDirection = $this.attr('data-firstsort') !== 'desc' ? 'desc' : 'asc';
+
+        context.lastSort = sortKey;
+        bsSort[sortKey] = (bsSort[sortKey] || initialDirection) === 'asc' ? 'desc' : 'asc';
+        if (bsSort[sortKey] === 'desc') {
+            $this.find('span.sign').addClass('up');
+            $this.addClass('up').removeClass('down nosort');
+        } else {
+            $this.addClass('down').removeClass('up nosort');
+        }
 
         // sort rows
-        var rows = $table.find('tbody tr');
-        rows.tsort('td:eq(' + nr + ')', { order: bsSort[nr], attr: 'data-value' });
-    };
+        var rows = $table.children('tbody').children('tr');
+        sortEngine(rows, { selector: 'td:nth-child(' + (sortColumn + 1) + ')', order: bsSort[sortKey], data: 'value' });
+
+        // add class to sorted column cells
+        $table.find('td.sorted, th.sorted').removeClass('sorted');
+        rows.find('td:eq(' + sortColumn + ')').addClass('sorted');
+        $this.addClass('sorted');
+    }
 
     // jQuery 1.9 removed this object
     if (!$.browser) {
         $.browser = { chrome: false, mozilla: false, opera: false, msie: false, safari: false };
         var ua = navigator.userAgent;
-        $.each($.browser, function (c, a) {
+        $.each($.browser, function (c) {
             $.browser[c] = ((new RegExp(c, 'i').test(ua))) ? true : false;
-            if ($.browser.mozilla && c == 'mozilla') { $.browser.mozilla = ((new RegExp('firefox', 'i').test(ua))) ? true : false; };
-            if ($.browser.chrome && c == 'safari') { $.browser.safari = false; };
+            if ($.browser.mozilla && c === 'mozilla') { $.browser.mozilla = ((new RegExp('firefox', 'i').test(ua))) ? true : false; }
+            if ($.browser.chrome && c === 'safari') { $.browser.safari = false; }
         });
-    };
+    }
 
     // Initialise on DOM ready
     $($.bootstrapSortable);
@@ -15015,6 +15387,27 @@ discardElement:Va,css:K,each:p,extend:s,map:za,merge:y,pick:q,splat:qa,extendCla
 
 
 }).call(this);
+(function() {
+
+
+}).call(this);
+(function(f){function A(a,b,c){var d;!b.rgba.length||!a.rgba.length?a=b.raw||"none":(a=a.rgba,b=b.rgba,d=b[3]!==1||a[3]!==1,a=(d?"rgba(":"rgb(")+Math.round(b[0]+(a[0]-b[0])*(1-c))+","+Math.round(b[1]+(a[1]-b[1])*(1-c))+","+Math.round(b[2]+(a[2]-b[2])*(1-c))+(d?","+(b[3]+(a[3]-b[3])*(1-c)):"")+")");return a}var t=function(){},q=f.getOptions(),h=f.each,l=f.extend,B=f.format,u=f.pick,r=f.wrap,m=f.Chart,p=f.seriesTypes,v=p.pie,n=p.column,w=f.Tick,x=HighchartsAdapter.fireEvent,y=HighchartsAdapter.inArray,
+z=1;h(["fill","stroke"],function(a){HighchartsAdapter.addAnimSetter(a,function(b){b.elem.attr(a,A(f.Color(b.start),f.Color(b.end),b.pos))})});l(q.lang,{drillUpText:"◁ Back to {series.name}"});q.drilldown={activeAxisLabelStyle:{cursor:"pointer",color:"#0d233a",fontWeight:"bold",textDecoration:"underline"},activeDataLabelStyle:{cursor:"pointer",color:"#0d233a",fontWeight:"bold",textDecoration:"underline"},animation:{duration:500},drillUpButton:{position:{align:"right",x:-10,y:10}}};f.SVGRenderer.prototype.Element.prototype.fadeIn=
+function(a){this.attr({opacity:0.1,visibility:"inherit"}).animate({opacity:u(this.newOpacity,1)},a||{duration:250})};m.prototype.addSeriesAsDrilldown=function(a,b){this.addSingleSeriesAsDrilldown(a,b);this.applyDrilldown()};m.prototype.addSingleSeriesAsDrilldown=function(a,b){var c=a.series,d=c.xAxis,g=c.yAxis,e;e=a.color||c.color;var i,f=[],j=[],k,o;if(!this.drilldownLevels)this.drilldownLevels=[];k=c.options._levelNumber||0;(o=this.drilldownLevels[this.drilldownLevels.length-1])&&o.levelNumber!==
+k&&(o=void 0);b=l({color:e,_ddSeriesId:z++},b);i=y(a,c.points);h(c.chart.series,function(a){if(a.xAxis===d&&!a.isDrilling)a.options._ddSeriesId=a.options._ddSeriesId||z++,a.options._colorIndex=a.userOptions._colorIndex,a.options._levelNumber=a.options._levelNumber||k,o?(f=o.levelSeries,j=o.levelSeriesOptions):(f.push(a),j.push(a.options))});e={levelNumber:k,seriesOptions:c.options,levelSeriesOptions:j,levelSeries:f,shapeArgs:a.shapeArgs,bBox:a.graphic?a.graphic.getBBox():{},color:e,lowerSeriesOptions:b,
+pointOptions:c.options.data[i],pointIndex:i,oldExtremes:{xMin:d&&d.userMin,xMax:d&&d.userMax,yMin:g&&g.userMin,yMax:g&&g.userMax}};this.drilldownLevels.push(e);e=e.lowerSeries=this.addSeries(b,!1);e.options._levelNumber=k+1;if(d)d.oldPos=d.pos,d.userMin=d.userMax=null,g.userMin=g.userMax=null;if(c.type===e.type)e.animate=e.animateDrilldown||t,e.options.animation=!0};m.prototype.applyDrilldown=function(){var a=this.drilldownLevels,b;if(a&&a.length>0)b=a[a.length-1].levelNumber,h(this.drilldownLevels,
+function(a){a.levelNumber===b&&h(a.levelSeries,function(a){a.options&&a.options._levelNumber===b&&a.remove(!1)})});this.redraw();this.showDrillUpButton()};m.prototype.getDrilldownBackText=function(){var a=this.drilldownLevels;if(a&&a.length>0)return a=a[a.length-1],a.series=a.seriesOptions,B(this.options.lang.drillUpText,a)};m.prototype.showDrillUpButton=function(){var a=this,b=this.getDrilldownBackText(),c=a.options.drilldown.drillUpButton,d,g;this.drillUpButton?this.drillUpButton.attr({text:b}).align():
+(g=(d=c.theme)&&d.states,this.drillUpButton=this.renderer.button(b,null,null,function(){a.drillUp()},d,g&&g.hover,g&&g.select).attr({align:c.position.align,zIndex:9}).add().align(c.position,!1,c.relativeTo||"plotBox"))};m.prototype.drillUp=function(){for(var a=this,b=a.drilldownLevels,c=b[b.length-1].levelNumber,d=b.length,g=a.series,e,i,f,j,k=function(b){var c;h(g,function(a){a.options._ddSeriesId===b._ddSeriesId&&(c=a)});c=c||a.addSeries(b,!1);if(c.type===f.type&&c.animateDrillupTo)c.animate=c.animateDrillupTo;
+b===i.seriesOptions&&(j=c)};d--;)if(i=b[d],i.levelNumber===c){b.pop();f=i.lowerSeries;if(!f.chart)for(e=g.length;e--;)if(g[e].options.id===i.lowerSeriesOptions.id&&g[e].options._levelNumber===c+1){f=g[e];break}f.xData=[];h(i.levelSeriesOptions,k);x(a,"drillup",{seriesOptions:i.seriesOptions});if(j.type===f.type)j.drilldownLevel=i,j.options.animation=a.options.drilldown.animation,f.animateDrillupFrom&&f.chart&&f.animateDrillupFrom(i);j.options._levelNumber=c;f.remove(!1);if(j.xAxis)e=i.oldExtremes,
+j.xAxis.setExtremes(e.xMin,e.xMax,!1),j.yAxis.setExtremes(e.yMin,e.yMax,!1)}this.redraw();this.drilldownLevels.length===0?this.drillUpButton=this.drillUpButton.destroy():this.drillUpButton.attr({text:this.getDrilldownBackText()}).align();this.ddDupes.length=[]};n.prototype.supportsDrilldown=!0;n.prototype.animateDrillupTo=function(a){if(!a){var b=this,c=b.drilldownLevel;h(this.points,function(a){a.graphic&&a.graphic.hide();a.dataLabel&&a.dataLabel.hide();a.connector&&a.connector.hide()});setTimeout(function(){b.points&&
+h(b.points,function(a,b){var e=b===(c&&c.pointIndex)?"show":"fadeIn",f=e==="show"?!0:void 0;if(a.graphic)a.graphic[e](f);if(a.dataLabel)a.dataLabel[e](f);if(a.connector)a.connector[e](f)})},Math.max(this.chart.options.drilldown.animation.duration-50,0));this.animate=t}};n.prototype.animateDrilldown=function(a){var b=this,c=this.chart.drilldownLevels,d,g=this.chart.options.drilldown.animation,e=this.xAxis;if(!a)h(c,function(a){if(b.options._ddSeriesId===a.lowerSeriesOptions._ddSeriesId)d=a.shapeArgs,
+d.fill=a.color}),d.x+=u(e.oldPos,e.pos)-e.pos,h(this.points,function(a){a.graphic&&a.graphic.attr(d).animate(l(a.shapeArgs,{fill:a.color}),g);a.dataLabel&&a.dataLabel.fadeIn(g)}),this.animate=null};n.prototype.animateDrillupFrom=function(a){var b=this.chart.options.drilldown.animation,c=this.group,d=this;h(d.trackerGroups,function(a){if(d[a])d[a].on("mouseover")});delete this.group;h(this.points,function(d){var e=d.graphic,i=function(){e.destroy();c&&(c=c.destroy())};e&&(delete d.graphic,b?e.animate(l(a.shapeArgs,
+{fill:a.color}),f.merge(b,{complete:i})):(e.attr(a.shapeArgs),i()))})};v&&l(v.prototype,{supportsDrilldown:!0,animateDrillupTo:n.prototype.animateDrillupTo,animateDrillupFrom:n.prototype.animateDrillupFrom,animateDrilldown:function(a){var b=this.chart.drilldownLevels[this.chart.drilldownLevels.length-1],c=this.chart.options.drilldown.animation,d=b.shapeArgs,g=d.start,e=(d.end-g)/this.points.length;if(!a)h(this.points,function(a,h){a.graphic.attr(f.merge(d,{start:g+h*e,end:g+(h+1)*e,fill:b.color}))[c?
+"animate":"attr"](l(a.shapeArgs,{fill:a.color}),c)}),this.animate=null}});f.Point.prototype.doDrilldown=function(a,b){var c=this.series.chart,d=c.options.drilldown,f=(d.series||[]).length,e;if(!c.ddDupes)c.ddDupes=[];for(;f--&&!e;)d.series[f].id===this.drilldown&&y(this.drilldown,c.ddDupes)===-1&&(e=d.series[f],c.ddDupes.push(this.drilldown));x(c,"drilldown",{point:this,seriesOptions:e,category:b,points:b!==void 0&&this.series.xAxis.ddPoints[b].slice(0)});e&&(a?c.addSingleSeriesAsDrilldown(this,e):
+c.addSeriesAsDrilldown(this,e))};f.Axis.prototype.drilldownCategory=function(a){var b,c,d=this.ddPoints[a];for(b in d)(c=d[b])&&c.series&&c.series.visible&&c.doDrilldown&&c.doDrilldown(!0,a);this.chart.applyDrilldown()};f.Axis.prototype.getDDPoints=function(a,b){var c=this.ddPoints;if(!c)this.ddPoints=c={};c[a]||(c[a]=[]);if(c[a].levelNumber!==b)c[a].length=0;return c[a]};w.prototype.drillable=function(){var a=this.pos,b=this.label,c=this.axis,d=c.ddPoints&&c.ddPoints[a];if(b&&d&&d.length){if(!b.basicStyles)b.basicStyles=
+f.merge(b.styles);b.addClass("highcharts-drilldown-axis-label").css(c.chart.options.drilldown.activeAxisLabelStyle).on("click",function(){c.drilldownCategory(a)})}else if(b&&b.basicStyles)b.styles={},b.css(b.basicStyles),b.on("click",null)};r(w.prototype,"addLabel",function(a){a.call(this);this.drillable()});r(f.Point.prototype,"init",function(a,b,c,d){var g=a.call(this,b,c,d),a=(c=b.xAxis)&&c.ticks[d],d=c&&c.getDDPoints(d,b.options._levelNumber);if(g.drilldown&&(f.addEvent(g,"click",function(){g.doDrilldown()}),
+d))d.push(g),d.levelNumber=b.options._levelNumber;a&&a.drillable();return g});r(f.Series.prototype,"drawDataLabels",function(a){var b=this.chart.options.drilldown.activeDataLabelStyle;a.call(this);h(this.points,function(a){a.drilldown&&a.dataLabel&&a.dataLabel.attr({"class":"highcharts-drilldown-data-label"}).css(b)})});var s,q=function(a){a.call(this);h(this.points,function(a){a.drilldown&&a.graphic&&a.graphic.attr({"class":"highcharts-drilldown-point"}).css({cursor:"pointer"})})};for(s in p)p[s].prototype.supportsDrilldown&&
+r(p[s].prototype,"drawTracker",q)})(Highcharts);
 (function() {
 
 
