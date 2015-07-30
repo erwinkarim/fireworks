@@ -44,12 +44,6 @@ Fireworks::Application.routes.draw do
     match '/licserver/:licserver_id/analysis' => :analysis, :via => :get, :as => 'licserver_analysis'
   end
 
-  #controller :dash do
-  #  match '/dash/' => :index, :via => :get, :as => 'dash'
-  #  match '/dash/monthly/:mode' => :monthly_report, :via => :get, :as => 'dash_monthly_report'
-  #  match '/dash/report/:mode' => :report , :via => :get, :as => 'dash_report'
-  #end
-
   resources :tags do
     collection do
       get 'gen_accordion'
@@ -58,18 +52,6 @@ Fireworks::Application.routes.draw do
     get 'gen_licservers'
   end
 
-  #controller :reports do
-  #  match '/reports/schedule/configure' => :schedule_configure, :via => :get, :as => 'schedule_configure'
-  #  match '/reports/schedule' => :schedule, :via => :get, :as => 'reports_schedules'
-  #  match '/reports/schedule/:schedule_id' => :reports_schedule, :via => :get, :as => 'reports_schedule'
-  #  match '/reports/schedule/:schedule_id/reports' => :reports_schedule_detail,
-  #    :via => :get, :as => 'reports_schedule_detail'
-  #  match '/reports/configure/new' => :schedule_new, :via => :get, :as => 'reports_schedule_new'
-  #  match '/reports/configure/new' => :schedule_create, :via => :post, :as => 'reports_schedule_create'
-  #  match '/reports/configure/:schedule_id/edit' => :schedule_edit, :via => :get, :as => 'reports_schedule_edit'
-  #  match '/reports/configure/:schedule_id' => :schedule_update, :via => :put, :as => 'reports_schedule_update'
-  #  match '/reports/configure/:schedule_id' => :schedule_delete, :via => :delete, :as => 'reports_schedule_delete'
-  #end
 
   resources :report_schedules do
     get 'accordion'

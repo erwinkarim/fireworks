@@ -35,6 +35,7 @@ end
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'font-awesome-rails', '=4.3.0'
+gem 'less-rails-bootstrap'
 gem 'haml'
 #gem 'psych'
 
@@ -56,14 +57,12 @@ gem 'unicorn-rails'
 #
 
 gem 'rufus-scheduler'
-gem 'less-rails', '=2.6.0'
+#gem 'less-rails', '=2.6.0'
 gem 'squeel'
 
 gem 'delayed_job_active_record'
 gem 'daemons'
 gem 'paloma', '~> 2.0.6'
-
-gem 'snmp'
 
 gem 'foreman'
 

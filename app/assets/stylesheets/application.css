@@ -9,15 +9,16 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
+ *= require twitter/bootstrap
+ *= require custom_bootstrap/custom_bootstrap
  *= require_tree .
  *= require font-awesome
  */
 
 body { padding-top: 70px; }
 
-#front-jumbotron{ 
-	background-image: url("/wall_e_and_eve-1920x1080.jpg"); 
-	background-size: cover; 
-	height:720px; 
+#front-jumbotron{
+	background-size: cover;
+	height:720px;
 	color:white;
 }

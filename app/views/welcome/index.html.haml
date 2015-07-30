@@ -1,4 +1,4 @@
-.jumbotron#front-jumbotron
+.jumbotron#front-jumbotron{:style => "background-image: url(\"#{ Fireworks::PANEL1_PICTURE} \")"}
 	%h1 Welcome to Fireworks!
 	%p All your FlexLicenses, Monitored
 	%p
@@ -6,7 +6,7 @@
 .row
 	.col-md-6.col-xs-12
 		.thumbnail
-			%img{ :src => "/wall_e__rubiks_cube-1280x800.jpg" }
+			%img{ :src => Fireworks::PANEL2_PICTURE }
 			.caption
 				%h3 How It Works
 				%p Explain how fireworks works
@@ -14,13 +14,12 @@
 					%a.btn.btn-default{ :href => welcome_tech_path } Learn More
 	.col-md-6.col-xs-12
 		.thumbnail
-			%img{ :src => "/walle009.jpg" }
+			%img{ :src => Fireworks::PANEL3_PICTURE }
 			.caption
 				%h3 Idle Client
 				%p Monitor Idle Client
 				%p
-					- if !@clientOs.nil? then 
+					- if !@clientOs.nil? then
 						= link_to 'Download for '+@clientOS, welcome_download_client_path(:type => @clientOS), :class=>'btn btn-default'
 				%p
 					%small #{ link_to 'Download for other platforms', welcome_download_client_path }
-

@@ -15,3 +15,5 @@
 //= require ./feature_headers/_manifest.js
 //= require ./reports/_manifest.js
 //= require ./unique_user_kill_lists/_manifest.js
+
+//= require ./settings/_manifest.js
