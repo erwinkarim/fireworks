@@ -45,5 +45,15 @@ Solution: You need to ensure that the license server hostname is resolvable. You
 You can test the connection by running the library
 /path/lib/myplugin/lmutil lmstat -a -c <port@server>
 
+== Customizing
+
+=== Color
+
+The settings for colors are in app/assets/stylesheets/custom_bootstrap/variables.less . You can just define bootstrap varibles here to change the color of your liking
+
+=== Front panel pictures
+
+To change the front panel pictures, upload your pictures in public folder and edit the file config/initilizers/fireworks_module.rb to point to the appropiate files
+
 ==Help
 If you need help installing it or request new features or report bugs, kindly contact me at erwinkarim at gmail dot com
