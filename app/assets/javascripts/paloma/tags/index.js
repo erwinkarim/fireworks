@@ -13,7 +13,7 @@
   // Access locals for the current scope through the _l object.
   //
   // Example:
-  // _l.localMethod(); 
+  // _l.localMethod();
   var _l = _L['tags'];
 
 
@@ -34,7 +34,7 @@
                 //setup_tab($(this));
               });
 
-              
+
             });
           }, 'html' ).done( function(){
 						handle.find('.panel-inner').attr('data-init', 'true');
@@ -42,7 +42,7 @@
         }
       });
     };
-	
+
 		//load all them tags
 		var init_load = function(){$.get( '/tags/gen_accordion.template', null,
         function(data, textStatus, jqXHR){
@@ -51,20 +51,31 @@
             $('.accordion-tag').each( function(index, value) {
               setup_accordion( $(this) );
             });
-          }) 
+          })
         }, 'html'
       )
 		};
+
+    var lookup = function(term, handle){
+      $.get('/tags/search.template', { query:term }, function(data, textStatus, jqXHR){
+        handle.empty();
+        handle.append(data).ready(function(){
+          $('.accordion-tag').each( function(index,value){
+            setup_accordion( $(this) );
+          });
+        });
+      }, 'html' );
+    }
 
     // Do something here.
     $(document).ready( function(){
 
       Highcharts.setOptions({
-        global:{ 
+        global:{
           useUTC: false
         }
       });
-    
+
       init_load();
 
       //setup search query
@@ -72,8 +83,12 @@
         source: function(query, process){
           return $.get('/tags/search', { query:query }, function(data, textStatus, jqXHR){
             return process(data.options);
-          }, 'json'); 
-        } 
+          }, 'json');
+        },
+        delay: 100,
+        afterSelect: function(item){
+          lookup( item, $('#tags-accordion'));
+        }
       }).bind('keypress', function(e){
         var code = e.keyCode || e.which;
         if(code==13){ //Enter keycode
@@ -81,20 +96,18 @@
           e.preventDefault();
 
           if( $(this).val().length != 0){
-            //clear everything and return the one's with 
-            $.get('/tags/search.template', { query:$(this).val() }, function(data, textStatus, jqXHR){
-              $('#tags-accordion').empty();
-              $('#tags-accordion').append(data).ready(function(){
-                $('.accordion-tag').each( function(index,value){
-                  setup_accordion( $(this) );
-                });
-              });
-            }, 'html' );
+            //clear everything and return the one's with
+            lookup( $(this).val() , $('#tags-accordion'));
           }else{
             //reset the page
             $('#tags-accordion').empty();
             init_load();
           };
+        }else {
+          if( $(this).val().length != 0 ){
+            //look for stuff
+            lookup( $(this).val() , $('#tags-accordion'));
+          }
         };
       });
     });

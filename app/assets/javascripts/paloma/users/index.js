@@ -13,7 +13,7 @@
   // Access locals for the current scope through the _l object.
   //
   // Example:
-  // _l.localMethod(); 
+  // _l.localMethod();
   var _l = _L['users'];
 
 
@@ -22,7 +22,7 @@
     setup_features_accordion_body = function(handle){
       console.log('called setup_features_accordion_body');
       handle.find('a[data-toggle="tab"]').on('shown', function(e){
-        console.log(e.target); 
+        console.log(e.target);
       });
     }; // setup_feaures_accordion_body = function(handle){
 
@@ -40,19 +40,41 @@
           $('.panel[data-init=false]').each( function(index) {
             _l.setup_accordion_body($(this));
           });
-          
+
           //update the add more users button
           $('#load-more-users').attr('data-last-userid', $('#user-listings .panel:last').attr('data-id') );
         });
-  
+
       }); // $.ajax( '/users/get_more', {
-    } 
+    }
+
+    var user_lookup = function(term, handle){
+      //reload the accordion and put the revelent people
+      $.ajax( '/users/search.template', {
+        data: { query:term },
+        dataType:'html'
+      }).done( function(data,textStatus, jqXHR){
+        //$('#user-listings').empty();
+        handle.empty();
+        //$('#user-listings').append(
+        handle.append(
+          $.parseHTML(data)
+        ).ready( function(){
+          $('.panel[data-init=false]').each( function(index) {
+            _l.setup_accordion_body($(this));
+          });
+        });
+        $('#load-more-users').attr('data-mode', 'search');
+      }); // $.ajax( '/users/serach', {
+
+    };
+
     // Do something here.
     $(document).ready( function(){
       Highcharts.setOptions({
           global: { useUTC: false }
       });
-  
+
       init_load();
 
       //when load more users button clicked
@@ -83,14 +105,14 @@
             $('.panel[data-init=false]').each( function(index) {
               _l.setup_accordion_body($(this));
             });
-            
+
             //update the add more users button
             $('#load-more-users').attr('data-last-userid', $('#user-listings .panel:last').attr('data-id') );
 
             //remove the spinner
             $('#user-listings').find('.fa-cog').remove();
           });
-    
+
         }); // $.ajax( '/users/get_more', {
 
       }); // $('#load-more-users').click( function(){
@@ -101,9 +123,12 @@
           return $.get( '/users/search/', {
             query:query
           }, function(data, textStatus, jqXHR){
-            //load the results while you type here before returning the data 
+            //load the results while you type here before returning the data
             return process(data.options);
           }, 'json');
+        },
+        afterSelect: function(item){
+            user_lookup( item, $('#user-listings'));
         }
       }).bind('keypress', function(e){
         var code = e.keyCode || e.which;
@@ -115,26 +140,14 @@
           console.log('search for ' + $(this).val() );
 
           if($(this).val().length != 0){
-            //reload the accordion and put the revelent people
-            $.ajax( '/users/search.template', {
-              data: { query:$(this).val() },
-              dataType:'html'
-            }).done( function(data,textStatus, jqXHR){
-              $('#user-listings').empty();
-              $('#user-listings').append(
-                $.parseHTML(data)
-              ).ready( function(){
-                $('.panel[data-init=false]').each( function(index) {
-                  _l.setup_accordion_body($(this));
-                });
-              });
-              $('#load-more-users').attr('data-mode', 'search');
-            }); // $.ajax( '/users/serach', {
+            user_lookup($(this).val(), $('#user-listings'));
           } else {
             $('#user-listings').empty();
             init_load();
             $('#load-more-users').attr('data-mode', 'default');
-          } // if($(this).val().length != 0){
+          } // if($(this).val().length != 0)
+        } else {
+          user_lookup($(this).val(), $('#user-listings'));
         }
       });
 
