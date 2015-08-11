@@ -58,7 +58,7 @@ class LicserversController < ApplicationController
   # GET /licservers/1/edit
   def edit
     @licserver = Licserver.find(params[:id])
-		
+
 		respond_to do |format|
 			format.html { render :partial => 'form', :locals => { :licserver => @licserver } }
 		end
@@ -69,7 +69,7 @@ class LicserversController < ApplicationController
   def create
     omnibar = params[:lic]
     if omnibar.include? '@' then
-      @licserver = Licserver.new(:port => omnibar.split('@').first, :server => omnibar.split('@').last)  
+      @licserver = Licserver.new(:port => omnibar.split('@').first, :server => omnibar.split('@').last)
     else
       @licserver = Licserver.new(:server => omnibar)
     end
@@ -94,11 +94,11 @@ class LicserversController < ApplicationController
 	#  Parameters: {"server_id"=>"2", "server_info"=>"9500@PETHNTTAD01", "tags"=>"ofm volts capital planning", "id"=>"2"}
   def update
     @licserver = Licserver.find(params[:server_id])
-	
+
 		port = params[:server_info].split('@').first.to_i
 		port = port == 0 ? nil : port
 		server = params[:server_info].split('@').last
-		
+
     respond_to do |format|
       if @licserver.update!( :port => port, :server => server ) then
 				@licserver.update_tag_list(params[:tags])
@@ -116,11 +116,11 @@ class LicserversController < ApplicationController
   # DELETE /licservers/1.json
   def destroy
     @licserver = Licserver.find(params[:id])
-    
+
     #put delete in background to improve interface reponsiveness
     #@licserver.destroy
     @licserver.update_attributes(:to_delete => true)
-    @licserver.save 
+    @licserver.save
 
     @licserver.delay.destroy
 
@@ -131,7 +131,7 @@ class LicserversController < ApplicationController
     end
   end
 
-	# POST   /licservers/:licserver_id/update_settings(.:format) 
+	# POST   /licservers/:licserver_id/update_settings(.:format)
   def update_settings
     @lic = Licserver.find(params[:licserver_id])
 
@@ -149,12 +149,12 @@ class LicserversController < ApplicationController
     #get trendy licservers
   end
 
-  # GET    /licserver/:licserver_id/analysis(.:format) 
+  # GET    /licserver/:licserver_id/analysis(.:format)
   # get analysis
   def analysis
     @licserver = Licserver.find(params[:licserver_id])
 
-    #input error margin is 0.1%  
+    #input error margin is 0.1%
     #feature_error_margin = 0
 
 
@@ -162,12 +162,12 @@ class LicserversController < ApplicationController
 			format.html
 			format.template {
 				feature_error_margin = @licserver.features.count * 0.001
-				@anal_dump = @licserver.features.where{ 
+				@anal_dump = @licserver.features.where{
 							# 0800 to 1700 malaysia time because data is stored in UTC
-						( to_char( created_at, 'HH24:MI:SS') > '01:00:00' ) & 
-						( to_char( created_at, 'HH24:MI:SS' ) < '10:00:00' ) & 
-						( to_char( created_at, 'D') != 1 ) & ( to_char( created_at, 'D' ) != 7 ) & 
-							( created_at.gt 6.months.ago ) 
+						( to_char( created_at, 'HH24:MI:SS') > '01:00:00' ) &
+						( to_char( created_at, 'HH24:MI:SS' ) < '10:00:00' ) &
+						( to_char( created_at, 'D') != 1 ) & ( to_char( created_at, 'D' ) != 7 ) &
+							( created_at.gt 6.months.ago )
 							#( to_char( created_at, 'MM') >= 5 ) & ( to_char( created_at, 'MM') <= 7)  }.
 					}.select{ [name, sum(current).as(total_current), sum(max).as(total_max), count(max).as(max_count) ] }.
 					group{ name }.
@@ -179,7 +179,7 @@ class LicserversController < ApplicationController
   end
 
 	# GET    /licservers/get_more
-	# options 
+	# options
 	#		last_id		start from last_id and above
 	def get_more
 		if params.has_key? :last_id then
@@ -191,7 +191,7 @@ class LicserversController < ApplicationController
 		@licservers = Licserver.where{ (id.gt last_id) & (to_delete.eq false) }.order(:id)
 
 		respond_to do |format|
-			format.html { render :partial => 'accordion', :locals => { :licservers => @licservers }  } 
+			format.html { render :partial => 'accordion', :locals => { :licservers => @licservers }  }
 			format.json { render :json => @licservers }
 		end
 	end
@@ -203,7 +203,7 @@ class LicserversController < ApplicationController
     @features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| {:name => item.name } }
 
 		respond_to do |format|
-			format.html { render :partial => 'info', :locals => { :licserver => @licserver , :features => @features}  } 
+			format.html { render :partial => 'info', :locals => { :licserver => @licserver , :features => @features}  }
 			format.json { render :json => @licserver }
 		end
 	end
@@ -213,19 +213,28 @@ class LicserversController < ApplicationController
 	#	optiosn
 	#		query		the search query
 	def search
-		#query = (params.has_key? :query) ? query = '%' + params[:query] + '%' : ''
-		query = (params.has_key? :query) ? params[:query] : ''
+		query = (params.has_key? :query) ? "%#{params[:query]}%" : ''
+		#query = (params.has_key? :query) ? params[:query] : ''
 		# need to handle case of port@server search term
-		@licservers = (Licserver.where{ server.matches query }.limit(20) + 
-			Licserver.where{ port.matches query }.limit(20) ).uniq
+		if query.index("@").nil? then
+			@licservers = (Licserver.where{ server.matches query }.limit(20) +
+				Licserver.where{ port.matches query }.limit(20) ).uniq
+		else
+			port_num = query.split("@")[0]
+			server_id = query.split("@")[1]
+
+			port_num = port_num.empty? ? "" : "%#{port_num}%"
+
+			@licservers = (Licserver.where{ server.matches server_id} + Licserver.where{ port.matches port_num})
+		end
 
     respond_to do |format|
       format.html { render :partial => 'accordion', :locals => { :licservers => @licservers } }
-      format.json { 
+      format.json {
         #to give back in typeahead format
         init_hash = { :options => [] }
         @licservers.each{ |x| init_hash[:options] << (x.port.to_s + '@' + x.server) }
-        render :json => init_hash 
+        render :json => init_hash
       }
 		end
 	end

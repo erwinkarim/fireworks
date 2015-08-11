@@ -7,4 +7,7 @@ module Fireworks
   PANEL2_PICTURE = "/ambyun_tg102914b-500.jpg"
   #PANEL3_PICTURE = "/walle009.jpg"
   PANEL3_PICTURE = "/natural-gas-lng-ship.jpg"
+
+
+  REVISION = `git describe --always`
 end

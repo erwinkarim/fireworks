@@ -13,20 +13,39 @@
   // Access locals for the current scope through the _l object.
   //
   // Example:
-  // _l.localMethod(); 
+  // _l.localMethod();
   var _l = _L['licservers'];
 
 
   Paloma.callbacks['licservers']['index'] = function(params){
+    var server_lookup = function(term, target){
+      //reload the accordion and put the revelent people
+      $.ajax( '/licservers/search', {
+        data: { query:term },
+        dataType:'html'
+      }).done( function(data,textStatus, jqXHR){
+        //$('#server-listings').empty();
+        target.empty();
+        target.append(
+          $.parseHTML(data)
+        ).ready( function(){
+          $('.accordion-group[data-init="false"]').each( function(index) {
+						setup_accordion($(this));
+          });
+        });
+
+      });
+    };
+
     $(document).ready( function(){
 
 			//just load everyuthing
 			load_more_servers = function(target, mode){
-				var last_id = null; 
+				var last_id = null;
 				if($(target).children().length == 0){
 					last_id = null;
 				} else {
-					last_id = { last_id:$(target).attr('last') }; 
+					last_id = { last_id:$(target).attr('last') };
 				}
 
 				var load_path = '';
@@ -54,7 +73,7 @@
 						$(target).find('.panel[data-init="false"]').each( function(index, value){
 							setup_accordion($(this));
 						});
-						
+
 					});
 				}, 'html');
 			};
@@ -77,16 +96,16 @@
 				}); // handle.on('shown', function(){
 
 				handle.attr('data-init', 'true');
-				
+
 			}; // var setup_accordion = function(handle){
-			
+
       //search servers as you type
       $('#search-servers').typeahead({
         source: function(query, process){
           return $.get( '/licservers/search', {
             query:query
           }, function(data, textStatus, jqXHR){
-            //load the results while you type here before returning the data 
+            //load the results while you type here before returning the data
             return process(data.options);
           }, 'json');
         }
@@ -97,26 +116,15 @@
           e.preventDefault();
 
           if($(this).val().length != 0){
-            //reload the accordion and put the revelent people
-            $.ajax( '/licservers/search', {
-              data: { query:$(this).val() },
-              dataType:'html'
-            }).done( function(data,textStatus, jqXHR){
-              $('#server-listings').empty();
-              $('#server-listings').append(
-                $.parseHTML(data)
-              ).ready( function(){
-                $('.accordion-group[data-init="false"]').each( function(index) {
-									setup_accordion($(this));
-                });
-              });
-
-            }); // $.ajax( '/licserver/serach', {
+            server_lookup($(this).val(), $('#server-listings'));
           } else {
             $('#load-more-servers').attr('data-mode', 'default');
             $('#server-listings').empty();
 						load_more_servers('#server-listings', $('#load-more-servers').attr('data-mode') );
-          } // if($(this).val().length != 0){
+          } // if($(this).val().length != 0)
+        } else {
+
+          server_lookup($(this).val(), $('#server-listings'));
         }
       });
 
@@ -126,7 +134,7 @@
 				$(this).find('.status').empty();
 			});
 
-			//create new licserver 
+			//create new licserver
 			$('#new-licserver-btn').click( function(){
 				var handle = $('#new-licserver-modal');
 
@@ -138,9 +146,9 @@
 				handle.find('.status').empty().append(
 					$.parseHTML('<i class="fa fa-cog fa-spin"></i> Adding server...')
 				);
-				
-				$.post('/licservers', { 
-						lic:handle.find('#server_info').val(), tags:handle.find('#tags').val(),  
+
+				$.post('/licservers', {
+						lic:handle.find('#server_info').val(), tags:handle.find('#tags').val(),
 						monitor_idle:handle.find('#monitor_idle').attr('checked')=='checked'
 					}, function(data, textStatus, jqXHR){
 					//create a new accordion and append the info
@@ -163,7 +171,7 @@
 			//#########################################################
 			//load the servers
 			load_more_servers('#server-listings', $('#load-more-servers').attr('data-mode') );
-			
+
 		}); // $(document).ready( function(){
   }; // Paloma.callbacks['licservers']['index'] = function(params){
 })();
