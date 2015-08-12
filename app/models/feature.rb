@@ -31,7 +31,7 @@ class Feature < ActiveRecord::Base
       unless feature_line.nil?
         #create new headers where necessary
         feature_name = feature_line.split(" ")[2].gsub(/:/, '')
-        Rails.logger.debug "Getting feature stats for #{feature_name}"
+        #Rails.logger.debug "Getting feature stats for #{feature_name}"
         if ( licserver.feature_headers.where(:name => feature_name ).empty? ) then
           licserver.feature_headers.create( :name => feature_name, :last_seen => DateTime.now ).save!
         end

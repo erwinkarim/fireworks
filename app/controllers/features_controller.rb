@@ -81,6 +81,8 @@ class FeaturesController < ApplicationController
     @fullname = @licserver.port.to_s + '@' + @licserver.server
     @output = Feature.kill_user(@fullname, params[:feature_id], params[:host_id], params[:port_id], params[:handle])
 
+		Rails.logger.info "Killing #{params[:user]}/#{params[:feature_id]} by #{current_ads_user.login}"
+
     respond_to do |format|
       format.html { redirect_to :back }
       format.xml { render :text => 'successful' }
