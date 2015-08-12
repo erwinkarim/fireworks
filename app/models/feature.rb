@@ -21,12 +21,17 @@ class Feature < ActiveRecord::Base
 
     #split the output into headers of "Users of <feature name>...."
     #sections = output.scan(/(?m)#{header}.*?(?=#{header})|\Z/)
-    sections = output.force_encoding("ISO-8859-1").encode("utf-8", replace: nil).scan(/(?m)#{header}.*?(?=#{header})|\Z/)
+    sections = output.force_encoding("ISO-8859-1").encode("utf-8", replace: nil).scan(/(?m)#{header}.*?(?=#{header})/)
+    if sections.count == 0 then
+      #handle if there's only 1 feature
+      sections = output.force_encoding("ISO-8859-1").encode("utf-8", replace: nil).scan(/(?m)#{header}.*/)
+    end
     sections.each do |section|
       feature_line = section.lines.grep(/Users/).first
       unless feature_line.nil?
         #create new headers where necessary
         feature_name = feature_line.split(" ")[2].gsub(/:/, '')
+        Rails.logger.debug "Getting feature stats for #{feature_name}"
         if ( licserver.feature_headers.where(:name => feature_name ).empty? ) then
           licserver.feature_headers.create( :name => feature_name, :last_seen => DateTime.now ).save!
         end
