@@ -14,4 +14,13 @@
 //= require jquery_ujs
 //= require paloma
 //= require twitter/bootstrap
+//= require turbolinks
 //= require_tree .
+
+Turbolinks.enableProgressBar();
+
+$(document).on('page:load', function(){
+
+  Paloma.executeHook();
+  Paloma.engine.start();
+})

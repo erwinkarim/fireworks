@@ -73,3 +73,7 @@ gem 'spreadsheet'
 #user authentication
 gem 'devise'
 gem 'net-ldap', :git => 'https://github.com/ruby-ldap/ruby-net-ldap'
+
+
+#turbolinks
+gem 'turbolinks'

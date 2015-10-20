@@ -4,12 +4,14 @@
 		%meta{ :charset => 'utf-8' }
 		%meta{ :http => { :equiv => "X-UA-Compatible" }, :content => "IE=Edge,chrome=1"  }
 		%meta{ :name => "viewport" , :content => "width=device-width, initial-scale=1.0"}
+		= javascript_include_tag "application", 'data-turbolinks-track' => true
+		= yield :other_javascript
 		%title
 			= content_for?(:title) ? yield(:title) : "Fireworks"
 
 		/ javascript include tag here
 		= csrf_meta_tags
-		= stylesheet_link_tag "application", :media => "all"
+		= stylesheet_link_tag "application", :media => "all", 'data-turbolinks-track' => true
 
 		/ For third-generation iPad with high-resolution Retina display:
 		/ Size should be 144 x 144 pixels
@@ -102,5 +104,3 @@
 		/ Javascripts
 		/ ================================================== -
 		/ Placed at the end of the document so the pages load faster
-		= javascript_include_tag "application"
-		= yield :other_javascript
