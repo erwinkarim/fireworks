@@ -221,7 +221,6 @@ DEPENDENCIES
   rails (~> 4.1.7)
   resque-scheduler
   ruby-oci8 (~> 2.1.7)
-  rufus-scheduler
   sass-rails (~> 4.0.5)
   spreadsheet
   squeel

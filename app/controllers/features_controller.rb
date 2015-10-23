@@ -108,8 +108,13 @@ class FeaturesController < ApplicationController
     else
       start_id = Feature.last.id
     end
-    @features = @licserver.features.where{ (features.id.lteq start_id) & (features.name.eq feature_name) }.
-      limit(2000).order('features.id desc')
+		start_date = Feature.find(start_id).created_at
+		data_points = params.has_key?(:start_id) ? 1000 : 200
+
+		# we partition the features table by date, so include date so oracle will know which partition to go
+    @features = @licserver.features.where{(features.created_at.lt start_date) & (features.id.lteq start_id) & (features.name.eq feature_name) }.
+      limit(data_points).order('features.id desc')
+
     output = [ { :name => 'current' , :data => [] }, { :name => 'max', :data => [] } ]
     @features.each do |x|
       output[0][:data] << [x.created_at.to_i*1000, x.current, x.id]

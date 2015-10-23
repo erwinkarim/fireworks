@@ -56,7 +56,7 @@ gem 'unicorn-rails'
 # gem 'debugger'
 #
 
-gem 'rufus-scheduler'
+#gem 'rufus-scheduler'
 #better scheduler
 gem 'resque-scheduler'
 #gem 'less-rails', '=2.6.0'
