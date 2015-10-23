@@ -1,0 +1,47 @@
+#queue_documents_for_indexing:
+  #cron: "* * * * *"
+  # you can use rufus-scheduler "every" syntax in place of cron if you prefer
+  #every: 30s
+  #class: "ResqueTest"
+  #args:
+  #description: "Test"
+
+collect_features_data:
+  #cron: "* * * * *"
+  # you can use rufus-scheduler "every" syntax in place of cron if you prefer
+  every: 11m
+  class: "CollectData"
+  args:
+  description: "Collect License Features data"
+
+enforce_uniq_users:
+  #cron: "* * * * *"
+  # you can use rufus-scheduler "every" syntax in place of cron if you prefer
+  every: 2m
+  class: "ForceUniqUsers"
+  args:
+  description: "Enforce Unique users policy where applicable"
+
+link_user_to_ad:
+  cron: "0 22 * * *"
+  # you can use rufus-scheduler "every" syntax in place of cron if you prefer
+  #every: 2m
+  class: "LinkUserToAD"
+  args:
+  description: "Link detected licserver user to Active Directory"
+
+check_idle_users:
+  #cron: "0 22 * * *"
+  # you can use rufus-scheduler "every" syntax in place of cron if you prefer
+  every: 23m
+  class: "CheckIdleUsers"
+  args:
+  description: "Check for Idle people"
+
+generate_report:
+  #cron: "0 22 * * *"
+  # you can use rufus-scheduler "every" syntax in place of cron if you prefer
+  every: 5m
+  class: "GenerateReport"
+  args:
+  description: "Generate the report"

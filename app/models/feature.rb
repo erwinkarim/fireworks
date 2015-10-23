@@ -227,7 +227,7 @@ class Feature < ActiveRecord::Base
 	# kill users which holding more than one license
 	def self.kill_dup_users(licserver_id, feature_name)
 		#get licserver full name
-		licserver = Licserver.find(1)
+		licserver = Licserver.find(licserver_id)
 		licserver_name = [licserver.port, licserver.server].join('@')
 
 		#get list of current users
