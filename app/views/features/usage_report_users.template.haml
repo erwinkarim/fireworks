@@ -1,0 +1,12 @@
+%table.table.table-hover.sortable
+  %thead
+    %tr
+      %th Name
+      %th Department
+      %th Company
+  %tbody
+    - @users.each do |user|
+      %tr
+        %td #{ link_to user[:name], user_path(user[:user_id]) }
+        %td #{ user[:department] }
+        %td #{ user[:company] }

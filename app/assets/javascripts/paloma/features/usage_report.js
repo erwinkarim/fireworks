@@ -13,7 +13,7 @@
   // Access locals for the current scope through the _l object.
   //
   // Example:
-  // _l.localMethod(); 
+  // _l.localMethod();
   var _l = _L['features'];
 
 
@@ -23,7 +23,7 @@
 
 		var datasum = 0;
 		var chart_options = {
-			chart: { 
+			chart: {
 				type: 'column', renderTo: 'usage-report-chart' ,
 				height: 800,
 				panning: true, panKey: 'shift',
@@ -31,7 +31,7 @@
 			},
 			title: { text: 'Last 30 days Feature Usage by Company/Department' },
 			subtitle: { text: 'Graph is drillable and zoomable. Use the shift key to pan' },
-			xAxis: { 
+			xAxis: {
 				type: 'category', labels: { rotation: 45 }
 			},
 			yAxis: {
@@ -58,9 +58,9 @@
 				}
 			},
 			tooltip: {
-				//pointFormat: '<span style="color:{series:color}">{series.name}</span>: 
-				//<b>{point.y}</b> ( {point.percentage:.2f}%)</br>', 
-				pointFormat: '<span style="color:{series:color}">{series.name}</span>: <b>{point.y}</b> <br />', 
+				//pointFormat: '<span style="color:{series:color}">{series.name}</span>:
+				//<b>{point.y}</b> ( {point.percentage:.2f}%)</br>',
+				pointFormat: '<span style="color:{series:color}">{series.name}</span>: <b>{point.y}</b> <br />',
 			},
 			series: [ { name:"Company", colorByPoint: true, data: [] } ],
 			drilldown: { series: [] }
@@ -85,16 +85,16 @@
 							};
 						});
 						inArray = true;
-					} 
+					}
 				}); // $.each(chart_options.series, function(index,series_value){
 
 				//data is not found at series level
 				if( inArray == false){
-					chart_options.series[0].data.push( 
-						{ name:value.company_name, drilldown:value.company_name, y:value.machine_count } 
+					chart_options.series[0].data.push(
+						{ name:value.company_name, drilldown:value.company_name, y:value.machine_count }
 					);
-					chart_options.drilldown.series.push( 
-						{ name:value.company_name, id:value.company_name, data:[ [value.department_name, value.machine_count ] ] } 
+					chart_options.drilldown.series.push(
+						{ name:value.company_name, id:value.company_name, data:[ [value.department_name, value.machine_count ] ] }
 					);
 				};
 			}); // $.each(data, function(index,value){
@@ -105,5 +105,12 @@
 				textStatus + ' Refresh page.'
 			);
 		});
+
+    console.log('fetching user list');
+    $.get(location.href + '_users.template', null, function(data){
+      $('#usage-report-list').empty().append(data);
+      $.bootstrapSortable(applyLast=true);
+
+    });
   };
 })();

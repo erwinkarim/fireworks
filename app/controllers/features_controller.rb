@@ -299,4 +299,18 @@ class FeaturesController < ApplicationController
 	def feature_params
 		params.require(:feature).permit( :current, :max, :name, :licserver_id )
 	end
+
+	# GET    /licservers/:licserver_id/features/:feature_id/usage_report_users(.:format)
+	def usage_report_users
+
+		@users = AdsUser.includes(:ads_department, :user).joins{ user.machines.features}.where(
+			:features => { :licserver_id => params[:licserver_id], :name => params[:feature_id],
+				:created_at => 30.days.ago..DateTime.now }
+		).uniq.map{ |x| { :user_id => x.user.id, :name => x.name, :department => x.ads_department.name, :company => x.ads_department.company_name}}
+
+		respond_to do |format|
+			format.template
+		end
+
+	end
 end

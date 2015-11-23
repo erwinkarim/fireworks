@@ -9,7 +9,8 @@ class AdsUser < ActiveRecord::Base
   #attr_accessible :login, :password, :password_confirmation, :remember_me, :email
   #attr_accessible :username, :domain
 	has_many :watch_lists, :dependent => :destroy
-	belongs_to :ads_department 
+	belongs_to :ads_department
+  has_one :user
 
 	validates :username, presence: true, uniqueness: true
 
@@ -21,7 +22,7 @@ class AdsUser < ActiveRecord::Base
 		#ldap = Devise::LDAP::Adapter.ldap_connect(self.username)
 		#ldap.ldap.authenticate self.username,self.password
 		#if (ldap.ldap.bind) then
-		#	results = ldap.ldap.search(:base => ldap.ldap.base, 
+		#	results = ldap.ldap.search(:base => ldap.ldap.base,
 		#		:filter => Net::LDAP::Filter.eq('userprincipalname', self.username) )
 		#	self.name = results.first[:displayname].first
 		#	self.email = results.first[:mail].first

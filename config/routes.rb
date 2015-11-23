@@ -33,6 +33,7 @@ Fireworks::Application.routes.draw do
       get 'historical_users'
 			post 'toggle_uniq_users'
 			get 'usage_report'
+      get 'usage_report_users'
       post 'mail'
     end
     resources :tags
