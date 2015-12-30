@@ -16,6 +16,10 @@ class FlexLicenseManager
     default_options = { :licserver => "@localhost", :feature => nil, :extra_info => false}
     options = default_options.merge args[0]
 
+    if options[:extra_info] then
+      extra_info_option = "-i"
+    end
+
     returnArray = Array.new
     output = `#{LMUTIL_PATH} lmstat -a -c #{options[:licserver]} #{extra_info_option} -f #{options[:feature]} | grep -vi "error"`
     header = /Users.*/

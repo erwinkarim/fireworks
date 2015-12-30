@@ -1,11 +1,13 @@
 class Licserver < ActiveRecord::Base
   #attr_accessible :port, :server, :to_delete, :monitor_idle
   validates :server, :presence => true
+  validates :license_type_id, :presence => true
   validates_uniqueness_of :server, :scope => :port
   validates :port, :inclusion => 1..65535, :allow_nil => true
   has_many :tags, :dependent => :destroy
   has_many :feature_headers, :dependent => :destroy
   has_many :features, :through => :feature_headers
+  belongs_to :license_type
   after_initialize :init
 
   def init

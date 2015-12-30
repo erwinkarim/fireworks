@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150616022459) do
+ActiveRecord::Schema.define(version: 20151230074352) do
 
   create_table "ads_departments", force: true do |t|
     t.string   "name"
@@ -94,14 +94,23 @@ ActiveRecord::Schema.define(version: 20150616022459) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "licservers", force: true do |t|
-    t.integer  "port",         precision: 38, scale: 0
-    t.string   "server"
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
-    t.boolean  "monitor_idle", precision: 1,  scale: 0
-    t.boolean  "to_delete",    precision: 1,  scale: 0
+  create_table "license_types", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
+
+  create_table "licservers", force: true do |t|
+    t.integer  "port",            precision: 38, scale: 0
+    t.string   "server"
+    t.datetime "created_at",                                               null: false
+    t.datetime "updated_at",                                               null: false
+    t.boolean  "monitor_idle",    precision: 1,  scale: 0
+    t.boolean  "to_delete",       precision: 1,  scale: 0
+    t.integer  "license_type_id", precision: 38, scale: 0, default: 10000
+  end
+
+  add_index "licservers", ["license_type_id"], name: "i_licservers_license_type_id"
 
   create_table "machine_feature_data", force: true do |t|
     t.integer  "machine_id", precision: 38, scale: 0
@@ -156,18 +165,18 @@ ActiveRecord::Schema.define(version: 20150616022459) do
   add_index "reports", ["report_schedule_id"], name: "i_reports_report_schedule_id"
 
   create_table "sys_export_schema_01", id: false, force: true do |t|
-    t.decimal  "process_order"
-    t.decimal  "duplicate"
-    t.decimal  "dump_fileid"
-    t.decimal  "dump_position"
-    t.decimal  "dump_length"
-    t.decimal  "dump_orig_length"
-    t.decimal  "dump_allocation"
-    t.decimal  "completed_rows"
-    t.decimal  "error_count"
-    t.decimal  "elapsed_time"
+    t.integer  "process_order",                       precision: 38, scale: 0
+    t.integer  "duplicate",                           precision: 38, scale: 0
+    t.integer  "dump_fileid",                         precision: 38, scale: 0
+    t.integer  "dump_position",                       precision: 38, scale: 0
+    t.integer  "dump_length",                         precision: 38, scale: 0
+    t.integer  "dump_orig_length",                    precision: 38, scale: 0
+    t.integer  "dump_allocation",                     precision: 38, scale: 0
+    t.integer  "completed_rows",                      precision: 38, scale: 0
+    t.integer  "error_count",                         precision: 38, scale: 0
+    t.integer  "elapsed_time",                        precision: 38, scale: 0
     t.string   "object_type_path",       limit: 200
-    t.decimal  "object_path_seqno"
+    t.integer  "object_path_seqno",                   precision: 38, scale: 0
     t.string   "object_type",            limit: 30
     t.string   "in_progress",            limit: 1
     t.string   "object_name",            limit: 500
@@ -177,78 +186,78 @@ ActiveRecord::Schema.define(version: 20150616022459) do
     t.string   "original_object_name",   limit: 4000
     t.string   "partition_name",         limit: 30
     t.string   "subpartition_name",      limit: 30
-    t.decimal  "dataobj_num"
-    t.decimal  "flags"
-    t.decimal  "property"
-    t.decimal  "trigflag"
-    t.decimal  "creation_level"
+    t.integer  "dataobj_num",                         precision: 38, scale: 0
+    t.integer  "flags",                               precision: 38, scale: 0
+    t.integer  "property",                            precision: 38, scale: 0
+    t.integer  "trigflag",                            precision: 38, scale: 0
+    t.integer  "creation_level",                      precision: 38, scale: 0
     t.datetime "completion_time"
     t.string   "object_tablespace",      limit: 30
-    t.decimal  "size_estimate"
-    t.decimal  "object_row"
+    t.integer  "size_estimate",                       precision: 38, scale: 0
+    t.integer  "object_row",                          precision: 38, scale: 0
     t.string   "processing_state",       limit: 1
     t.string   "processing_status",      limit: 1
-    t.decimal  "base_process_order"
+    t.integer  "base_process_order",                  precision: 38, scale: 0
     t.string   "base_object_type",       limit: 30
     t.string   "base_object_name",       limit: 30
     t.string   "base_object_schema",     limit: 30
-    t.decimal  "ancestor_process_order"
-    t.decimal  "domain_process_order"
-    t.decimal  "parallelization"
-    t.decimal  "unload_method"
-    t.decimal  "load_method"
-    t.decimal  "granules"
-    t.decimal  "scn"
+    t.integer  "ancestor_process_order",              precision: 38, scale: 0
+    t.integer  "domain_process_order",                precision: 38, scale: 0
+    t.integer  "parallelization",                     precision: 38, scale: 0
+    t.integer  "unload_method",                       precision: 38, scale: 0
+    t.integer  "load_method",                         precision: 38, scale: 0
+    t.integer  "granules",                            precision: 38, scale: 0
+    t.integer  "scn",                                 precision: 38, scale: 0
     t.string   "grantor",                limit: 30
     t.text     "xml_clob"
-    t.decimal  "parent_process_order"
+    t.integer  "parent_process_order",                precision: 38, scale: 0
     t.string   "name",                   limit: 30
     t.string   "value_t",                limit: 4000
-    t.decimal  "value_n"
-    t.decimal  "is_default"
-    t.decimal  "file_type"
+    t.integer  "value_n",                             precision: 38, scale: 0
+    t.integer  "is_default",                          precision: 38, scale: 0
+    t.integer  "file_type",                           precision: 38, scale: 0
     t.string   "user_directory",         limit: 4000
     t.string   "user_file_name",         limit: 4000
     t.string   "file_name",              limit: 4000
-    t.decimal  "extend_size"
-    t.decimal  "file_max_size"
+    t.integer  "extend_size",                         precision: 38, scale: 0
+    t.integer  "file_max_size",                       precision: 38, scale: 0
     t.string   "process_name",           limit: 30
     t.datetime "last_update"
     t.string   "work_item",              limit: 30
-    t.decimal  "object_number"
-    t.decimal  "completed_bytes"
-    t.decimal  "total_bytes"
-    t.decimal  "metadata_io"
-    t.decimal  "data_io"
-    t.decimal  "cumulative_time"
-    t.decimal  "packet_number"
-    t.decimal  "instance_id"
+    t.integer  "object_number",                       precision: 38, scale: 0
+    t.integer  "completed_bytes",                     precision: 38, scale: 0
+    t.integer  "total_bytes",                         precision: 38, scale: 0
+    t.integer  "metadata_io",                         precision: 38, scale: 0
+    t.integer  "data_io",                             precision: 38, scale: 0
+    t.integer  "cumulative_time",                     precision: 38, scale: 0
+    t.integer  "packet_number",                       precision: 38, scale: 0
+    t.integer  "instance_id",                         precision: 38, scale: 0
     t.string   "old_value",              limit: 4000
-    t.decimal  "seed"
-    t.decimal  "last_file"
+    t.integer  "seed",                                precision: 38, scale: 0
+    t.integer  "last_file",                           precision: 38, scale: 0
     t.string   "user_name",              limit: 30
     t.string   "operation",              limit: 30
     t.string   "job_mode",               limit: 30
-    t.decimal  "queue_tabnum"
+    t.integer  "queue_tabnum",                        precision: 38, scale: 0
     t.string   "control_queue",          limit: 30
     t.string   "status_queue",           limit: 30
     t.string   "remote_link",            limit: 4000
-    t.decimal  "version"
+    t.integer  "version",                             precision: 38, scale: 0
     t.string   "job_version",            limit: 30
     t.string   "db_version",             limit: 30
     t.string   "timezone",               limit: 64
     t.string   "state",                  limit: 30
-    t.decimal  "phase"
+    t.integer  "phase",                               precision: 38, scale: 0
     t.raw      "guid",                   limit: 16
     t.datetime "start_time"
-    t.decimal  "block_size"
-    t.decimal  "metadata_buffer_size"
-    t.decimal  "data_buffer_size"
-    t.decimal  "degree"
+    t.integer  "block_size",                          precision: 38, scale: 0
+    t.integer  "metadata_buffer_size",                precision: 38, scale: 0
+    t.integer  "data_buffer_size",                    precision: 38, scale: 0
+    t.integer  "degree",                              precision: 38, scale: 0
     t.string   "platform",               limit: 101
-    t.decimal  "abort_step"
+    t.integer  "abort_step",                          precision: 38, scale: 0
     t.string   "instance",               limit: 60
-    t.decimal  "cluster_ok"
+    t.integer  "cluster_ok",                          precision: 38, scale: 0
     t.string   "service_name",           limit: 100
     t.string   "object_int_oid",         limit: 32
   end
@@ -258,18 +267,18 @@ ActiveRecord::Schema.define(version: 20150616022459) do
   add_index "sys_export_schema_01", ["process_order", "duplicate"], name: "sys_c0021190", unique: true
 
   create_table "sys_import_schema_01", id: false, force: true do |t|
-    t.decimal  "process_order"
-    t.decimal  "duplicate"
-    t.decimal  "dump_fileid"
-    t.decimal  "dump_position"
-    t.decimal  "dump_length"
-    t.decimal  "dump_orig_length"
-    t.decimal  "dump_allocation"
-    t.decimal  "completed_rows"
-    t.decimal  "error_count"
-    t.decimal  "elapsed_time"
+    t.integer  "process_order",                       precision: 38, scale: 0
+    t.integer  "duplicate",                           precision: 38, scale: 0
+    t.integer  "dump_fileid",                         precision: 38, scale: 0
+    t.integer  "dump_position",                       precision: 38, scale: 0
+    t.integer  "dump_length",                         precision: 38, scale: 0
+    t.integer  "dump_orig_length",                    precision: 38, scale: 0
+    t.integer  "dump_allocation",                     precision: 38, scale: 0
+    t.integer  "completed_rows",                      precision: 38, scale: 0
+    t.integer  "error_count",                         precision: 38, scale: 0
+    t.integer  "elapsed_time",                        precision: 38, scale: 0
     t.string   "object_type_path",       limit: 200
-    t.decimal  "object_path_seqno"
+    t.integer  "object_path_seqno",                   precision: 38, scale: 0
     t.string   "object_type",            limit: 30
     t.string   "in_progress",            limit: 1
     t.string   "object_name",            limit: 500
@@ -279,78 +288,78 @@ ActiveRecord::Schema.define(version: 20150616022459) do
     t.string   "original_object_name",   limit: 4000
     t.string   "partition_name",         limit: 30
     t.string   "subpartition_name",      limit: 30
-    t.decimal  "dataobj_num"
-    t.decimal  "flags"
-    t.decimal  "property"
-    t.decimal  "trigflag"
-    t.decimal  "creation_level"
+    t.integer  "dataobj_num",                         precision: 38, scale: 0
+    t.integer  "flags",                               precision: 38, scale: 0
+    t.integer  "property",                            precision: 38, scale: 0
+    t.integer  "trigflag",                            precision: 38, scale: 0
+    t.integer  "creation_level",                      precision: 38, scale: 0
     t.datetime "completion_time"
     t.string   "object_tablespace",      limit: 30
-    t.decimal  "size_estimate"
-    t.decimal  "object_row"
+    t.integer  "size_estimate",                       precision: 38, scale: 0
+    t.integer  "object_row",                          precision: 38, scale: 0
     t.string   "processing_state",       limit: 1
     t.string   "processing_status",      limit: 1
-    t.decimal  "base_process_order"
+    t.integer  "base_process_order",                  precision: 38, scale: 0
     t.string   "base_object_type",       limit: 30
     t.string   "base_object_name",       limit: 30
     t.string   "base_object_schema",     limit: 30
-    t.decimal  "ancestor_process_order"
-    t.decimal  "domain_process_order"
-    t.decimal  "parallelization"
-    t.decimal  "unload_method"
-    t.decimal  "load_method"
-    t.decimal  "granules"
-    t.decimal  "scn"
+    t.integer  "ancestor_process_order",              precision: 38, scale: 0
+    t.integer  "domain_process_order",                precision: 38, scale: 0
+    t.integer  "parallelization",                     precision: 38, scale: 0
+    t.integer  "unload_method",                       precision: 38, scale: 0
+    t.integer  "load_method",                         precision: 38, scale: 0
+    t.integer  "granules",                            precision: 38, scale: 0
+    t.integer  "scn",                                 precision: 38, scale: 0
     t.string   "grantor",                limit: 30
     t.text     "xml_clob"
-    t.decimal  "parent_process_order"
+    t.integer  "parent_process_order",                precision: 38, scale: 0
     t.string   "name",                   limit: 30
     t.string   "value_t",                limit: 4000
-    t.decimal  "value_n"
-    t.decimal  "is_default"
-    t.decimal  "file_type"
+    t.integer  "value_n",                             precision: 38, scale: 0
+    t.integer  "is_default",                          precision: 38, scale: 0
+    t.integer  "file_type",                           precision: 38, scale: 0
     t.string   "user_directory",         limit: 4000
     t.string   "user_file_name",         limit: 4000
     t.string   "file_name",              limit: 4000
-    t.decimal  "extend_size"
-    t.decimal  "file_max_size"
+    t.integer  "extend_size",                         precision: 38, scale: 0
+    t.integer  "file_max_size",                       precision: 38, scale: 0
     t.string   "process_name",           limit: 30
     t.datetime "last_update"
     t.string   "work_item",              limit: 30
-    t.decimal  "object_number"
-    t.decimal  "completed_bytes"
-    t.decimal  "total_bytes"
-    t.decimal  "metadata_io"
-    t.decimal  "data_io"
-    t.decimal  "cumulative_time"
-    t.decimal  "packet_number"
-    t.decimal  "instance_id"
+    t.integer  "object_number",                       precision: 38, scale: 0
+    t.integer  "completed_bytes",                     precision: 38, scale: 0
+    t.integer  "total_bytes",                         precision: 38, scale: 0
+    t.integer  "metadata_io",                         precision: 38, scale: 0
+    t.integer  "data_io",                             precision: 38, scale: 0
+    t.integer  "cumulative_time",                     precision: 38, scale: 0
+    t.integer  "packet_number",                       precision: 38, scale: 0
+    t.integer  "instance_id",                         precision: 38, scale: 0
     t.string   "old_value",              limit: 4000
-    t.decimal  "seed"
-    t.decimal  "last_file"
+    t.integer  "seed",                                precision: 38, scale: 0
+    t.integer  "last_file",                           precision: 38, scale: 0
     t.string   "user_name",              limit: 30
     t.string   "operation",              limit: 30
     t.string   "job_mode",               limit: 30
-    t.decimal  "queue_tabnum"
+    t.integer  "queue_tabnum",                        precision: 38, scale: 0
     t.string   "control_queue",          limit: 30
     t.string   "status_queue",           limit: 30
     t.string   "remote_link",            limit: 4000
-    t.decimal  "version"
+    t.integer  "version",                             precision: 38, scale: 0
     t.string   "job_version",            limit: 30
     t.string   "db_version",             limit: 30
     t.string   "timezone",               limit: 64
     t.string   "state",                  limit: 30
-    t.decimal  "phase"
+    t.integer  "phase",                               precision: 38, scale: 0
     t.raw      "guid",                   limit: 16
     t.datetime "start_time"
-    t.decimal  "block_size"
-    t.decimal  "metadata_buffer_size"
-    t.decimal  "data_buffer_size"
-    t.decimal  "degree"
+    t.integer  "block_size",                          precision: 38, scale: 0
+    t.integer  "metadata_buffer_size",                precision: 38, scale: 0
+    t.integer  "data_buffer_size",                    precision: 38, scale: 0
+    t.integer  "degree",                              precision: 38, scale: 0
     t.string   "platform",               limit: 101
-    t.decimal  "abort_step"
+    t.integer  "abort_step",                          precision: 38, scale: 0
     t.string   "instance",               limit: 60
-    t.decimal  "cluster_ok"
+    t.integer  "cluster_ok",                          precision: 38, scale: 0
     t.string   "service_name",           limit: 100
     t.string   "object_int_oid",         limit: 32
   end

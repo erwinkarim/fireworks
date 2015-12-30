@@ -5,3 +5,7 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+LicenseType.create(
+  [{name: 'FlexLicenseManager'}, {name: 'RepriseLicenseManager'}]
+)
