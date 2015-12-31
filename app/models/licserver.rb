@@ -1,3 +1,5 @@
+require "license_manager/FlexLicenseManager"
+
 class Licserver < ActiveRecord::Base
   #attr_accessible :port, :server, :to_delete, :monitor_idle
   validates :server, :presence => true
@@ -13,39 +15,17 @@ class Licserver < ActiveRecord::Base
   def init
     self.monitor_idle ||= false
     self.to_delete ||= false
+    self.license_type_id ||= LicenseType.first.id
   end
 
   #get features listing, version, seat count expiration date
-  def self.get_features_demise licserver_id
-    @licserver = Licserver.find(licserver_id)
-    @features = @licserver.features.where("created_at > ?", @licserver.features.last.created_at - 1.minute)
-    full_address = @licserver.port.to_s + "@" + @licserver.server
-    @lmutilOutput = `#{Rails.root.to_s}/lib/myplugin/lmutil lmstat -i -c #{full_address} | grep [0-9][0-9]-[[:alpha:]]`
+  def get_features_demise
+    results = eval(self.license_type.name).list_features(:licserver => self.get_port_at_server, :extra_info => true)
 
-    returnArray = Array.new
-    @lmutilOutput.each_line do |thisline|
-      thislineS = thisline.split
-      temp = {:feature => thislineS[0], :version => thislineS[1], :seats => thislineS[2],
-        :expire => Date.parse(thislineS[3]), :deamon => thislineS[4] }
-      returnArray.push temp
-    end
-
-    #:feature might be truncated, so help append the feature name
-    @lmutilOutput = `#{Rails.root.to_s}/lib/myplugin/lmutil lmstat -f -c #{full_address} | grep "Users of" | gawk '{ print gensub(":", "", "G", $3) } ' `
-    featuresArray = Array.new
-    @lmutilOutput.each_line do |thisline|
-      featuresArray.push thisline.strip
-    end
-
-    featuresArray.each do |thisF|
-      returnArray.collect { |thisA|
-        if(thisF.index(thisA[:feature]) == 0) then
-          thisA[:feature] = thisF
-        end
+    results.select{ |x| !x[:extra_info].nil? }.map{|x| x[:extra_info].map{ |y|
+        { :feature => x[:name], :version => y[:version], :seats => y[:seats], :expire => y[:expire] }
       }
-    end
-
-    return returnArray
+    }.flatten
   end
 
   def get_port_at_server
@@ -96,87 +76,43 @@ class Licserver < ActiveRecord::Base
 
     #update features here
     licserver = self
-    @fullname = licserver.port.to_s + '@' + licserver.server
 
-    Rails.logger.info "getting stats for #{@fullname} "
-    #new way to generate features,users and machine  data
-    output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} | grep -vi "error"`
-    header = /Users.*/
+    Rails.logger.info "getting stats for #{self.get_port_at_server} "
 
-    #split the output into headers of "Users of <feature name>...."
-    #sections = output.scan(/(?m)#{header}.*?(?=#{header})|\Z/)
-    sections = output.force_encoding("ISO-8859-1").encode("utf-8", replace: nil).scan(/(?m)#{header}.*?(?=#{header})/)
-    if sections.count == 0 then
-      #handle if there's only 1 feature
-      sections = output.force_encoding("ISO-8859-1").encode("utf-8", replace: nil).scan(/(?m)#{header}.*/)
-    end
-    sections.each do |section|
-      feature_line = section.lines.grep(/Users/).first
-      unless feature_line.nil?
-        #create new headers where necessary
-        feature_name = feature_line.split(" ")[2].gsub(/:/, '')
-        #Rails.logger.debug "Getting feature stats for #{feature_name}"
-        if ( licserver.feature_headers.where(:name => feature_name ).empty? ) then
-          licserver.feature_headers.create( :name => feature_name, :last_seen => DateTime.now ).save!
-        end
+    #get the results form appropiate module
+    results = eval(self.license_type.name).list_features({:licserver => licserver.get_port_at_server })
 
-        feature = licserver.feature_headers.where(:name => feature_name).first.features.create(
-          :name => feature_name, :current => feature_line.split[10], :max => feature_line.split[5],
-          :licserver_id => licserver.id
-        )
-        licserver.feature_headers.where(:name => feature_name).first.update_attribute(:last_seen, DateTime.now)
-        feature.save!
+    results.each do |result_line|
+      #update feature info
+      if ( licserver.feature_headers.where(:name => result_line[:name] ).empty? ) then
+        licserver.feature_headers.create( :name => result_line[:name], :last_seen => DateTime.now ).save!
       end
 
-      #collect user info
-      user_lines = section.lines.grep(/start/)
-      unless user_lines.nil? || user_lines.empty?
-        user_lines.each do |user_line|
-          user_line_array = user_line.scan(/\S+/)
-          version_index = user_line_array.index{ |x| x =~ /\(\S+\)/ }
+      feature = licserver.feature_headers.where(:name => result_line[:name]).first.features.create(
+        :name => result_line[:name], :current => result_line[:current], :max => result_line[:max],
+        :licserver_id => licserver.id
+      )
+      licserver.feature_headers.where(:name => result_line[:name]).first.update_attribute(:last_seen, DateTime.now)
+      feature.save!
 
-          #the version keyword is not in the string, so use the (server/port) keywork instead
-          if version_index.nil? then
-            version_index = user_line_array.index{ |x| x =~ /\(\S+/ }
-          end
-
+      #update people who are using this feature
+      unless result_line[:users].nil?
+        result_line[:users].each do |user|
           User.generate_features_data(
-            user_line_array[0..zero_if_negative(version_index-3)].join(" "), user_line_array[version_index-2] , feature.id
+            user[:user], user[:machine], feature.id
           )
         end
       end
     end
+
   end
 
-  def current_users( features_id )
+  def current_users( features_name )
     licserver = self
 
-    @fullname = licserver.port.to_s + '@' + licserver.server
-
-    output = `#{Rails.root}/lib/myplugin/lmutil lmstat -a -c #{@fullname} -f #{features_id} | gawk '/start/ { print $0 }'`
-
-    users = []
-    output.each_line do |line|
-      correction = 0
-      line_array = line.scan(/\S+/)
-      version_index = line_array.index{ |x| x =~ /\(\S+\)/ }
-      if version_index.nil? then
-        version_index = line_array.index{ |x| x =~ /\(\S+/ }
-        correction = -1
-      end
-      #need to handle cases where the version keyword is not there
-      users << { :user => line_array[0..zero_if_negative(version_index-3)].join(" "),
-        :user_id => User.find_by_name( line_array[0..version_index-3].join(" ") ),
-        :machine => line_array[version_index-2],
-        :host_id => line_array[version_index+correction+1].split('/')[0].gsub(/\(/, ''),
-        :port_id => line_array[version_index+correction+1].split('/')[1],
-        :handle => line_array[version_index+correction+2].gsub(/\)/, '').gsub(/,/, ''),
-        :since => Time.parse(line_array[version_index+correction+4..version_index+correction+6].reverse.join(" ")).to_datetime ,
-        :lic_count => line_array[version_index+correction+7]
-      }
-    end
-
-    return users
+    eval(licserver.license_type.name).list_features(
+      { :licserver => licserver.get_port_at_server, :feature => features_name }
+    ).first[:users]
   end
 
   def kill_dup_users feature_name
@@ -203,12 +139,10 @@ class Licserver < ActiveRecord::Base
   end
 
   def get_mailing_list feature_name
-    # get list of current users
-    current_users = self.current_users(feature_name)
-
     mailing_list = Array.new
 
-    current_users.each do |user|
+    # get list of current users
+    self.current_users.select{|x| !x[:user_id].nil? }.each do |user|
       if !user[:user_id].ads_user.nil? then
         mailing_list << user[:user_id].ads_user.email
       end
