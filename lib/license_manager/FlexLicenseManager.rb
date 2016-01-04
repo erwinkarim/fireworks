@@ -12,6 +12,12 @@ class FlexLicenseManager
     `#{LMUTIL_PATH} lmstat -a -c #{options[:licserver]}`
   end
 
+  # expected response:-
+  # [ {
+  #   :name, :current, :max,
+  #   :users => [ {:user, user_id, :machine, :host_id, :port_id, :handle, :since, :lic_count }, { ... } ]
+  #   (optional) :extra_info => [ {:version, :seats, :expire, :deamon }, { ... }]
+  # }]
   def self.list_features *args
     default_options = { :licserver => "@localhost", :feature => nil, :extra_info => false}
     options = default_options.merge args[0]
