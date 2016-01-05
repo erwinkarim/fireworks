@@ -45,13 +45,33 @@ class RepriseLicenseManager
         elsif thisLine.index(/^\t\tUNCOUNTED/) == 0 then
           #uncounted keyword detected
           match_data = thisLine.match(/\t\tUNCOUNTED, inuse: (?<lic_inuse>\d+)\n/)
-          puts "thisLine = #{thisLine}"
-          puts "match_data = #{match_data}"
           returnArray.last[:current] = match_data[:lic_inuse]
           returnArray.last[:max] = 0
         end
 
       end
+    end
+
+    userPool = output.split(/------------------------/)[3].lines.delete_if{ |x| x == "\n" || x == "\t" }
+    userPool = userPool[1..userPool.length-1]
+
+    #scan and sort user according to detected features
+    userPool.each do |thisLine|
+      match_data = thisLine.match(
+        /(?<feature>\w+) v\d+.\d+: (?<username>[\w\d.]+)@(?<machinename>[\w-]+) \d+\/\d+ at (?<since>\d\d\/\d\d \d\d:\d\d)  \(handle: (?<handle>\w+)/)
+      taggedFeature = returnArray.select{|x| x[:feature] = match_data[:feature]}.first
+      if taggedFeature[:users].nil? then
+        taggedFeature[:users] = Array.new
+      end
+      taggedFeature[:users] << {
+        :user => match_data[:username],
+        :user_id => User.find_by_name(match_data[:username]),
+        :machine => match_data[:machinename],
+        :host_id => nil,
+        :handle => match_data[:handle],
+        :since => Time.parse(match_data[:since]).to_datetime,
+        :lic_count => nil
+      }
     end
 
     returnArray
