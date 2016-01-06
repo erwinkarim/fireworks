@@ -27,6 +27,9 @@ class RepriseLicenseManager
     returnArray = Array.new
 
     licensePool = output.split(/------------------------/)[2].lines.delete_if{ |x| x == "\n" || x == "\t" }
+    if options[:extra_info] then
+      license_deamon = licensePool.first.split.first
+    end
     licensePool = licensePool[1..licensePool.length-1]
 
     licensePool.each do |thisLine|
@@ -34,7 +37,16 @@ class RepriseLicenseManager
 
       if thisLine.index(/\t\t/).nil? then
         #talking about new feature
-        returnArray << { :name => thisLine.strip.split.first}
+        match_data = thisLine.strip.match(/(?<feature>\w+) v(?<version>\d+\.\d+)/)
+        #returnArray << { :name => thisLine.strip.split.first}
+        returnArray << { :name => match_data[:feature] }
+        if options[:extra_info] then
+          returnArray.last[:extra_info] = [{
+            :version => match_data[:version],
+            :expire => DateTime.now,
+            :deamon => license_deamon
+          } ]
+        end
       else
         #check if it counted or uncounted
         if thisLine.index(/^\t\tcount/) == 0 then
@@ -42,11 +54,17 @@ class RepriseLicenseManager
           match_data = thisLine.match(/\t\tcount: (?<lic_count>\d+), # reservations: \d+, inuse: (?<lic_inuse>\d+)/)
           returnArray.last[:current] = match_data[:lic_inuse]
           returnArray.last[:max] = match_data[:lic_count]
+          if options[:extra_info] then
+            returnArray.last[:extra_info].first[:seats] = match_data[:lic_count]
+          end
         elsif thisLine.index(/^\t\tUNCOUNTED/) == 0 then
           #uncounted keyword detected
           match_data = thisLine.match(/\t\tUNCOUNTED, inuse: (?<lic_inuse>\d+)\n/)
           returnArray.last[:current] = match_data[:lic_inuse]
           returnArray.last[:max] = 0
+          if options[:extra_info] then
+            returnArray.last[:extra_info].first[:seats] = 0
+          end
         end
 
       end
@@ -59,7 +77,8 @@ class RepriseLicenseManager
     userPool.each do |thisLine|
       match_data = thisLine.match(
         /(?<feature>\w+) v\d+.\d+: (?<username>[\w\d.]+)@(?<machinename>[\w-]+) \d+\/\d+ at (?<since>\d\d\/\d\d \d\d:\d\d)  \(handle: (?<handle>\w+)/)
-      taggedFeature = returnArray.select{|x| x[:feature] = match_data[:feature]}.first
+      taggedFeature = returnArray.select{|x| x[:name] == match_data[:feature]}.first
+
       if taggedFeature[:users].nil? then
         taggedFeature[:users] = Array.new
       end
@@ -74,6 +93,10 @@ class RepriseLicenseManager
       }
     end
 
-    returnArray
+    if options[:feature].nil? then
+      returnArray
+    else
+      returnArray.select{ |x| x[:name] == options[:feature] }
+    end
   end
 end

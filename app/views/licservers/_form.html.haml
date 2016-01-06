@@ -1,20 +1,24 @@
 %form.form{ :role => 'form', :data => { :licserver => licserver.nil? ? 0 : licserver.id } }
-	= hidden_field_tag 'server_id', licserver.nil? ? 0 : licserver.id 
+	= hidden_field_tag 'server_id', licserver.nil? ? 0 : licserver.id
 	.form-group.server-info-control
 		%label.control-label
 			Server port and IP
-		= text_field_tag 'server_info', 
+		= text_field_tag 'server_info',
 			licserver.nil? ? '' : licserver.port.to_s + '@' + licserver.server, :placeholder => 'Format: port@server or @server',
 			:class => 'form-control'
 	.form-group.tags-control
 		%label
+			License Type
+		= select_tag "license_type", options_from_collection_for_select(LicenseType.all, "id", "name"), :class => "form-control"
+	.form-group.tags-control
+		%label
 			Tags
-		= text_field_tag 'tags', 
-			licserver.nil? ? '' : licserver.tags.map{|x| x.title }.join(' '), 
-			:placeholder => 'Seperate tags by spaces; ie "Openworks Geoprobe"', :class => 'form-control' 
+		= text_field_tag 'tags',
+			licserver.nil? ? '' : licserver.tags.map{|x| x.title }.join(' '),
+			:placeholder => 'Seperate tags by spaces; ie "Openworks Geoprobe"', :class => 'form-control'
 	.checkbox.monitor-idle-control
 		%label
 			= (check_box_tag 'monitor_idle', 'monitor_idle', licserver.nil? ? false : licserver.monitor_idle?, :class => 'checkbox' )  + ' Monitor Idle Users'
 		%p.help-block Monitor users for idle activity
-	
+
 .status

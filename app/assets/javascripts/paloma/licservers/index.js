@@ -149,7 +149,8 @@
 
 				$.post('/licservers', {
 						lic:handle.find('#server_info').val(), tags:handle.find('#tags').val(),
-						monitor_idle:handle.find('#monitor_idle').attr('checked')=='checked'
+						monitor_idle:handle.find('#monitor_idle').attr('checked')=='checked',
+            license_type:handle.find('#license_type').val()
 					}, function(data, textStatus, jqXHR){
 					//create a new accordion and append the info
 					$('#server-listings').append(data).ready( function(){

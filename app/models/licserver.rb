@@ -1,4 +1,5 @@
 require "license_manager/FlexLicenseManager"
+require "license_manager/RepriseLicenseManager"
 
 class Licserver < ActiveRecord::Base
   #attr_accessible :port, :server, :to_delete, :monitor_idle
@@ -23,7 +24,7 @@ class Licserver < ActiveRecord::Base
     results = eval(self.license_type.name).list_features(:licserver => self.get_port_at_server, :extra_info => true)
 
     results.select{ |x| !x[:extra_info].nil? }.map{|x| x[:extra_info].map{ |y|
-        { :feature => x[:name], :version => y[:version], :seats => y[:seats], :expire => y[:expire] }
+        { :feature => x[:name], :version => y[:version], :seats => y[:seats], :expire => y[:expire], :deamon => y[:deamon] }
       }
     }.flatten
   end
@@ -78,6 +79,7 @@ class Licserver < ActiveRecord::Base
     licserver = self
 
     Rails.logger.info "getting stats for #{self.get_port_at_server} "
+    Rails.logger.info "license type is #{self.license_type.name}"
 
     #get the results form appropiate module
     results = eval(self.license_type.name).list_features({:licserver => licserver.get_port_at_server })

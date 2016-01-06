@@ -67,16 +67,13 @@ class LicserversController < ApplicationController
   # POST /licservers
   # POST /licservers.json
   def create
-    omnibar = params[:lic]
-    if omnibar.include? '@' then
-      @licserver = Licserver.new(:port => omnibar.split('@').first, :server => omnibar.split('@').last)
-    else
-      @licserver = Licserver.new(:server => omnibar)
-    end
+		match_data = params[:lic].to_s.match(/(?<port>\d*)@(?<host>[\w.\-]+)/)
+		@licserver = Licserver.new(:port => match_data[:port].empty? ? nil : match_data[:port],
+			:server => match_data[:host], :license_type_id => params[:license_type])
 
     respond_to do |format|
       if @licserver.save
-        Feature.update_features(@licserver.id)
+				@licserver.update_features
 				@features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| {:name => item.name } }
 				@licserver.update_tag_list( params[:tags] )
         #format.html { redirect_to @licserver, notice: 'Licserver was successfully created.' }
@@ -240,6 +237,6 @@ class LicserversController < ApplicationController
 	end
 
 	def licserver_params
-		params.require(:licserver).permit( :port, :server, :to_delete, :monitor_idle )
+		params.require(:licserver).permit( :port, :server, :to_delete, :monitor_idle, :license_type_id )
 	end
 end

@@ -148,7 +148,8 @@ class FeaturesController < ApplicationController
   #  GET    /licservers/:licserver_id/features/:feature_id/users(.:format)
   # get a list of current users from params[:licserver_id] using features params[:feature_id]
   def users
-    @users = Feature.current_users(params[:licserver_id].to_i, params[:feature_id])
+    #@users = Feature.current_users(params[:licserver_id].to_i, params[:feature_id])
+		@users = Licserver.find(params[:licserver_id]).current_users(params[:feature_id])
 
     respond_to do |format|
       format.json{ render :json => @users }
