@@ -43,7 +43,6 @@ class RepriseLicenseManager
         if options[:extra_info] then
           returnArray.last[:extra_info] = [{
             :version => match_data[:version],
-            :expire => DateTime.now,
             :deamon => license_deamon
           } ]
         end
@@ -51,11 +50,16 @@ class RepriseLicenseManager
         #check if it counted or uncounted
         if thisLine.index(/^\t\tcount/) == 0 then
           #count: keyword detected.
-          match_data = thisLine.match(/\t\tcount: (?<lic_count>\d+), # reservations: \d+, inuse: (?<lic_inuse>\d+)/)
+          match_data = thisLine.match(/\t\tcount: (?<lic_count>\d+), # reservations: \d+, inuse: (?<lic_inuse>\d+), exp: (?<expiration>\w+)/)
           returnArray.last[:current] = match_data[:lic_inuse]
           returnArray.last[:max] = match_data[:lic_count]
           if options[:extra_info] then
             returnArray.last[:extra_info].first[:seats] = match_data[:lic_count]
+            if match_data[:expiration] == "permanent" then
+              returnArray.last[:extra_info].first[:expire] = "0000-01-01"
+            else
+              returnArray.last[:extra_info].first[:expire] = match_data[:expiration]
+            end
           end
         elsif thisLine.index(/^\t\tUNCOUNTED/) == 0 then
           #uncounted keyword detected
@@ -64,6 +68,7 @@ class RepriseLicenseManager
           returnArray.last[:max] = 0
           if options[:extra_info] then
             returnArray.last[:extra_info].first[:seats] = 0
+            returnArray.last[:extra_info].first[:expire] = "0000-01-01"
           end
         end
 
