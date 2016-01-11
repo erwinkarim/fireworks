@@ -202,6 +202,48 @@ class Licserver < ActiveRecord::Base
     return output
   end
 
+  def kill_user *args
+      options = { :licserver => self.get_port_at_server}.merge( args[0] )
+      eval(self.license_type.name).kill_user options
+  end
+
+  # skew the data to your liking.
+  # options:
+  # => period: how long the skew you want to be
+  # => feature: which feature that you want to skew
+  # => :skew_factor: increase the skew factor; 1.5 means that figures will be inflated 1.5 times, -1 will restore the original
+  #                  data
+  def skew_data *args
+    default_options = { :period => 1.month.ago..DateTime.now, :feature => nil, :skew_factor => 1.5 }
+
+    options = default_options.merge( args[0])
+
+    # plan:
+    # 1. find the features that will be affected
+    # 2. copy the original data (if nil) then apply skew_factor, account for max seats
+    if options[:skew_factor] == -1 then
+      #reset the skew to original data
+      features = self.feature_headers.where(:name => options[:feature]).first.features.where(:created_at => options[:period])
+
+      features.find_each do |feature|
+        if !feature.pre_skew.nil? then
+          feature.update_attributes({:current => feature.pre_skew, :pre_skew => nil })
+        end
+      end
+    else
+      # skew the data
+      features = self.feature_headers.where(:name => options[:feature]).first.features.where(:created_at => options[:period])
+
+      features.find_each do |feature|
+          original_value = feature.pre_skew.nil? ? feature.current : feature.pre_skew
+          new_value = original_value * options[:skew_factor]
+          new_value = new_value > feature.max ? feature.max : new_value
+          feature.update_attributes( { :current => new_value, :pre_skew => original_value})
+      end
+    end
+
+  end
+
 	# return zero if the number is negatie
 	def zero_if_negative the_number
 		return the_number < 0 ? 0 : the_number

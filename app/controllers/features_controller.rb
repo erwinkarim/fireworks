@@ -77,7 +77,9 @@ class FeaturesController < ApplicationController
     #kill user here
     @licserver = Licserver.find(params[:licserver_id])
     @fullname = @licserver.port.to_s + '@' + @licserver.server
-    @output = Feature.kill_user(@fullname, params[:feature_id], params[:host_id], params[:port_id], params[:handle])
+    #@output = Feature.kill_user(@fullname, params[:feature_id], params[:host_id], params[:port_id], params[:handle])
+    @output = Licserver.find(params[:licserver_id]).kill_user(params[:feature_id], params[:host_id], params[:port_id], params[:handle])
+
 
 		Rails.logger.info "Killing #{params[:user]}/#{params[:feature_id]} by #{current_ads_user.login}"
 

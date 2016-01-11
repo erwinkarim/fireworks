@@ -108,6 +108,13 @@ class FlexLicenseManager
     return returnArray
   end
 
+  def self.kill_user *args
+    default_options = {:licserver => "localhost", :feature_id => 0, :host_id => 0 , :port_id => 0 , :handle => 0}
+    options = deafult_options.merge(args[0])
+
+    `#{LMUTIL_PATH} lmutil lmremove -c #{options[:licserver]} -h #{options[:feature_id]} #{options[:host_id]} #{options[:port_id]} #{options[:handle]}`
+  end
+
 	# return zero if the number is negatie
 	def self.zero_if_negative the_number
 		return the_number < 0 ? 0 : the_number

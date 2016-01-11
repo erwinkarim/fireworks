@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151230074352) do
+ActiveRecord::Schema.define(version: 20160111064615) do
 
   create_table "ads_departments", force: true do |t|
     t.string   "name"
@@ -81,6 +81,7 @@ ActiveRecord::Schema.define(version: 20151230074352) do
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
     t.integer  "feature_header_id", precision: 38, scale: 0
+    t.integer  "pre_skew",          precision: 38, scale: 0
   end
 
   add_index "features", ["feature_header_id"], name: "i_features_feature_header_id"
