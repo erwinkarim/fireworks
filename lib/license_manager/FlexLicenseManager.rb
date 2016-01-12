@@ -109,8 +109,8 @@ class FlexLicenseManager
   end
 
   def self.kill_user *args
-    default_options = {:licserver => "localhost", :feature_id => 0, :host_id => 0 , :port_id => 0 , :handle => 0}
-    options = deafult_options.merge(args[0])
+    default_options = {:licserver => "@localhost", :feature => 0, :host => 0 , :port => 0 , :handle => 0}
+    options = default_options.merge(args[0])
 
     `#{LMUTIL_PATH} lmutil lmremove -c #{options[:licserver]} -h #{options[:feature_id]} #{options[:host_id]} #{options[:port_id]} #{options[:handle]}`
   end

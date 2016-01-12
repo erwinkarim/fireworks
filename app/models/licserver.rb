@@ -203,7 +203,7 @@ class Licserver < ActiveRecord::Base
   end
 
   def kill_user *args
-      options = { :licserver => self.get_port_at_server}.merge( args[0] )
+      options = { :licserver => self.get_port_at_server }.merge( args[0] )
       eval(self.license_type.name).kill_user options
   end
 
