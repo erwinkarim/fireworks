@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-ruby '2.1.5'
-
 gem 'rails', '~> 4.1.7'
 
 
@@ -64,7 +62,7 @@ gem 'squeel'
 
 gem 'delayed_job_active_record'
 gem 'daemons'
-gem 'paloma', '~> 2.0.6'
+gem 'paloma'
 
 gem 'foreman'
 

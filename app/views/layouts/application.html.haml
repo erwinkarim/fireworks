@@ -53,25 +53,7 @@
 						%li{ :class => active_path(tags_path) } #{ link_to 'Tags', tags_path }
 						%li{ :class => active_path(licservers_path) } #{ link_to 'Servers', licservers_path }
 						%li{ :class => active_path(users_path) } #{ link_to 'Users', users_path }
-						%li.dropdown
-							%a.dropdown-toggle{ :href => '#', :data => { :toggle => 'dropdown' } }
-								Idle Client
-								%span.caret
-							%ul.dropdown-menu{ :role => 'menu' }
-								%li #{ link_to 'Download Client', welcome_download_client_path  }
-								%li.divider
-								%li #{ link_to 'List Idle Clients', idle_user_show_path }
-						%li{ :class => active_path( report_schedules_path ) } #{ link_to 'Reports', report_schedules_path }
 					%ul.nav.navbar-nav.navbar-right
-						%li
-							%a.dropdown-toggle#drop-help{ :href => '#', :data => { :toggle => 'dropdown' } }
-								Help
-								%b.caret
-							%ul.dropdown-menu{ :role => 'menu', :aria => { :labelledby => 'drop-help'}  }
-								%li #{ link_to 'Fireworks Help', welcome_tech_path }
-								%li.divider
-								%li #{ link_to 'About', welcome_about_path }
-								%li #{ link_to 'Settings', '#' }
 						%li
 							- if ads_user_signed_in? then
 								%a.dropdown-toggle#drop-ads-user{ :href => '#', :data => { :toggle => 'dropdown' } }
@@ -99,7 +81,6 @@
 				%p
 					Build #{Fireworks::REVISION}
 					&copy; Fireworks 2012-2015
-					= link_to 'Disclaimer', welcome_disclaimer_path
 
 		/ Javascripts
 		/ ================================================== -

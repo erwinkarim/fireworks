@@ -1,94 +1,20 @@
 Fireworks::Application.routes.draw do
 
-  get 'unique_user_kill_lists/toggle'
-
-  get "feature_headers/accordion_group"
-
   devise_for :ads_users
 
 	resources :ads_users, :ads_user_id => /[^\/]+/ , only: [ :show ]  do
-    post 'toggle_watch'
-		resources :watch_lists, only: [:index, :show]
 	end
 
-
-
   resources :licservers do
-		collection do
-			get 'get_more'
-			get 'search'
-		end
-    post 'update_settings'
-    #resources :features, :constraints => { :id => /[^\/]+[^\/]+/ } do
     resources :features, :constraints => { :id => /.*/ } do
-      collection do
-        get 'list'
-				get 'lic_info'
-      end
-      get 'get_data'
-      get "monthly"
-      get "kill"
-      get 'users'
-      get 'data_dump'
-      get 'historical_users'
-			post 'toggle_uniq_users'
-			get 'usage_report'
-      get 'usage_report_users'
-      post 'mail'
     end
-    resources :tags
-  end
-
-  resources :feature_headers, only: [:accordion_group]
-
-  controller :licservers do
-    match '/licserver/:licserver_id/analysis' => :analysis, :via => :get, :as => 'licserver_analysis'
   end
 
   resources :tags do
-    collection do
-      get 'gen_accordion'
-      get 'search'
-    end
-    get 'gen_licservers'
   end
-
-
-  resources :report_schedules do
-    get 'accordion'
-    collection do
-      get 'gen_monitored_obj_listings'
-    end
-    resources :reports do
-    end
-  end
-
-  get "welcome/index"
-  get "welcome/about"
-  get "welcome/tech"
-  get "welcome/download_client"
-  get 'welcome/notice'
-	get 'welcome/login_test'
-	get 'welcome/disclaimer'
 
   resources :users do
-    collection do
-      get 'get_more'
-      get 'search'
-			get 'uniq_exempted'
-			post 'uniq_exempted' => 'users#update_uniq_exempted'
-			get 'top_users'
-    end
-    resources :machines do
-      member do
-        get 'gen_features'
-      end
-    end
   end
-
-  #update user idle time
-  get "idle_user/report"
-  get "idle_user/show"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
