@@ -1,87 +1,22 @@
 !!!
 %html{ :lang => 'en' }
 	%head
-		%meta{ :charset => 'utf-8' }
-		%meta{ :http => { :equiv => "X-UA-Compatible" }, :content => "IE=Edge,chrome=1"  }
-		%meta{ :name => "viewport" , :content => "width=device-width, initial-scale=1.0"}
-		= javascript_include_tag "application", 'data-turbolinks-track' => true
-		= yield :other_javascript
-		%title
-			= content_for?(:title) ? yield(:title) : "Fireworks"
+		%meta{ :charset => "utf-8"}
+		%meta{ :name => "viewport", :content => "width=device-width, initial-scale=1, shirt-to-fit=no"}
+		%meta{ :'http-equiv' => "x-ua-compatible", :content => "ie=edge"}
 
-		/ javascript include tag here
-		= csrf_meta_tags
-		= stylesheet_link_tag "application", :media => "all", 'data-turbolinks-track' => true
-
-		/ For third-generation iPad with high-resolution Retina display:
-		/ Size should be 144 x 144 pixels
-		= favicon_link_tag 'images/apple-touch-icon-144x144-precomposed.png', :rel => 'apple-touch-icon-precomposed',
-			:type => 'image/png', :sizes => '144x144'
-
-		/ For iPhone with high-resolution Retina display:
-		/ Size should be 114 x 114 pixels
-		= favicon_link_tag 'images/apple-touch-icon-114x114-precomposed.png', :rel => 'apple-touch-icon-precomposed',
-			:type => 'image/png', :sizes => '114x114'
-
-		/ For first- and second-generation iPad:
-		/ Size should be 72 x 72 pixels
-		= favicon_link_tag 'images/apple-touch-icon-72x72-precomposed.png', :rel => 'apple-touch-icon-precomposed',
-			:type => 'image/png', :sizes => '72x72'
-
-		/ For non-Retina iPhone, iPod Touch, and Android 2.1+ devices:
-		/ Size should be 57 x 57 pixels
-		= favicon_link_tag 'images/apple-touch-icon-precomposed.png', :rel => 'apple-touch-icon-precomposed',
-			:type => 'image/png'
-
-		/ For all other devices
-		/ Size should be 32 x 32 pixels
-		= favicon_link_tag 'images/favicon.ico', :rel => 'shortcut icon'
+		= stylesheet_link_tag "//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css",
+			:integrity => "sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd", :crossorigin => "anonymous"
+		= javascript_include_tag "application", "data-turbolinks-track" => true
+		= javascript_include_tag "//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js",
+			:integrity => "sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7", :crossorigin => "anonymous"
 	%body
-		.navbar.navbar-default.navbar-fixed-top{ :role => 'navigation' }
-			.container-fluid
-				.navbar-header
-					%button.navbar-toggle.collapsed{ :type => 'button', :data => { :toggle => 'collapse', :target => '#main-navbar' } }
-						%span.sr-only Toggle Navigation
-						%span.icon-bar
-						%span.icon-bar
-						%span.icon-bar
-					%a.navbar-brand{ :href => root_path }
-						Fireworks
-
-				.navbar-collapse.collapse#main-navbar
-					%ul.nav.navbar-nav
-						%li{ :class => active_path(tags_path) } #{ link_to 'Tags', tags_path }
-						%li{ :class => active_path(licservers_path) } #{ link_to 'Servers', licservers_path }
-						%li{ :class => active_path(users_path) } #{ link_to 'Users', users_path }
-					%ul.nav.navbar-nav.navbar-right
-						%li
-							- if ads_user_signed_in? then
-								%a.dropdown-toggle#drop-ads-user{ :href => '#', :data => { :toggle => 'dropdown' } }
-									= current_ads_user.name
-									%b.caret
-								%ul.dropdown-menu{ :role => 'menu', :aria => { :labelledby => 'drop-ads-user' } }
-									%li #{ link_to 'My Watch List', ads_user_watch_lists_path(current_ads_user.login) }
-									%li.divider
-									%li #{ link_to 'Sign Out', destroy_ads_user_session_path, :method => :delete }
-							- else
-								= link_to 'Sign In', ads_user_session_path
-
-		.container.flash-msg
-			- flash.each do |name,msg|
-				.div.alert{ :class => "alert-#{flash_class(name)}"}
-					#{msg}
-					%button.close{ :type => 'button', :'data-dismiss' => 'alert'}
-						%span{ :'aria-hidden' => true} &times;
-			/ put flash messages here
-		.container.yield_div
-			= yield
-
-		.container
-			%footer
-				%p
-					Build #{Fireworks::REVISION}
-					&copy; Fireworks 2012-2015
-
-		/ Javascripts
-		/ ================================================== -
-		/ Placed at the end of the document so the pages load faster
+		.jumbotron.jumbotron-fluid
+			.container
+				%h1.display-3 Fireworks
+				%p.lead Clean
+		.jumbotron.jumbotron-fluid
+		%footer
+			%p
+				Build #{Fireworks::REVISION}
+				&copy; Fireworks 2012-2015

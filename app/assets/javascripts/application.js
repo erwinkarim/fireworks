@@ -13,7 +13,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require paloma
-//= require twitter/bootstrap
 //= require turbolinks
 //= require_tree .
 

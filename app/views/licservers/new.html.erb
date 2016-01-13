@@ -1,9 +1,0 @@
-<% stack = Array.new %>
-<% stack.push link_to "Fireworks", tags_path %>
-<% stack.push link_to "Servers", licservers_path %>
-<% stack.push "Create" %>
-<%= generate_header(stack) %>
-
-<div id="lic_new_form">
-  <%= render 'form' %>
-</div>
