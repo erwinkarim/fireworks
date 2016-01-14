@@ -11,14 +11,6 @@
  *= require_self
  *= require twitter/bootstrap
  *= require custom_bootstrap/custom_bootstrap
- *= require_tree .
  *= require font-awesome
+ *= require_tree .
  */
-
-body { padding-top: 70px; }
-
-#front-jumbotron{
-	background-size: cover;
-	height:720px;
-	color:white;
-}

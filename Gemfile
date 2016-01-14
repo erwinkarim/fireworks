@@ -54,10 +54,8 @@ gem 'unicorn-rails'
 # gem 'debugger'
 #
 
-#gem 'rufus-scheduler'
-#better scheduler
+#job distrubution
 gem 'resque-scheduler'
-#gem 'less-rails', '=2.6.0'
 gem 'squeel'
 
 gem 'delayed_job_active_record'
@@ -65,10 +63,6 @@ gem 'daemons'
 gem 'paloma'
 
 gem 'foreman'
-
-#to excel
-#
-gem 'spreadsheet'
 
 #user authentication
 gem 'devise'

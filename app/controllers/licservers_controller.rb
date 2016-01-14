@@ -15,20 +15,9 @@ class LicserversController < ApplicationController
   # GET /licservers/1.json
   def show
     @licserver = Licserver.find(params[:id])
-    licserver = @licserver
-    #@tags = @licserver.tags
-    #@features = @licserver.feature_headers.where{ last_seen.gt 1.day.ago }.map{ |item| {:name => item.name } }
-    #if @features.empty? then
-    #  @features = nil
-    #end
-    if ads_user_signed_in? then
-      @watched = current_ads_user.watch_lists.where(:model_type => 'Licserver', :model_id => @licserver.id ).first
-    end
-
+		
     respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @licserver }
-			format.template { render :template => 'licservers/show.template', :locals => { :licserver => @licserver } }
+			format.template
     end
   end
 

@@ -1,0 +1,16 @@
+.form-group
+  %fieldset.form-group
+    %input.form-control{ :type => "text", :placeholder => "Search..." }
+.card-columns
+  - @tags.each do |tag|
+    .card
+      .card-block
+        %h4.card-title #{tag[:title]}
+      .list-group.list-group-flush
+        - tag[:licservers].each do |licserver|
+          %a.list-group-item{ :href => "#licserver-#{tag[:title]}-#{licserver.id}", :'data-toggle' => "collapse" }
+            %strong #{licserver.get_port_at_server}
+          .collapse.licserver-collapse{ :id => "licserver-#{tag[:title]}-#{licserver.id}", :'data-licserver' => licserver.id }
+            .list-group-item
+              %p
+                %i.fa.fa-cog.fa-spin.fa-2x

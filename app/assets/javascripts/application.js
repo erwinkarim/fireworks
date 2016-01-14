@@ -19,7 +19,13 @@
 Turbolinks.enableProgressBar();
 
 $(document).on('page:load', function(){
-
   Paloma.executeHook();
   Paloma.engine.start();
 })
+
+var load_main = function(target){
+  $.get('/tags.template', null, function(data){
+    target.empty().append(data);
+  });
+
+}

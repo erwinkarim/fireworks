@@ -5,17 +5,16 @@
 		%meta{ :name => "viewport", :content => "width=device-width, initial-scale=1, shirt-to-fit=no"}
 		%meta{ :'http-equiv' => "x-ua-compatible", :content => "ie=edge"}
 
+		= stylesheet_link_tag "application", :media => "all", :'data-turbolinks-track' => true
 		= stylesheet_link_tag "//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css",
 			:integrity => "sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd", :crossorigin => "anonymous"
 		= javascript_include_tag "application", "data-turbolinks-track" => true
+		= insert_paloma_hook
 		= javascript_include_tag "//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js",
 			:integrity => "sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7", :crossorigin => "anonymous"
+		%title Fireworks
 	%body
-		.jumbotron.jumbotron-fluid
-			.container
-				%h1.display-3 Fireworks
-				%p.lead Clean
-		.jumbotron.jumbotron-fluid
+		= yield
 		%footer
 			%p
 				Build #{Fireworks::REVISION}
