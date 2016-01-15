@@ -1,7 +1,8 @@
 - @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.each do |feature|
-  - collapse_id = SecureRandom.hex(6)
+  - collapse_id = "b-#{SecureRandom.hex(6)}"
   %a.list-group-item{ :href => "##{collapse_id}", :'data-toggle' => 'collapse'} #{ feature.name }
-  .collapse.feature-collapse{ :id => collapse_id, :data => { :licserver => @licserver.id, :feature => feature.name }  }
-    .list-group-item
-      %p
-        Graph and info goes here
+  .collapse.feature-collapse{ :id => collapse_id,
+    :data => { :content => 'grap', :plsload => 'yes', :source => licserver_feature_path( @licserver, feature.name, :format => :template)} }
+    .list-group-item{ :id => "graph-#{collapse_id}", :data => { :licserver => @licserver.id, :feature => feature.name } }
+      %i.fa.fa-cog.fa-spin.fa-2x
+      %p #{ licserver_feature_get_data_path( @licserver, feature.name, :format => :json ) }

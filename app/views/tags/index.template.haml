@@ -8,9 +8,11 @@
         %h4.card-title #{tag[:title]}
       .list-group.list-group-flush
         - tag[:licservers].each do |licserver|
-          %a.list-group-item{ :href => "#licserver-#{tag[:title]}-#{licserver.id}", :'data-toggle' => "collapse" }
+          - target = "a-#{SecureRandom.hex(6)}";
+          %a.list-group-item{ :href => "##{target}", :'data-toggle' => "collapse" }
             %strong #{licserver.get_port_at_server}
-          .collapse.licserver-collapse{ :id => "licserver-#{tag[:title]}-#{licserver.id}", :'data-licserver' => licserver.id }
+          .collapse.licserver-collapse{ :id => "#{target}",
+            :data => { :licserver => licserver.id , :source => licserver_path(licserver.id, :format => :template), :plsload => 'yes' } }
             .list-group-item
               %p
                 %i.fa.fa-cog.fa-spin.fa-2x

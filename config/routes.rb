@@ -6,7 +6,9 @@ Fireworks::Application.routes.draw do
 	end
 
   resources :licservers do
-    resources :features, :constraints => { :id => /.*/ } do
+    # need to take care of the . and /
+    resources :features do
+      get 'get_data'
     end
   end
 

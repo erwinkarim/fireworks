@@ -24,8 +24,27 @@ $(document).on('page:load', function(){
 })
 
 var load_main = function(target){
-  $.get('/tags.template', null, function(data){
-    target.empty().append(data);
+  $.get( target.attr('data-source'), null, function(data){
+      target.empty().append(data).ready(function(){
+        $(document).find('.collapse').each( function(){
+          setup_collapse($(this));
+        });
+      });
   });
-
 }
+
+var setup_collapse = function(target){
+  $(target).on('shown.bs.collapse', function(){
+    if (target.attr('data-plsload') == 'yes' ){
+      console.log('should load ' + $(target).attr('data-source') );
+      $.get( $(target).attr('data-source'), null, function(data){
+          $(target).empty().append(data).ready(function(){
+              $(target).find('.collapse').each( function(){
+                  setup_collapse($(this));
+              });
+          });
+          $(target).attr('data-plsload', 'no');
+      });
+    };
+  });
+};

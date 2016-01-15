@@ -4,5 +4,5 @@
     %p.lead Clean
 .jumbotron.jumbotron-fluid
   .container-fluid
-    #tags-target
+    #tags-target{ :'data-source' => tags_path(:format => :template) }
       %i.fa.fa-cog.fa-spin.fa-2x
