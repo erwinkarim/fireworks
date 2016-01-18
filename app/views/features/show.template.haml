@@ -1,1 +1,20 @@
-%p #{ licserver_feature_path( params[:licserver_id], params[:id], :format => :template)} 
+- random_id = SecureRandom.hex(8)
+%ul.list-group{ :id => random_id }
+  %li.list-group-item
+    %h6 Daily graph
+    %div{ :id => "graph-#{random_id}",
+      :data => { :'graph-source' => licserver_feature_get_data_path(params[:licserver_id], params[:id], :format => :json ), :'start-id' => -1 } }
+    %button.btn.btn-secondary{ :type => 'button' }
+      %i.fa.fa-fast-backward
+    %button.btn.btn-secondary{ :type => 'button' }
+      %i.fa.fa-backward
+  %li.list-group-item
+    %h6 Current Users
+    %i.fa.fa-chevron-down
+    Click to load
+  %li.list-group-item
+    %h6 Other Items
+    %i.fa.fa-chevron-down
+    Click to load
+:javascript
+  load_graph( $('#graph-#{ random_id}'), { title: { text:'#{params[:id]}'} } );

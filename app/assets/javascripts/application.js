@@ -36,9 +36,9 @@ var load_main = function(target){
 var setup_collapse = function(target){
   $(target).on('shown.bs.collapse', function(){
     if (target.attr('data-plsload') == 'yes' ){
-      console.log('should load ' + $(target).attr('data-source') );
       $.get( $(target).attr('data-source'), null, function(data){
           $(target).empty().append(data).ready(function(){
+              //setup collapse if detected
               $(target).find('.collapse').each( function(){
                   setup_collapse($(this));
               });
@@ -48,3 +48,49 @@ var setup_collapse = function(target){
     };
   });
 };
+
+var show_feature = function(target){
+
+};
+
+var load_graph = function(target, options){
+  var default_options = {
+      chart: {
+          type: 'line',
+          events: {
+            load: function(){
+              var chart_handle = this;
+              console.log('finished setup data. load data from ' + $(target).attr('data-graph-source') );
+              chart_handle.showLoading();
+              $.get( $(target).attr('data-graph-source'), null, function(data){
+                  for(i=0; i< data['data'][0]['data'].length; i++){
+                      chart_handle.series[0].addPoint({
+                        x: data['data'][0]['data'][i][0],
+                        y: data['data'][0]['data'][i][1],
+                        id: data['data'][0]['data'][i][2],
+                        name: data['data'][0]['data'][i][3]
+                      }, false, false);
+                      chart_handle.series[1].addPoint(data['data'][1]['data'][i], false, false);
+                  }; //for
+
+                  chart_handle.redraw();
+                  chart_handle.hideLoading();
+              });
+            }
+          }
+      },
+      series:[
+        { name: 'current', data:[], turboThreshold: 0},
+        { name: 'max', data:[] }
+      ],
+      title: {
+        text: 'Test'
+      }
+  };
+
+  var settings = $.extend({}, default_options, options);
+  //merge default with options
+
+  //setup highcharts with target
+  target.highcharts('StockChart', settings);
+}

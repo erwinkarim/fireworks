@@ -1,18 +1,19 @@
 .form-group
   %fieldset.form-group
     %input.form-control{ :type => "text", :placeholder => "Search..." }
-.card-columns
+.row
   - @tags.each do |tag|
-    .card
-      .card-block
-        %h4.card-title #{tag[:title]}
-      .list-group.list-group-flush
-        - tag[:licservers].each do |licserver|
-          - target = "a-#{SecureRandom.hex(6)}";
-          %a.list-group-item{ :href => "##{target}", :'data-toggle' => "collapse" }
-            %strong #{licserver.get_port_at_server}
-          .collapse.licserver-collapse{ :id => "#{target}",
-            :data => { :licserver => licserver.id , :source => licserver_path(licserver.id, :format => :template), :plsload => 'yes' } }
-            .list-group-item
-              %p
-                %i.fa.fa-cog.fa-spin.fa-2x
+    .col-xl-6.col-lg-12.col-sm-12
+      .card
+        .card-block
+          %h3.card-title #{tag[:title]}
+        .list-group.list-group-flush
+          - tag[:licservers].each do |licserver|
+            - target = "a-#{SecureRandom.hex(6)}";
+            %h4
+              %a.list-group-item{ :href => "##{target}", :'data-toggle' => "collapse" } #{licserver.get_port_at_server}
+            .collapse.licserver-collapse{ :id => "#{target}",
+              :data => { :licserver => licserver.id , :source => licserver_path(licserver.id, :format => :template), :plsload => 'yes' } }
+              .list-group-item
+                %p
+                  %i.fa.fa-cog.fa-spin.fa-2x
