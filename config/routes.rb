@@ -5,17 +5,18 @@ Fireworks::Application.routes.draw do
 	resources :ads_users, :ads_user_id => /[^\/]+/ , only: [ :show ]  do
 	end
 
-  resources :licservers do
+  resources :licservers, :only => [:index, :show]  do
     # need to take care of the . and /
-    resources :features do
+    resources :features, :only => [:index, :show] do
       get 'get_data'
+      get 'users'
     end
   end
 
-  resources :tags do
+  resources :tags, :only => [:index] do
   end
 
-  resources :users do
+  resources :users, :only => [:index] do
   end
 
   # The priority is based upon order of creation:

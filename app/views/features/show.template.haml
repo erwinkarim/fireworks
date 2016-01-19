@@ -1,20 +1,49 @@
 - random_id = SecureRandom.hex(8)
-%ul.list-group{ :id => random_id }
-  %li.list-group-item
+.list-group{ :id => random_id }
+  %a.list-group-item{ :href => "#graph-collapse-#{random_id} ", :'data-toggle' => 'collapse'}
     %h6 Daily graph
+  .collapse.in{ :id => "graph-collapse-#{random_id}"}
     %div{ :id => "graph-#{random_id}",
       :data => { :'graph-source' => licserver_feature_get_data_path(params[:licserver_id], params[:id], :format => :json ), :'start-id' => -1 } }
-    %button.btn.btn-secondary{ :type => 'button' }
-      %i.fa.fa-fast-backward
-    %button.btn.btn-secondary{ :type => 'button' }
-      %i.fa.fa-backward
-  %li.list-group-item
+    .list-group-item
+      %button.btn.btn-secondary{ :type => 'button', :'data-target' => "#graph-#{random_id}", :id => "graph-load-#{random_id}" }
+        %i.fa.fa-backward
+  %a.list-group-item{ :href => "#user-collapse-#{random_id}", :'data-toggle' => 'collapse'}
     %h6 Current Users
-    %i.fa.fa-chevron-down
-    Click to load
-  %li.list-group-item
+  .collapse{ :id => "user-collapse-#{random_id}" ,
+    :data => { :source => licserver_feature_users_path( params[:licserver_id], params[:id], :format => :template), :plsload => 'yes' } }
+    .list-group-item
+      %i.fa.fa-cog.fa-spin
+  %a.list-group-item{ :href => "#other-collapse-#{random_id}", :'data-toggle' => 'collapse' }
     %h6 Other Items
-    %i.fa.fa-chevron-down
-    Click to load
+  .collapse{ :id => "other-collapse-#{random_id}"}
+    .list-group-item
+      %i.fa.fa-chevron-down
+      Click to load
 :javascript
   load_graph( $('#graph-#{ random_id}'), { title: { text:'#{params[:id]}'} } );
+
+  //setup the graph loading button
+  $('#graph-load-#{random_id}').on('click', function(){
+    var this_button = $(this);
+    var graph_handle = $('#graph-#{random_id}');
+
+    //disable the button
+    this_button.attr('disabled', 'disabled');
+
+    //load and dump data
+    $.get( graph_handle.attr('data-graph-source'), { start_id: graph_handle.attr('data-start-id')}, function(data){
+      var chart_handle = graph_handle.highcharts();
+      for(i=0; i< data['data'][0]['data'].length; i++){
+        chart_handle.series[0].addPoint( data['data'][0]['data'][i], false, false);
+        chart_handle.series[1].addPoint( data['data'][1]['data'][i], false, false);
+      };
+      graph_handle.attr('data-start-id', data['last_id']);
+      chart_handle.redraw();
+    });
+
+    //enable the button
+    this_button.removeAttr('disabled');
+  })
+
+  setup_collapse($('#user-collapse-#{random_id}'));

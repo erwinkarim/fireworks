@@ -27,6 +27,10 @@ class FeaturesController < ApplicationController
     end
   end
 
+	def users
+		@users = Licserver.find(params[:licserver_id]).current_users(params[:feature_id])
+	end
+
   # GET    /licservers/:licserver_id/features/:feature_id/get_data(.:format)
   # generate data for features params[:feature_id] from licserver params[:licserver_id]
   # will return 10000 data points at at time beginning from start_id or Feature.last.id and the previous

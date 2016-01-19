@@ -60,7 +60,6 @@ var load_graph = function(target, options){
           events: {
             load: function(){
               var chart_handle = this;
-              console.log('finished setup data. load data from ' + $(target).attr('data-graph-source') );
               chart_handle.showLoading();
               $.get( $(target).attr('data-graph-source'), null, function(data){
                   for(i=0; i< data['data'][0]['data'].length; i++){
@@ -72,6 +71,9 @@ var load_graph = function(target, options){
                       }, false, false);
                       chart_handle.series[1].addPoint(data['data'][1]['data'][i], false, false);
                   }; //for
+
+                  //set the last data thing
+                  $(target).attr('data-start-id', data['last_id']);
 
                   chart_handle.redraw();
                   chart_handle.hideLoading();
@@ -93,4 +95,13 @@ var load_graph = function(target, options){
 
   //setup highcharts with target
   target.highcharts('StockChart', settings);
+}
+
+var load_users = function(target, options){
+  //the target has where to load the users page
+  console.log('loading data from ' + $(target).attr('data-source'));
+
+  $.get( $(target).attr('data-source'), null, function(data){
+    $(target).empty().append(data);
+  });
 }
