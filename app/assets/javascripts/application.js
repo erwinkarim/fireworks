@@ -33,17 +33,26 @@ var load_main = function(target){
   });
 }
 
-var setup_collapse = function(target){
+var setup_collapse = function(target, div_target){
   $(target).on('shown.bs.collapse', function(){
     if (target.attr('data-plsload') == 'yes' ){
+      if( typeof div_target == "undefined"){
+          var load_target = target;
+      } else {
+          var load_target = div_target;
+      }
       $.get( $(target).attr('data-source'), null, function(data){
-          $(target).empty().append(data).ready(function(){
-              //setup collapse if detected
-              $(target).find('.collapse').each( function(){
-                  setup_collapse($(this));
-              });
+          $(load_target).empty().append(data).ready(function(){
+            //setup collapse if detected
+            $(load_target).find('.collapse').each( function(){
+              if($(this).attr('data-load-target') == null){
+                setup_collapse($(this));
+              } else {
+                setup_collapse($(this), $(this).attr('data-load-target'));
+              }
+            });
+            $(target).attr('data-plsload', 'no');
           });
-          $(target).attr('data-plsload', 'no');
       });
     };
   });
@@ -95,13 +104,4 @@ var load_graph = function(target, options){
 
   //setup highcharts with target
   target.highcharts('StockChart', settings);
-}
-
-var load_users = function(target, options){
-  //the target has where to load the users page
-  console.log('loading data from ' + $(target).attr('data-source'));
-
-  $.get( $(target).attr('data-source'), null, function(data){
-    $(target).empty().append(data);
-  });
 }

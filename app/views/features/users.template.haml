@@ -1,15 +1,10 @@
-.list-group-item
-  %button.btn.btn-secondary{ :type => "button"}
-    %i.fa.fa-refresh
-  %button.btn.btn-secondary{ :type => "button"}
-    %i.fa.fa-bomb
-  %button.btn.btn-secondary{ :type => "button"}
-    %i.fa.fa-envelope
 %table.table
   - if @users.nil? then
     %tr
-      %td{:rowspan => 2} No Users Detected
+      %td{:colspan => 2} No Users Detected
   - else
+    %tr
+      %td{:colspan => 2} Last Updated: #{ DateTime.now }
     - @users.each do |user|
       %tr
         %td #{user[:user]}@#{user[:machine]} since #{user[:since]}
