@@ -8,21 +8,17 @@ class FeaturesController < ApplicationController
     end
   end
 
-  def kill
+	# DELETE /licservers/:licserver_id/features/:feature_id/user(.:format)
+  def kill_user
     #kill user here
-    @licserver = Licserver.find(params[:licserver_id])
-    @fullname = @licserver.port.to_s + '@' + @licserver.server
-    #@output = Feature.kill_user(@fullname, params[:feature_id], params[:host_id], params[:port_id], params[:handle])
-    @output = Licserver.find(params[:licserver_id]).kill_user(
+		licserver = Licserver.find(params[:licsrver_id])
+    @output = licserver.kill_user(
 			{ :feature => params[:feature_id], :host => params[:host_id], :port => params[:port_id], :handle => params[:handle]}
 		)
-
 
 		Rails.logger.info "Killing #{params[:user]}/#{params[:feature_id]} by #{current_ads_user.login}"
 
     respond_to do |format|
-      format.html { redirect_to :back }
-      format.xml { render :text => 'successful' }
 			format.js
     end
   end

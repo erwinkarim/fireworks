@@ -6,6 +6,11 @@
     %tr
       %td{:colspan => 2} Last Updated: #{ DateTime.now }
     - @users.each do |user|
-      %tr
+      - random_id = SecureRandom.hex(8)
+      %tr{ :id => "user-#{random_id}"}
         %td #{user[:user]}@#{user[:machine]} since #{user[:since]}
-        %td X
+        - if ads_user_signed_in? then
+          %td
+            = button_to( "&times;".html_safe,
+              licserver_feature_user_path( params[:licserver_id], params[:feature_id], :handle => user[:handle], :target => "#user-#{random_id}"),
+              { :method => :delete, :class => 'btn btn-danger btn-sm', :remote => true } )

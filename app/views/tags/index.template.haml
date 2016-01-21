@@ -26,7 +26,10 @@
         .modal-title
           %h4 Nuke-Em
       .modal-body
-        %p Nuke-em Dialog here
+        <strong>Warning:</strong> This action will kill everyone that using this feature. To confirm you really want to do this, please type the name of the feature in the input box below
+        = form_tag '#' do
+          %fieldset.form-group
+            %input.form-control{ :type => 'text', :placeholder => 'Feature Name' }
       .modal-footer
         %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
         %button.btn.btn-danger{ :type => 'button' } Nuke-em
@@ -43,3 +46,7 @@
       .modal-footer
         %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
         %button.btn.btn-primary{ :type => 'button'} Send Message
+:javascript
+  $('#nuke-em-modal').on('show.bs.modal', function(e){
+    console.log( 'called by ' + $(e.relatedTarget).attr('id') );
+  });

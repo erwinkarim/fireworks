@@ -10,6 +10,8 @@ Fireworks::Application.routes.draw do
     resources :features, :only => [:index, :show] do
       get 'get_data'
       get 'users'
+      delete 'users', :to => 'features#kill_users'
+      delete 'user', :to => 'features#kill_user'
     end
   end
 
