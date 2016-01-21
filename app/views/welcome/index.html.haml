@@ -1,7 +1,8 @@
-.jumbotron.jumbotron-fluid
-  .container
-    %h1.display-3 Fireworks
-    %p.lead Clean
+- if !ads_user_signed_in? then
+  .jumbotron.jumbotron-fluid{ :style => "background:url(437738278-3556162892011.jpg); height:100vh; background-size: cover; color:white;"}
+    .container
+      %h1.display-3 Fireworks
+      %p.lead Clean
 .jumbotron.jumbotron-fluid
   .container-fluid
     #tags-target{ :'data-source' => tags_path(:format => :template) }

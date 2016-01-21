@@ -14,6 +14,16 @@
 			:integrity => "sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7", :crossorigin => "anonymous"
 		%title Fireworks
 	%body
+		%nav.navbar.nvabar-light.bg-transparent.navbar-fixed-top
+			%ul.nav.navbar-nav.pull-right
+				%li.nav-item
+					- if ads_user_signed_in? then
+						.dropdown
+							%a.nav-link.dropdown-toggle.btn.btn-primary{ :href => '#', :'data-toggle' => 'dropdown'} #{current_ads_user.name }
+							.dropdown-menu
+								= button_to 'Sign Out', destroy_ads_user_session_path, :method => :delete, :class => 'dropdown-item'
+					- else
+						%a.btn.btn-primary.nav-link{ :href => new_ads_user_session_path } Login
 		= yield
 		%footer
 			%p
