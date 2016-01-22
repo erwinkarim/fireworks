@@ -17,7 +17,8 @@
       %button.btn.btn-secondary{ :type => "button", :id => "user-refresh-#{random_id}"}
         %i.fa.fa-refresh
       - if ads_user_signed_in? then
-        %button.btn.btn-secondary{:id => "nuke-em-#{random_id}", :type => "button", :data => { :toggle => 'modal', :target => '#nuke-em-modal'}}
+        %button.btn.btn-secondary{:id => "nuke-em-#{random_id}", :type => "button",
+          :data => { :toggle => 'modal', :target => '#nuke-em-modal', :'feature-name' => params[:id]}}
           %i.fa.fa-bomb
         %button.btn.btn-secondary{ :type => "button", :data => { :toggle => 'modal', :target => '#mail-modal'}}
           %i.fa.fa-envelope

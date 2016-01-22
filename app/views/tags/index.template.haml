@@ -24,7 +24,7 @@
         %button.close{ :type => 'button', :'data-dismiss' => 'modal'}
           %span &times;
         .modal-title
-          %h4 Nuke-Em
+          %h4#nuke-em-title Nuke-Em
       .modal-body
         <strong>Warning:</strong> This action will kill everyone that using this feature. To confirm you really want to do this, please type the name of the feature in the input box below
         = form_tag '#' do
@@ -49,4 +49,5 @@
 :javascript
   $('#nuke-em-modal').on('show.bs.modal', function(e){
     console.log( 'called by ' + $(e.relatedTarget).attr('id') );
+    $(this).find('#nuke-em-title').text("Nuke " + $(e.relatedTarget).data('feature-name') + " users");
   });

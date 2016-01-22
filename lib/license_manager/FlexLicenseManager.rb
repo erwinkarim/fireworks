@@ -111,8 +111,9 @@ class FlexLicenseManager
   def self.kill_user *args
     default_options = {:licserver => "@localhost", :feature => 0, :host => 0 , :port => 0 , :handle => 0}
     options = default_options.merge(args[0])
+    Rails.logger.info "options = #{options}"
 
-    `#{LMUTIL_PATH} lmutil lmremove -c #{options[:licserver]} -h #{options[:feature_id]} #{options[:host_id]} #{options[:port_id]} #{options[:handle]}`
+    `#{LMUTIL_PATH} lmremove -c #{options[:licserver]} -h #{options[:feature]} #{options[:host]} #{options[:port]} #{options[:handle]}`
   end
 
 	# return zero if the number is negatie
