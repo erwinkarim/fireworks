@@ -16,13 +16,17 @@ class FeaturesController < ApplicationController
 			{ :feature => params[:feature_id], :host => params[:host_id], :port => params[:port_id], :handle => params[:handle]}
 		)
 
-		Rails.logger.info "Killing #{params[:user]}/#{params[:feature_id]} by #{current_ads_user.login}"
-		Rails.logger.info @output
-
     respond_to do |format|
 			format.js
     end
   end
+
+	#nuke users
+	def kill_users
+		respond_to do |format|
+				format.js
+		end
+	end
 
 	def users
 		@users = Licserver.find(params[:licserver_id]).current_users(params[:feature_id])

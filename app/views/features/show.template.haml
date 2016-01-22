@@ -17,9 +17,9 @@
       %button.btn.btn-secondary{ :type => "button", :id => "user-refresh-#{random_id}"}
         %i.fa.fa-refresh
       - if ads_user_signed_in? then
-        %button.btn.btn-secondary{:id => "nuke-em-#{random_id}", :type => "button",
-          :data => { :toggle => 'modal', :target => '#nuke-em-modal', :'feature-name' => params[:id]}}
-          %i.fa.fa-bomb
+        = button_to "Nuke-em", licserver_feature_users_path(params[:licserver_id], params[:id], :format => :js),
+          { :data => { :remote => true, :confirm => "Really Nuke #{params[:id]} users?" }, :method => :delete,
+          :form => { :class => '', :style => 'white-space:nowrap' }, :class => 'btn btn-danger' }
         %button.btn.btn-secondary{ :type => "button", :data => { :toggle => 'modal', :target => '#mail-modal'}}
           %i.fa.fa-envelope
     .list-group-item{ :id => "user-list-#{random_id}"}
