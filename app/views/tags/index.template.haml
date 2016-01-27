@@ -17,6 +17,23 @@
               .list-group-item
                 %p
                   %i.fa.fa-cog.fa-spin.fa-2x
+.modal.fade#nuke-em-modal{ :tabindex => '-1', :role => 'dialog'}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{ :type => 'button', :'data-dismiss' => 'modal'}
+          %span &times;
+        .modal-title
+          %h4#nuke-em-title Nuke-Em
+      .modal-body
+        <strong>Warning:</strong> This action will kill everyone that using this feature. To confirm you really want to do this, please type the name of the feature in the input box below
+        = form_tag '#' do
+          %fieldset.form-group
+            %input.form-control#nuke-em-sanity-check{ :type => 'text', :placeholder => 'Feature Name' }
+        #nuke-em-status
+      .modal-footer
+        %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
+        %button.btn.btn-danger#nuke-em{ :type => 'button', :data => { :url => '', :feature => '', :random => ''} } Nuke-em
 .modal.fade#mail-modal{ :tabindex => '-1', :role => 'dialog'}
   .modal-dialog
     .modal-content
@@ -30,3 +47,24 @@
       .modal-footer
         %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
         %button.btn.btn-primary{ :type => 'button'} Send Message
+:javascript
+  $('#nuke-em-modal').on('show.bs.modal', function(e){
+    //console.log( 'called by ' + $(e.relatedTarget).attr('id') );
+
+    //setup to nuke-em
+    $(this).find('#nuke-em-title').text("Nuke " + $(e.relatedTarget).data('feature') + " users");
+    $('#nuke-em').attr('data-url', $(e.relatedTarget).data('kill-path') );
+    $('#nuke-em').attr('data-feature', $(e.relatedTarget).data('feature') );
+    $('#nuke-em').attr('data-random', $(e.relatedTarget).data('random') );
+  });
+
+  $('#nuke-em').click( function(){
+      //sanity check before killing users
+      console.log('nuke ' + $(this).data('feature') + ' users');
+
+      if ( $(this).data('feature') == $('#nuke-em-sanity-check').val() ) {
+        console.log('start nukeing people');
+      } else {
+        console.log('error: did not match');
+      }
+  });
