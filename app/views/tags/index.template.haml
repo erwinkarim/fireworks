@@ -27,9 +27,10 @@
           %h4#nuke-em-title Nuke-Em
       .modal-body
         <strong>Warning:</strong> This action will kill everyone that using this feature. To confirm you really want to do this, please type the name of the feature in the input box below
-        = form_tag '#' do
+        = form_tag '#', :id => "nuke-em-form", :method => :delete do
           %fieldset.form-group
-            %input.form-control#nuke-em-sanity-check{ :type => 'text', :placeholder => 'Feature Name' }
+            %input.form-control.hidden{ :type => "text", :id => "faker" }
+            %input.form-control{ :id => "nuke-em-sanity-check", :type => "text"}
         #nuke-em-status
       .modal-footer
         %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
@@ -64,6 +65,13 @@
 
       if ( $(this).data('feature') == $('#nuke-em-sanity-check').val() ) {
         console.log('start nukeing people');
+
+        $.ajax($(this).data('url') + "?" + $('#nuke-em-form').serialize() , {
+            method: "DELETE",
+            success: function(){
+              console.log('killed a lot of users');
+            }
+        });
       } else {
         console.log('error: did not match');
       }
