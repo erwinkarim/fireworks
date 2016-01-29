@@ -22,9 +22,22 @@ class FeaturesController < ApplicationController
   end
 
 	#nuke users
+	# DELETE /licservers/:licserver_id/features/:feature_id/users(.:format)
 	def kill_users
+		licserver = Licserver.find(params[:licserver_id])
+		#get users list
+		users = licserver.current_users( params[:feature_id])
+
+		#mass kill them
+		users.each do |user|
+			licserver.kill_user({ :feature => params[:feature_id],
+				:host => user[:host_id], :port => user[:port_id], :handle => user[:handle]})
+		end
+
 		respond_to do |format|
-				format.js
+				format.js {
+					render :nothing => true, :status => :ok
+				}
 		end
 	end
 

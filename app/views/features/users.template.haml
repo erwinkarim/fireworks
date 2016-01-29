@@ -4,7 +4,7 @@
       %td{:colspan => 2} No Users Detected
   - else
     %tr
-      %td{:colspan => 2} Last Updated: #{ DateTime.now }
+      %td{:colspan => 2} Last Updated: #{ DateTime.now } (#{@users.count} User(s))
     - @users.each do |user|
       - random_id = SecureRandom.hex(8)
       %tr{ :id => "user-#{random_id}"}
