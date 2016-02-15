@@ -21,6 +21,8 @@
 						.dropdown
 							%a.nav-link.dropdown-toggle.btn.btn-primary{ :href => '#', :'data-toggle' => 'dropdown'} #{current_ads_user.name }
 							.dropdown-menu
+								%button.dropdown-item{ :type => 'button', :data => { :toggle => 'modal', :target => '#new-licserver-modal'} } New license server...
+								.dropdown-divider
 								= button_to 'Sign Out', destroy_ads_user_session_path, :method => :delete, :class => 'dropdown-item'
 					- else
 						%a.btn.btn-primary.nav-link{ :href => new_ads_user_session_path } Login

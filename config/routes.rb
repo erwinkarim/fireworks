@@ -1,11 +1,11 @@
 Fireworks::Application.routes.draw do
 
-  devise_for :ads_users
+  devise_for :ads_users, controllers: { sessions: "ads_users/sessions"}
 
 	resources :ads_users, :ads_user_id => /[^\/]+/ , only: [ :show ]  do
 	end
 
-  resources :licservers, :only => [:index, :show]  do
+  resources :licservers, :only => [:index, :show, :create ]  do
     # need to take care of the . and /
     resources :features, :only => [:index, :show] do
       get 'get_data'
