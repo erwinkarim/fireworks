@@ -54,7 +54,10 @@
         .modal-title
           %h4#feat-settings-title Settings
       .modal-body
-        %p Settings Dialog Here
+        = form_tag '#' do
+          .checkbox
+            %label
+              %input{ :type => "checkbox" } Enforce Unique Users
       .modal-footer
         %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
         %button.btn.btn-primary{ :type => 'button'} Update Settings
@@ -67,7 +70,7 @@
         .modal-title
           %h4#feat-settings-title New Licserver
       .modal-body
-        = form_tag licservers_path do
+        = form_tag licservers_path, :id => 'new-licserver-form' do
           %fieldset.form-group
             %label License Server Address
             %input.form-control#licserver-address{ :type => 'text', :placeholder => "port@hostname", :name => "licserver-location"}
@@ -121,9 +124,21 @@
   $('#new-licserver-modal').on('show.bs.modal', function(e){
       //clean up before display
       console.log('attempt to clean up');
-      console.log( $(this).find('#licserver-address').text() );
-
+      $(document).find('#licserver-address').val('');
+      $(document).find('#licserver-tags').val('');
   });
 
   $('#licserver-create').click( function(){
+    console.log('attempt to create license');
+    $.post( $('#new-licserver-form').attr('action'), $('#new-licserver-form').serialize(), function(data, textStatus){
+        console.log('posted new licserver info with status ' + textStatus);
+    } ).fail( function( jqXHR, textStatus){
+      console.log('posted new licserver info with status ' + textStatus);
+    });
+
+    $('#new-licserver-modal').modal('hide');
+  });
+
+  $('#feature-settings-modal').on('show.bs.modal', function(e){
+
   });
