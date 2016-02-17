@@ -7,7 +7,7 @@ Fireworks::Application.routes.draw do
 
   resources :licservers, :only => [:index, :show, :create ]  do
     # need to take care of the . and /
-    resources :features, :only => [:index, :show] do
+    resources :features, :only => [:index, :show, :update] do
       get 'get_data'
       get 'users'
       delete 'users', :to => 'features#kill_users'

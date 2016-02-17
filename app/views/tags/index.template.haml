@@ -54,13 +54,13 @@
         .modal-title
           %h4#feat-settings-title Settings
       .modal-body
-        = form_tag '#' do
+        = form_tag '#', :id => 'feature-settings-form' do
           .checkbox
             %label
-              %input{ :type => "checkbox" } Enforce Unique Users
+              %input#uniq-users-checkbox{ :type => "checkbox" } Enforce Unique Users
       .modal-footer
         %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
-        %button.btn.btn-primary{ :type => 'button'} Update Settings
+        %button.btn.btn-primary#feature-settings-update{ :type => 'button'} Update Settings
 .modal.fade#new-licserver-modal{ :tabindex => '-1', :role => 'dialog'}
   .modal-dialog
     .modal-content
@@ -95,6 +95,20 @@
 
     //setup the modal
     $(this).find('#feat-settings-title').text($(e.relatedTarget).data('feature') + " settings");
+    $(document).find('#feature-settings-form').attr('action', $(e.relatedTarget).data('info-path'))
+
+    //get the unique users status
+    $.getJSON( $(e.relatedTarget).data('info-path'), null, function(data){
+      if(data.uniq_users == true) {
+        $(document).find('#uniq-users-checkbox').prop('checked', true);
+      } else {
+        $(this).find('#uniq-users-checkbox').prop('checked', false);
+      };
+    });
+  });
+
+  $('#feature-settings-update').click(function(){
+      //update the feature
   });
 
   $('#nuke-em').click( function(){

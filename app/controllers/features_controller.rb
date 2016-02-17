@@ -4,6 +4,10 @@ class FeaturesController < ApplicationController
   # GET    /licservers/:licserver_id/features/:id(.:format)
   def show
     respond_to do |format|
+			format.json {
+				feature = FeatureHeader.where(:licserver_id => params[:licserver_id], :name => params[:id]).first
+				render :json => feature 
+			}
 			format.template
     end
   end
