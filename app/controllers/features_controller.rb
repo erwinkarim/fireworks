@@ -6,11 +6,31 @@ class FeaturesController < ApplicationController
     respond_to do |format|
 			format.json {
 				feature = FeatureHeader.where(:licserver_id => params[:licserver_id], :name => params[:id]).first
-				render :json => feature 
+				render :json => feature
 			}
 			format.template
     end
   end
+
+	#update settings for the feature
+	# PATCH  /licservers/:licserver_id/features/:id
+	def update
+		#find the feature header
+		feature = FeatureHeader.where(:licserver_id => params[:licserver_id], :name => params[:id]).first
+
+		if feature.nil? then
+			render :nothign => true, :status => :not_found
+			return
+		else
+			#update the feature
+			if params.has_key? :'enforce-uniq' then
+				feature.update_attribute(:uniq_users, true)
+			else
+				feature.update_attribute(:uniq_users, false)
+			end
+			render :nothing => true, :status => :ok
+		end
+	end
 
 	# DELETE /licservers/:licserver_id/features/:feature_id/user(.:format)
   def kill_user

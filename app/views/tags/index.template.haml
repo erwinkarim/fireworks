@@ -57,7 +57,7 @@
         = form_tag '#', :id => 'feature-settings-form' do
           .checkbox
             %label
-              %input#uniq-users-checkbox{ :type => "checkbox" } Enforce Unique Users
+              %input#uniq-users-checkbox{ :type => "checkbox", :name => 'enforce-uniq' } Enforce Unique Users
       .modal-footer
         %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
         %button.btn.btn-primary#feature-settings-update{ :type => 'button'} Update Settings
@@ -99,16 +99,28 @@
 
     //get the unique users status
     $.getJSON( $(e.relatedTarget).data('info-path'), null, function(data){
-      if(data.uniq_users == true) {
+      if($.parseJSON(data.uniq_users) == true) {
         $(document).find('#uniq-users-checkbox').prop('checked', true);
       } else {
-        $(this).find('#uniq-users-checkbox').prop('checked', false);
+        $(document).find('#uniq-users-checkbox').prop('checked', false);
       };
     });
   });
 
   $('#feature-settings-update').click(function(){
       //update the feature
+      $.ajax( $('#feature-settings-form').attr('action'), {
+          data: $('#feature-settings-form').serialize(),
+          method: 'PATCH',
+          success: function(data, textStatus){
+            console.log('patched feature settings with status ' + textStatus);
+            $('#feature-settings-modal').modal('hide');
+          },
+          error: function(jqXHR, textStatus){
+            console.log('patched feature settings with status ' + textStatus);
+            $('#feature-settings-modal').modal('hide');
+          }
+      } );
   });
 
   $('#nuke-em').click( function(){
