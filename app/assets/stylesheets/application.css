@@ -14,3 +14,17 @@
  *= require font-awesome
  *= require_tree .
  */
+
+.blue {
+    background-color: #66A7C5;
+    border-color: #66A7C5;
+}
+.light-blue{
+  background-color: #B2DDF0;
+  border-color: #b2ddF0;
+}
+
+.light-yellow{
+  background-color: #FEDE87;
+  border-color: #FEDE87;
+}

@@ -1,7 +1,7 @@
 - @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.each do |feature|
   - collapse_id = "b-#{SecureRandom.hex(6)}"
-  %h5
-    %a.list-group-item{ :href => "##{collapse_id}", :'data-toggle' => 'collapse'} #{ feature.name }
+  %h5{ :style => "margin-bottom:0px; "}
+    %a.list-group-item{ :href => "##{collapse_id}", :'data-toggle' => 'collapse', :style => "background-color: #CEEBFB;"} #{ feature.name }
   .collapse.feature-collapse{ :id => collapse_id,
     :data => { :content => 'graph', :plsload => 'yes', :source => licserver_feature_path( @licserver, feature.name, :format => :template)} }
     .list-group-item{ :id => "graph-#{collapse_id}", :data => { :licserver => @licserver.id, :feature => feature.name } }

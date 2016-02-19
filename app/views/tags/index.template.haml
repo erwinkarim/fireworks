@@ -2,13 +2,13 @@
   - @tags.each do |tag|
     .col-xl-6.col-lg-12.col-sm-12
       .card
-        .card-block
+        .card-block.blue
           %h3.card-title #{tag[:title]}
         .list-group.list-group-flush
           - tag[:licservers].each do |licserver|
             - target = "a-#{SecureRandom.hex(6)}";
-            %h4
-              %a.list-group-item{ :href => "##{target}", :'data-toggle' => "collapse" } #{licserver.get_port_at_server}
+            %h4{ :style => "margin-bottom:0px; "}
+              %a.list-group-item{ :href => "##{target}", :'data-toggle' => "collapse", :style => "background-color: #B2DDF0;" } #{licserver.get_port_at_server}
             .collapse.licserver-collapse{ :id => "#{target}",
               :data => { :licserver => licserver.id , :source => licserver_path(licserver.id, :format => :template), :plsload => 'yes' } }
               .list-group-item

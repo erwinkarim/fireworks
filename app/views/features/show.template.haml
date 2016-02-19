@@ -28,10 +28,13 @@
     %h6 Other Items
   .collapse{ :id => "other-collapse-#{random_id}"}
     .list-group-item
-      %button.btn.btn-secondary{ :type => "button", :id => "settings-#{random_id}" ,
-        :data => { :toggle => "modal", :target => '#feature-settings-modal', :random => random_id,
-          :feature => params[:id ], :'info-path' => licserver_feature_path(params[:licserver_id], params[:id]) } }
-        %i.fa.fa-cog
+      - if ads_user_signed_in? then
+        %button.btn.btn-secondary{ :type => "button", :id => "settings-#{random_id}" ,
+          :data => { :toggle => "modal", :target => '#feature-settings-modal', :random => random_id,
+            :feature => params[:id ], :'info-path' => licserver_feature_path(params[:licserver_id], params[:id]) } }
+          %i.fa.fa-cog
+      - else
+        %p Must login to access extra items
 :javascript
   load_graph( $('#graph-#{ random_id}'), { title: { text:'#{params[:id]}'} } );
 
