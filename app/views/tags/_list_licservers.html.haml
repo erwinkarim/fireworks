@@ -1,5 +1,0 @@
-%ul.nav.nav-pills
-  - licservers.each do |licserver|
-    %li
-      %a{ :href => licserver.id }
-        = licserver.port.to_s + '@' + licserver.server

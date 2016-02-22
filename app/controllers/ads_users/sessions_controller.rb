@@ -1,4 +1,5 @@
 class AdsUsers::SessionsController < Devise::SessionsController
+  protect_from_forgery :except => [:delete]
  before_filter :configure_sign_in_params
 
   # GET /resource/sign_in
@@ -13,7 +14,7 @@ class AdsUsers::SessionsController < Devise::SessionsController
 	#	params[:ads_user][:username] = params[:ads_user][:login] + "@" + params[:ads_user][:domain]
 	#	params[:ads_user][:email] = params[:ads_user][:login] + "@petronas.com.my"
 
-	#	logger.info "username = " + params[:ads_user][:email] 
+	#	logger.info "username = " + params[:ads_user][:email]
 
 		#set the admin login as the user who is logging in...
 	#	ENV['devise_ldap_admin'] = params[:ads_user][:username]
@@ -22,9 +23,9 @@ class AdsUsers::SessionsController < Devise::SessionsController
 	#end
 
   # DELETE /resource/sign_out
-  # def destroy
-  #   super
-  # end
+   def destroy
+     super
+   end
 
 	def ads_user_params
 		params.rqeuire(:ads_user).permit( :login, :password, :password_confirmation, :remember_me, :email, :username, :domain )

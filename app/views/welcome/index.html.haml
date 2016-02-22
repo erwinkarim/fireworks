@@ -1,25 +1,9 @@
-.jumbotron#front-jumbotron{:style => "background-image: url(\"#{ Fireworks::PANEL1_PICTURE} \")"}
-	%h1 Welcome to Fireworks!
-	%p All your FlexLicenses, Monitored
-	%p
-		%a.btn.btn-default.btn-large{ :href => tags_path } Enter
-.row
-	.col-md-6.col-xs-12
-		.thumbnail
-			%img{ :src => Fireworks::PANEL2_PICTURE }
-			.caption
-				%h3 How It Works
-				%p Explain how fireworks works
-				%p
-					%a.btn.btn-default{ :href => welcome_tech_path } Learn More
-	.col-md-6.col-xs-12
-		.thumbnail
-			%img{ :src => Fireworks::PANEL3_PICTURE }
-			.caption
-				%h3 Idle Client
-				%p Monitor Idle Client
-				%p
-					- if !@clientOs.nil? then
-						= link_to 'Download for '+@clientOS, welcome_download_client_path(:type => @clientOS), :class=>'btn btn-default'
-				%p
-					%small #{ link_to 'Download for other platforms', welcome_download_client_path }
+- if !ads_user_signed_in? then
+  .jumbotron.jumbotron-fluid{ :style => "background:url(9482.jpg); height:100vh; background-size: cover; color:white;"}
+    .container
+      %h1.display-3 Fireworks
+      %p.lead Flexera and Reprise License Monitoring
+.jumbotron.jumbotron-fluid
+  .container-fluid
+    #tags-target{ :'data-source' => tags_path(:format => :template) }
+      %i.fa.fa-cog.fa-spin.fa-2x

@@ -1,12 +1,11 @@
 class Report < ActiveRecord::Base
-  require 'spreadsheet'
   belongs_to :report_schedule
   #attr_accessible :body, :title, :start_date, :end_date, :status
 
   def to_csv
     csv_string = String.new
     csv_string << CSV.generate do |csv|
-      csv << ['Report between ' + self.start_date.strftime('%B %d, %Y') + 
+      csv << ['Report between ' + self.start_date.strftime('%B %d, %Y') +
         ' and ' + self.end_date.strftime('%B %d, %Y')  ]
       csv << ['License Server', 'Tags', 'Hours', 'Feature', 'License Count', 'Total_Utilization %' ]
     end
@@ -18,11 +17,11 @@ class Report < ActiveRecord::Base
         ee.each do |stats|
           licserver = Licserver.find(key.to_s)
           csv_string << CSV.generate do |csv|
-            csv << ( Array.new << 
-              licserver.attributes.values_at("port", "server").join('@') << 
+            csv << ( Array.new <<
+              licserver.attributes.values_at("port", "server").join('@') <<
               licserver.tags.map{ |x| x.title }.join(',') <<
-              ek.to_s << 
-              stats[0] << 
+              ek.to_s <<
+              stats[0] <<
               stats[1] <<
               (stats[2].nil? ? 0 : (stats[2].to_f/stats[3]).round(4)*100)
             )
@@ -54,7 +53,7 @@ class Report < ActiveRecord::Base
         end
       end
     end
-    
+
     return book
   end
 end

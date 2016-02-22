@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-ruby '2.1.5'
-
 gem 'rails', '~> 4.1.7'
 
 
@@ -56,21 +54,15 @@ gem 'unicorn-rails'
 # gem 'debugger'
 #
 
-#gem 'rufus-scheduler'
-#better scheduler
+#job distrubution
 gem 'resque-scheduler'
-#gem 'less-rails', '=2.6.0'
 gem 'squeel'
 
 gem 'delayed_job_active_record'
 gem 'daemons'
-gem 'paloma', '~> 2.0.6'
+gem 'paloma'
 
 gem 'foreman'
-
-#to excel
-#
-gem 'spreadsheet'
 
 #user authentication
 gem 'devise'

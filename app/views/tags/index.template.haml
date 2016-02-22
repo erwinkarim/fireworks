@@ -1,3 +1,170 @@
-- unless @tags.empty? || @tags.nil?
-	- @tags.each do |tag|
-		%a.btn.btn-default{ :href => tag_path(tag.title) } 	#{tag.title}
+.row
+  - @tags.each do |tag|
+    .col-xl-6.col-lg-12.col-sm-12
+      .card
+        .card-block.blue
+          %h3.card-title #{tag[:title]}
+        .list-group.list-group-flush
+          - tag[:licservers].each do |licserver|
+            - target = "a-#{SecureRandom.hex(6)}";
+            %h4{ :style => "margin-bottom:0px; "}
+              %a.list-group-item{ :href => "##{target}", :'data-toggle' => "collapse", :style => "background-color: #B2DDF0;" } #{licserver.get_port_at_server}
+            .collapse.licserver-collapse{ :id => "#{target}",
+              :data => { :licserver => licserver.id , :source => licserver_path(licserver.id, :format => :template), :plsload => 'yes' } }
+              .list-group-item
+                %p
+                  %i.fa.fa-cog.fa-spin.fa-2x
+.modal.fade#nuke-em-modal{ :tabindex => '-1', :role => 'dialog'}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{ :type => 'button', :'data-dismiss' => 'modal'}
+          %span &times;
+        .modal-title
+          %h4#nuke-em-title Nuke-Em
+      .modal-body
+        <strong>Warning:</strong> This action will kill everyone that using this feature. To confirm you really want to do this, please type the name of the feature in the input box below
+        = form_tag '#', :id => "nuke-em-form", :method => :delete do
+          %fieldset.form-group
+            %input.form-control.hidden{ :type => "text", :id => "faker" }
+            %input.form-control{ :id => "nuke-em-sanity-check", :type => "text"}
+        #nuke-em-status
+      .modal-footer
+        %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
+        %button.btn.btn-danger#nuke-em{ :type => 'button', :data => { :url => '', :feature => '', :random => ''} } Nuke-em
+.modal.fade#mail-modal{ :tabindex => '-1', :role => 'dialog'}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{ :type => 'button', :'data-dismiss' => 'modal'}
+          %span &times;
+        .modal-title
+          %h4 Message
+      .modal-body
+        %p Mail Dialog Here
+      .modal-footer
+        %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
+        %button.btn.btn-primary{ :type => 'button'} Send Message
+.modal.fade#feature-settings-modal{ :tabindex => '-1', :role => 'dialog'}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{ :type => 'button', :'data-dismiss' => 'modal'}
+          %span &times;
+        .modal-title
+          %h4#feat-settings-title Settings
+      .modal-body
+        = form_tag '#', :id => 'feature-settings-form' do
+          .checkbox
+            %label
+              %input#uniq-users-checkbox{ :type => "checkbox", :name => 'enforce-uniq' } Enforce Unique Users
+      .modal-footer
+        %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
+        %button.btn.btn-primary#feature-settings-update{ :type => 'button'} Update Settings
+.modal.fade#new-licserver-modal{ :tabindex => '-1', :role => 'dialog'}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{ :type => 'button', :'data-dismiss' => 'modal'}
+          %span &times;
+        .modal-title
+          %h4#feat-settings-title New Licserver
+      .modal-body
+        = form_tag licservers_path, :id => 'new-licserver-form' do
+          %fieldset.form-group
+            %label License Server Address
+            %input.form-control#licserver-address{ :type => 'text', :placeholder => "port@hostname", :name => "licserver-location"}
+          %fieldset.form-group
+            %label tags
+            %input.form-control#licserver-tags{ :type => "text", :placeholder => "tags seperated by spaces", :name => "licserver-tags"}
+      .modal-footer
+        %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
+        %button.btn.btn-primary#licserver-create{ :type => 'button'} Create Licserver
+:javascript
+  $('#nuke-em-modal').on('show.bs.modal', function(e){
+    //console.log( 'called by ' + $(e.relatedTarget).attr('id') );
+
+    //setup to nuke-em
+    $(this).find('#nuke-em-title').text("Nuke " + $(e.relatedTarget).data('feature') + " users");
+    $('#nuke-em').attr('data-url', $(e.relatedTarget).data('kill-path') );
+    $('#nuke-em').attr('data-feature', $(e.relatedTarget).data('feature') );
+    $('#nuke-em').attr('data-random', $(e.relatedTarget).data('random') );
+  });
+
+  $('#feature-settings-modal').on('show.bs.modal', function(e){
+
+    //setup the modal
+    $(this).find('#feat-settings-title').text($(e.relatedTarget).data('feature') + " settings");
+    $(document).find('#feature-settings-form').attr('action', $(e.relatedTarget).data('info-path'))
+
+    //get the unique users status
+    $.getJSON( $(e.relatedTarget).data('info-path'), null, function(data){
+      if($.parseJSON(data.uniq_users) == true) {
+        $(document).find('#uniq-users-checkbox').prop('checked', true);
+      } else {
+        $(document).find('#uniq-users-checkbox').prop('checked', false);
+      };
+    });
+  });
+
+  $('#feature-settings-update').click(function(){
+      //update the feature
+      $.ajax( $('#feature-settings-form').attr('action'), {
+          data: $('#feature-settings-form').serialize(),
+          method: 'PATCH',
+          success: function(data, textStatus){
+            console.log('patched feature settings with status ' + textStatus);
+            $('#feature-settings-modal').modal('hide');
+          },
+          error: function(jqXHR, textStatus){
+            console.log('patched feature settings with status ' + textStatus);
+            $('#feature-settings-modal').modal('hide');
+          }
+      } );
+  });
+
+  $('#nuke-em').click( function(){
+      //sanity check before killing users
+      console.log('nuke ' + $(this).data('feature') + ' users');
+      var random_id = $(this).data('random');
+
+      if ( $(this).data('feature') == $('#nuke-em-sanity-check').val() ) {
+        console.log('start nukeing people');
+
+        $.ajax($(this).data('url') + "?" + $('#nuke-em-form').serialize() , {
+            method: "DELETE",
+            success: function(){
+              console.log('killed a lot of users');
+
+              //clean up
+              $('#nuke-em-sanity-check').val("");
+              $('#nuke-em-modal').modal('toggle');
+              $('#user-refresh-' + random_id).click();
+            }
+        });
+      } else {
+        console.log('error: did not match');
+      }
+  });
+
+  $('#new-licserver-modal').on('show.bs.modal', function(e){
+      //clean up before display
+      console.log('attempt to clean up');
+      $(document).find('#licserver-address').val('');
+      $(document).find('#licserver-tags').val('');
+  });
+
+  $('#licserver-create').click( function(){
+    console.log('attempt to create license');
+    $.post( $('#new-licserver-form').attr('action'), $('#new-licserver-form').serialize(), function(data, textStatus){
+        console.log('posted new licserver info with status ' + textStatus);
+    } ).fail( function( jqXHR, textStatus){
+      console.log('posted new licserver info with status ' + textStatus);
+    });
+
+    $('#new-licserver-modal').modal('hide');
+  });
+
+  $('#feature-settings-modal').on('show.bs.modal', function(e){
+
+  });
