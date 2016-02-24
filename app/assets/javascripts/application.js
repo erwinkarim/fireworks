@@ -58,10 +58,6 @@ var setup_collapse = function(target, div_target){
   });
 };
 
-var show_feature = function(target){
-
-};
-
 var load_graph = function(target, options){
   var default_options = {
       chart: {
