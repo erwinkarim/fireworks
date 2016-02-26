@@ -101,3 +101,47 @@ var load_graph = function(target, options){
   //setup highcharts with target
   target.highcharts('StockChart', settings);
 }
+
+var usage_histogram_graph = function(target, options){
+  var default_options = {
+      chart: {
+          type: 'line',
+          events: {
+            load: function(){
+              var chart_handle = this;
+              chart_handle.showLoading();
+              $.get( $(target).attr('data-graph-source'), null, function(data){
+                  for(i=0; i< data['data'][0]['data'].length; i++){
+                      chart_handle.series[0].addPoint({
+                        x: data['data'][0]['data'][i][0],
+                        y: data['data'][0]['data'][i][1],
+                        id: data['data'][0]['data'][i][2],
+                        name: data['data'][0]['data'][i][3]
+                      }, false, false);
+                      chart_handle.series[1].addPoint(data['data'][1]['data'][i], false, false);
+                  }; //for
+
+                  //set the last data thing
+                  $(target).attr('data-start-id', data['last_id']);
+
+                  chart_handle.redraw();
+                  chart_handle.hideLoading();
+              });
+            }
+          }
+      },
+      series:[
+        { name: 'current', data:[], turboThreshold: 0},
+        { name: 'max', data:[] }
+      ],
+      title: {
+        text: 'Test'
+      }
+  };
+
+  var settings = $.extend({}, default_options, options);
+  //merge default with options
+
+  target.highcharts('HighChart', settings);
+
+}

@@ -108,6 +108,18 @@ class FeaturesController < ApplicationController
     end
   end
 
+	# GET    /licservers/:licserver_id/features/:feature_id/histogram_data
+	def histogram_data
+		licserver = Licserver.find(params[:licserver_id])
+
+		office_hours = licserver.usage_histogram_data(params[:feature_id])
+		all_hours = licserver.usage_histogram_data(params[:feature_id])
+
+		respond_to do |format|
+			format.json { render :json => { :office => office_hours, :all => all_hours }  }
+		end
+	end
+
 	def feature_header_params
 		params.require(:feature_header).permit( :name, :licserver_id, :feature_id, :last_seen )
 	end

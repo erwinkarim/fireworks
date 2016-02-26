@@ -9,6 +9,7 @@ Fireworks::Application.routes.draw do
     # need to take care of the . and /
     resources :features, :only => [:index, :show, :update] do
       get 'get_data'
+      get 'histogram_data'
       get 'users'
       delete 'users', :to => 'features#kill_users'
       delete 'user', :to => 'features#kill_user'
