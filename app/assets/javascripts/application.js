@@ -109,30 +109,23 @@ var usage_histogram_graph = function(target, options){
           events: {
             load: function(){
               var chart_handle = this;
-              chart_handle.showLoading();
               $.get( $(target).attr('data-graph-source'), null, function(data){
-                  for(i=0; i< data['data'][0]['data'].length; i++){
-                      chart_handle.series[0].addPoint({
-                        x: data['data'][0]['data'][i][0],
-                        y: data['data'][0]['data'][i][1],
-                        id: data['data'][0]['data'][i][2],
-                        name: data['data'][0]['data'][i][3]
-                      }, false, false);
-                      chart_handle.series[1].addPoint(data['data'][1]['data'][i], false, false);
-                  }; //for
+                for(i=0; i < data['all'].length; i++){
+                    chart_handle.series[0].addPoint({
+                      x: data['office'][0],
+                      y: data['office'][1]
+                    }, false, false);
+                }//for
 
-                  //set the last data thing
-                  $(target).attr('data-start-id', data['last_id']);
+                chart_handle.redraw();
 
-                  chart_handle.redraw();
-                  chart_handle.hideLoading();
-              });
+              }); //get
             }
           }
       },
       series:[
-        { name: 'current', data:[], turboThreshold: 0},
-        { name: 'max', data:[] }
+        { name: 'office', data:[], turboThreshold: 0},
+        { name: 'allhours', data:[] }
       ],
       title: {
         text: 'Test'
@@ -142,6 +135,6 @@ var usage_histogram_graph = function(target, options){
   var settings = $.extend({}, default_options, options);
   //merge default with options
 
-  target.highcharts('HighChart', settings);
+  target.highcharts('Chart', settings);
 
 }
