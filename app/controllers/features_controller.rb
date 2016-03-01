@@ -113,7 +113,7 @@ class FeaturesController < ApplicationController
 		licserver = Licserver.find(params[:licserver_id])
 
 		office_hours = licserver.usage_histogram_data(params[:feature_id])
-		all_hours = licserver.usage_histogram_data(params[:feature_id])
+		all_hours = licserver.usage_histogram_data(params[:feature_id], false)
 
 		respond_to do |format|
 			format.json { render :json => { :office => office_hours, :all => all_hours }  }

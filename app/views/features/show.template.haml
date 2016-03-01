@@ -37,7 +37,7 @@
   .collapse{ :id => "other-collapse-#{random_id}"}
     .list-group-item
       %p 30 Days Usage Histogram
-      %div{ :id => "histogram-#{random_id}", :data => { :loaded => 'no',  :'graph-source' => licserver_feature_histogram_data_path(params[:licserver_id], params[:id], :format => :json ) } }
+      %div{:id => "histogram-#{random_id}", :data => { :loaded => 'no',  :'graph-source' => licserver_feature_histogram_data_path(params[:licserver_id], params[:id], :format => :json ) } }
     .list-group-item
       %p Usage by Company / Group
       %div{ :id => "usage-by-company-graph-#{random_id}" }
@@ -81,7 +81,9 @@
 
     if( $('#histogram-#{random_id}').attr('data-loaded') == 'no') {
       console.log('start loading other data here');
-      usage_histogram_graph( $('#histogram-#{random_id}'));
+      usage_histogram_graph( $('#histogram-#{random_id}'), {
+        title: { text: '#{ params[:id]} 30-days Usage Historgram'}
+      });
 
       $('#histogram-#{random_id}').attr('data-loaded', 'yes');
     }

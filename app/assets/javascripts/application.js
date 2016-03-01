@@ -105,20 +105,19 @@ var load_graph = function(target, options){
 var usage_histogram_graph = function(target, options){
   var default_options = {
       chart: {
-          type: 'line',
+          type: 'spline',
           events: {
             load: function(){
               var chart_handle = this;
               $.get( $(target).attr('data-graph-source'), null, function(data){
-                for(i=0; i < data['all'].length; i++){
-                    chart_handle.series[0].addPoint({
-                      x: data['office'][0],
-                      y: data['office'][1]
-                    }, false, false);
-                }//for
+                  for(i=0; i < data.office.length; i++ ){
+                    chart_handle.series[0].addPoint( data.office[i], false, false);
+                  }
+                  for(i=0; i < data.all.length; i++ ){
+                    chart_handle.series[1].addPoint( data.all[i], false, false);
+                  }
 
-                chart_handle.redraw();
-
+                  chart_handle.redraw();
               }); //get
             }
           }
