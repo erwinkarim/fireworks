@@ -136,4 +136,91 @@ var usage_histogram_graph = function(target, options){
 
   target.highcharts('Chart', settings);
 
-}
+};
+
+var company_usage_graph = function(target, options){
+  var datasum = 0;
+  var default_options = {
+      chart: {
+        type: 'column',
+        height: 800,
+        panning: true, panKey: 'shift',
+        zoomType: 'x'
+      },
+      xAxis: {
+				type: 'category', labels: { rotation: 45 }
+			},
+			yAxis: {
+				min: 0, title: { text:'Lic Count observered' },
+				stackLabels:{
+					enabled: true
+				},
+        labels: {
+          formatter: function(){
+            var pcnt = ( this.value / datasum ) * 100;
+            return Highcharts.numberFormat(pcnt, 0, ',') + '%';
+          }
+        }
+			},
+      series:[
+        { name: "Company", colorByPoint: true, data: [] }
+      ],
+      plotOptions: {
+        series: {
+          dataLabels: {
+            enabled:true,
+            formatter: function(){
+              var pcnt = (this.y / datasum ) * 100;
+              return Highcharts.numberFormat(pcnt) + '%';
+            }
+          }
+        }
+      },
+      tooltip: {
+        pointFormat: '<span style="color:{series:color}">{series.name}</span>: <b>{point.y}</b> <br />',
+      },
+      drilldown: { series: [] },
+      title: {
+        text: 'Text'
+      }
+  };
+
+  var settings = $.extend({}, default_options, options);
+
+  //load the data
+  $.get( $(target).attr('data-graph-source'), null, function(data){
+    $.each(data, function(index,value){
+      //try to find the company name in chart_options.series index
+      var inArray = false;
+      datasum += value.machine_count;
+      $.each(settings.series[0].data, function(index,series_value){
+        if( series_value.name == value.company_name) {
+          series_value.y += value.machine_count;
+          //find the drill down and add the data
+          $.each(settings.drilldown.series, function(index, drilldown_series_value){
+            if(drilldown_series_value.name == value.company_name){
+                drilldown_series_value.data.push( [value.department_name, value.machine_count] );
+            };
+          });
+          inArray = true;
+        }
+      });
+
+      //data is not found at series level
+      if( inArray == false){
+        settings.series[0].data.push(
+          { name:value.company_name, drilldown:value.company_name, y:value.machine_count }
+        );
+        settings.drilldown.series.push(
+          { name:value.company_name, id:value.company_name, data:[ [value.department_name, value.machine_count ] ] }
+        );
+      }; //if
+    });
+
+    target.highcharts('Chart', settings);
+  });
+
+  console.log("updated settings");
+  console.log(settings);
+
+};

@@ -266,6 +266,47 @@ class Licserver < ActiveRecord::Base
     return features
   end
 
+  def usage_report_data( feature_name )
+    results = ActiveRecord::Base.connection.exec_query("select
+      ads_departments.company_name, ads_departments.name, count(machines.id) from
+      feature_headers
+      , features
+      , machine_Features
+      , machines
+      , users
+      , ads_users
+      , ads_departments
+      where
+      feature_headers.name = '#{feature_name}' AND feature_headers.licserver_id = #{self.id}
+      and features.feature_header_id = feature_headers.id
+      and features.created_at > sysdate - 2 and features.created_at < sysdate
+      and machine_features.feature_id = features.id
+      and machine_features.machine_id = machines.id
+      and machines.user_id = users.id
+      and users.ads_user_id = ads_users.id
+      and ads_users.ads_department_id = ads_departments.id
+      group by
+      ads_departments.company_name, ads_departments.name
+      union
+      select 'no company' as company_name, 'no department' as name, count(machines.id) from
+      feature_headers
+      , features
+      , machine_Features
+      , machines
+      , users
+      where
+      feature_headers.name = '#{feature_name}' AND feature_headers.licserver_id = #{self.id}
+      and features.feature_header_id = feature_headers.id
+      and features.created_at > sysdate - 2 and features.created_at < sysdate
+      and machine_features.feature_id = features.id
+      and machine_features.machine_id = machines.id
+      and machines.user_id = users.id
+      and users.ads_user_id is null
+      ").rows.map{ |x|
+        { :company_name => x[0], :department_name => x[1],  :machine_count => x[2] }
+      }
+  end
+
 	# return zero if the number is negatie
 	def zero_if_negative the_number
 		return the_number < 0 ? 0 : the_number

@@ -40,7 +40,8 @@
       %div{:id => "histogram-#{random_id}", :data => { :loaded => 'no',  :'graph-source' => licserver_feature_histogram_data_path(params[:licserver_id], params[:id], :format => :json ) } }
     .list-group-item
       %p Usage by Company / Group
-      %div{ :id => "usage-by-company-graph-#{random_id}" }
+      %button.btn.btn-secondary{ :type => 'button', :id => "generate-usage-rpt-#{random_id}"} Click to Load
+      %div{ :id => "usage-by-company-graph-#{random_id}", :data => { :'graph-source' => licserver_feature_usage_report_data_path(params[:licserver_id], params[:id], :format => :json ) } }
 :javascript
   load_graph( $('#graph-#{ random_id}'), { title: { text:'#{params[:id]}'} } );
 
@@ -67,6 +68,7 @@
     this_button.removeAttr('disabled');
   })
 
+  //refresh user
   $('#user-refresh-#{random_id}').on('click', function(){
     //reload the user list
     $('#user-list-#{random_id}').empty().append(
@@ -77,6 +79,7 @@
     });
   });
 
+  //load histogram data
   $('#other-collapse-#{random_id}').on('show.collapse.bs', function(){
 
     if( $('#histogram-#{random_id}').attr('data-loaded') == 'no') {
@@ -87,4 +90,16 @@
 
       $('#histogram-#{random_id}').attr('data-loaded', 'yes');
     }
+  });
+
+  //feature usage
+  $('#generate-usage-rpt-#{random_id}').click( function(){
+    $(this).remove();
+    $('#usage-by-company-graph-#{random_id}').append(
+      $.parseHTML('<i class="fa fa-cog fa-spin"></i>')
+    )
+
+    company_usage_graph( $('#usage-by-company-graph-#{random_id}'), {
+      title: { text: '#{ params[:id]} 30-days usage by Company & Department'}
+    });
   });

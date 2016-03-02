@@ -120,6 +120,16 @@ class FeaturesController < ApplicationController
 		end
 	end
 
+	# licserver_feature_usage_report_data
+	#  GET    /licservers/:licserver_id/features/:feature_id/usage_report_data(.:format)
+	def usage_report_data
+		data = Licserver.find(params[:licserver_id]).usage_report_data( params[:feature_id] )
+
+		respond_to do |format|
+			format.json { render :json => data }
+		end
+	end
+
 	def feature_header_params
 		params.require(:feature_header).permit( :name, :licserver_id, :feature_id, :last_seen )
 	end
