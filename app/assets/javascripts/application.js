@@ -86,6 +86,16 @@ var load_graph = function(target, options){
             }
           }
       },
+      rangeSelector: {
+         buttons: [
+           { type: 'hour', count: 1, text: '1h' },
+           { type: 'day', count: 1, text: '1d' },
+           { type: 'week', count: 1, text: '1w' },
+           { type: 'month', count: 1, text: '1m' },
+           { type: 'year', count: 1, text: '1y' },
+           { type: 'all', text: 'All' }
+         ], selected : 2 // all
+      } ,
       series:[
         { name: 'current', data:[], turboThreshold: 0},
         { name: 'max', data:[] }
@@ -126,9 +136,7 @@ var usage_histogram_graph = function(target, options){
         { name: 'office', data:[], turboThreshold: 0},
         { name: 'allhours', data:[] }
       ],
-      title: {
-        text: 'Test'
-      }
+      title: { text: 'Test' }
   };
 
   var settings = $.extend({}, default_options, options);
@@ -180,9 +188,8 @@ var company_usage_graph = function(target, options){
         pointFormat: '<span style="color:{series:color}">{series.name}</span>: <b>{point.y}</b> <br />',
       },
       drilldown: { series: [] },
-      title: {
-        text: 'Text'
-      }
+      title: { text: 'Text' },
+      subtitle: { text: 'Graph is drillable and zoomable. Use the shift key to pan'}
   };
 
   var settings = $.extend({}, default_options, options);
