@@ -1,5 +1,13 @@
 - random_id = SecureRandom.hex(8)
 .list-group{ :id => random_id }
+  %li.list-group-item
+    %a.btn.btn-secondary{ :href => licserver_feature_path( params[:licserver_id], params[:id] ), :target => "_blank"}
+      %i.fa.fa-external-link
+    - if ads_user_signed_in? then
+      %button.btn.btn-secondary{ :type => "button", :id => "settings-#{random_id}" ,
+        :data => { :toggle => "modal", :target => '#feature-settings-modal', :random => random_id,
+          :feature => params[:id ], :'info-path' => licserver_feature_path(params[:licserver_id], params[:id]) } }
+        %i.fa.fa-cog
   %a.list-group-item{ :href => "#graph-collapse-#{random_id} ", :'data-toggle' => 'collapse'}
     %h6 Daily graph
   .collapse.in{ :id => "graph-collapse-#{random_id}"}
@@ -28,13 +36,14 @@
     %h6 Other Items
   .collapse{ :id => "other-collapse-#{random_id}"}
     .list-group-item
-      - if ads_user_signed_in? then
-        %button.btn.btn-secondary{ :type => "button", :id => "settings-#{random_id}" ,
-          :data => { :toggle => "modal", :target => '#feature-settings-modal', :random => random_id,
-            :feature => params[:id ], :'info-path' => licserver_feature_path(params[:licserver_id], params[:id]) } }
-          %i.fa.fa-cog
-      - else
-        %p Must login to access extra items
+      %p 30 Days Usage Histogram
+      %div{:id => "histogram-#{random_id}", :data => { :loaded => 'no',  :'graph-source' => licserver_feature_histogram_data_path(params[:licserver_id], params[:id], :format => :json ) } }
+    .list-group-item
+      %p Usage by Company / Group
+      %button.btn.btn-secondary{ :type => 'button', :id => "generate-usage-rpt-#{random_id}"}
+        %i.fa.fa-bar-chart
+        Click to Load
+      %div{ :id => "usage-by-company-graph-#{random_id}", :data => { :'graph-source' => licserver_feature_usage_report_data_path(params[:licserver_id], params[:id], :format => :json ) } }
 :javascript
   load_graph( $('#graph-#{ random_id}'), { title: { text:'#{params[:id]}'} } );
 
@@ -61,6 +70,7 @@
     this_button.removeAttr('disabled');
   })
 
+  //refresh user
   $('#user-refresh-#{random_id}').on('click', function(){
     //reload the user list
     $('#user-list-#{random_id}').empty().append(
@@ -68,5 +78,30 @@
     );
     $.get($('#user-collapse-#{random_id}').attr('data-source'), null, function(data){
         $("#user-list-#{random_id}").empty().append(data);
+    });
+  });
+
+  //load histogram data
+  $('#other-collapse-#{random_id}').on('show.collapse.bs', function(){
+
+    if( $('#histogram-#{random_id}').attr('data-loaded') == 'no') {
+      console.log('start loading other data here');
+      usage_histogram_graph( $('#histogram-#{random_id}'), {
+        title: { text: '#{ params[:id]} 30-days Usage Historgram'}
+      });
+
+      $('#histogram-#{random_id}').attr('data-loaded', 'yes');
+    }
+  });
+
+  //feature usage
+  $('#generate-usage-rpt-#{random_id}').click( function(){
+    $(this).remove();
+    $('#usage-by-company-graph-#{random_id}').append(
+      $.parseHTML('<i class="fa fa-cog fa-spin"></i>')
+    )
+
+    company_usage_graph( $('#usage-by-company-graph-#{random_id}'), {
+      title: { text: '#{ params[:id]} 30-days usage by Company & Department'}
     });
   });

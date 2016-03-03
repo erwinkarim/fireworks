@@ -4,6 +4,9 @@ class FeaturesController < ApplicationController
   # GET    /licservers/:licserver_id/features/:id(.:format)
   def show
     respond_to do |format|
+			format.html {
+				@licserver = Licserver.find(params[:licserver_id])
+			}
 			format.json {
 				feature = FeatureHeader.where(:licserver_id => params[:licserver_id], :name => params[:id]).first
 				render :json => feature
@@ -104,6 +107,28 @@ class FeaturesController < ApplicationController
       format.json { render :json => { :last_id => @features.empty? ? 0 : @features.min.id, :data => output  } }
     end
   end
+
+	# GET    /licservers/:licserver_id/features/:feature_id/histogram_data
+	def histogram_data
+		licserver = Licserver.find(params[:licserver_id])
+
+		office_hours = licserver.usage_histogram_data(params[:feature_id])
+		all_hours = licserver.usage_histogram_data(params[:feature_id], false)
+
+		respond_to do |format|
+			format.json { render :json => { :office => office_hours, :all => all_hours }  }
+		end
+	end
+
+	# licserver_feature_usage_report_data
+	#  GET    /licservers/:licserver_id/features/:feature_id/usage_report_data(.:format)
+	def usage_report_data
+		data = Licserver.find(params[:licserver_id]).usage_report_data( params[:feature_id] )
+
+		respond_to do |format|
+			format.json { render :json => data }
+		end
+	end
 
 	def feature_header_params
 		params.require(:feature_header).permit( :name, :licserver_id, :feature_id, :last_seen )

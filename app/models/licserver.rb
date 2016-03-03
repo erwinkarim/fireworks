@@ -242,7 +242,69 @@ class Licserver < ActiveRecord::Base
           feature.update_attributes( { :current => new_value, :pre_skew => original_value})
       end
     end
+  end
 
+  def usage_histogram_data(feature_name, office_hours = true, start_date = 30.days.ago )
+
+    features_list = self.features.where( :name => feature_name, :created_at => start_date..DateTime.now )
+
+    if office_hours == true then
+      #filter to office hours only
+      #office hours is from 8am to 5pm
+      features_list = features_list.select { |thisf| thisf.created_at.localtime.hour > 8 &&
+        thisf.created_at.localtime.hour < 17 && thisf.created_at.localtime.wday != 0 &&
+        thisf.created_at.localtime.wday != 6 }
+    end
+
+    #do the countings
+    features_sorted = features_list.group_by{ |item| item.current }.reject{ |k,v| k.nil? || k[0].nil? }
+    sum = 0
+    features = features_sorted.inject(Hash.new(0)) { |h,e| h[e[0]] = e[1].count; h }.to_a.sort.map {
+      |x| [ x[0], sum += x[1] ]
+    }
+
+    return features
+  end
+
+  def usage_report_data( feature_name )
+    results = ActiveRecord::Base.connection.exec_query("select
+      ads_departments.company_name, ads_departments.name, count(machines.id) from
+      feature_headers
+      , features
+      , machine_Features
+      , machines
+      , users
+      , ads_users
+      , ads_departments
+      where
+      feature_headers.name = '#{feature_name}' AND feature_headers.licserver_id = #{self.id}
+      and features.feature_header_id = feature_headers.id
+      and features.created_at > sysdate - 2 and features.created_at < sysdate
+      and machine_features.feature_id = features.id
+      and machine_features.machine_id = machines.id
+      and machines.user_id = users.id
+      and users.ads_user_id = ads_users.id
+      and ads_users.ads_department_id = ads_departments.id
+      group by
+      ads_departments.company_name, ads_departments.name
+      union
+      select 'no company' as company_name, 'no department' as name, count(machines.id) from
+      feature_headers
+      , features
+      , machine_Features
+      , machines
+      , users
+      where
+      feature_headers.name = '#{feature_name}' AND feature_headers.licserver_id = #{self.id}
+      and features.feature_header_id = feature_headers.id
+      and features.created_at > sysdate - 2 and features.created_at < sysdate
+      and machine_features.feature_id = features.id
+      and machine_features.machine_id = machines.id
+      and machines.user_id = users.id
+      and users.ads_user_id is null
+      ").rows.map{ |x|
+        { :company_name => x[0], :department_name => x[1],  :machine_count => x[2] }
+      }
   end
 
 	# return zero if the number is negatie
