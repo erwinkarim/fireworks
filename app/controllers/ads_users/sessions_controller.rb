@@ -9,7 +9,7 @@ class AdsUsers::SessionsController < Devise::SessionsController
 
 	#creating a new session
 	#POST /resource/sign_in
-	#def create
+	def create
 		# process the domain names and combine the user name for authentication
 	#	params[:ads_user][:username] = params[:ads_user][:login] + "@" + params[:ads_user][:domain]
 	#	params[:ads_user][:email] = params[:ads_user][:login] + "@petronas.com.my"
@@ -19,8 +19,8 @@ class AdsUsers::SessionsController < Devise::SessionsController
 		#set the admin login as the user who is logging in...
 	#	ENV['devise_ldap_admin'] = params[:ads_user][:username]
 	#	ENV['devise_ldap_admin_password'] = params[:ads_user][:password]
-	#	super
-	#end
+		super
+	end
 
   # DELETE /resource/sign_out
    def destroy

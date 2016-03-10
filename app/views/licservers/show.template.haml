@@ -1,3 +1,12 @@
+- random_id = SecureRandom.hex(6)
+.list-group-item
+  %a.btn.btn-secondary{:target => "_blank", :href => licserver_path(params[:id]) }
+    %i.fa.fa-external-link
+  %a.btn.btn-secondary{ :href => '#' }
+    %i.fa.fa-refresh
+%a.list-group-item{ :'data-toggle' => 'collapse', :href => "#summary-#{random_id}" } Summary
+.collapse.summary-collapse{ :id => "summary-#{random_id}"}
+  Summary Goes Here
 - @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.each do |feature|
   - collapse_id = "b-#{SecureRandom.hex(6)}"
   %h5{ :style => "margin-bottom:0px; "}

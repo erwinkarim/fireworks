@@ -1,14 +1,12 @@
 - content_for :head do
-  = " #{params[:id]} in #{@licserver.get_port_at_server} -"
+  = "#{@licserver.get_port_at_server} -"
 .container{:style => "margin-top:70px;"}
   .row
     .col-xs-12
       %ol.breadcrumb
-        %li
-          %a{ :href => licserver_path(@licserver) } #{ @licserver.get_port_at_server }
-        %li.active #{ params[:id]}
+        %li.active #{ @licserver.get_port_at_server }
     .col-xs-12
-      = render :file => "features/show.template.haml"
+      = render :file => "licservers/show.template.haml"
 = render :file => "layouts/modal.template"
 :javascript
   console.log('setup collapse on individual page');

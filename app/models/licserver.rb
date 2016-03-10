@@ -307,6 +307,10 @@ class Licserver < ActiveRecord::Base
       }
   end
 
+  def license_summary
+    eval(self.license_type.name).list_features( { :licserver => self.get_port_at_server, :extra_info => true })
+  end
+
 	# return zero if the number is negatie
 	def zero_if_negative the_number
 		return the_number < 0 ? 0 : the_number
