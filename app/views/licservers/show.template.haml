@@ -5,8 +5,9 @@
   %a.btn.btn-secondary{ :href => '#' }
     %i.fa.fa-refresh
 %a.list-group-item{ :'data-toggle' => 'collapse', :href => "#summary-#{random_id}" } Summary
-.collapse.summary-collapse{ :id => "summary-#{random_id}"}
-  Summary Goes Here
+.collapse.summary-collapse{ :id => "summary-#{random_id}", :data => { :plsload => 'yes', :source => licserver_summary_path(params[:id], :format => :template)} }
+  .list-group-item
+    %i.fa.fa-cog.fa-spin.fa-2x
 - @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.each do |feature|
   - collapse_id = "b-#{SecureRandom.hex(6)}"
   %h5{ :style => "margin-bottom:0px; "}

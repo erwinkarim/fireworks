@@ -52,6 +52,14 @@ class LicserversController < ApplicationController
 		end
 	end
 
+	# get the license summary
+	# /licservers/:licserver_id/summary(.:format)
+	def summary
+		respond_to do |format|
+			format.template { @info = Licserver.find(params[:licserver_id]).license_summary }
+		end
+	end
+
 	def licserver_params
 		params.require(:licserver).permit( :port, :server, :to_delete, :monitor_idle, :license_type_id )
 	end

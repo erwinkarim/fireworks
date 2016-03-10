@@ -1,0 +1,21 @@
+%table.table
+  %thead
+    %tr
+      %th Feature
+      %th Version
+      %th Seats
+      %th Deamon
+      %th Expired
+  %tbody
+    - if @info.empty? then
+      %tr
+        %td{ :colspan => 3 } There's nothing to show
+    - else
+      - @info.select{|x| !x[:extra_info].nil? }.each do |feature|
+        - feature[:extra_info].each do |extra_info|
+          %tr
+            %td #{ feature[:name]}
+            %td #{ extra_info[:version]}
+            %td #{ extra_info[:seats]}
+            %td #{ extra_info[:deamon]}
+            %td #{ extra_info[:expire]}

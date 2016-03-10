@@ -6,6 +6,7 @@ Fireworks::Application.routes.draw do
 	end
 
   resources :licservers, :only => [:index, :show, :create ]  do
+    get 'summary'
     # need to take care of the . and /
     resources :features, :only => [:index, :show, :update] do
       get 'get_data'
