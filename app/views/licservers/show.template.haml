@@ -2,11 +2,9 @@
 .list-group-item
   %a.btn.btn-secondary{:target => "_blank", :href => licserver_path(params[:id]) }
     %i.fa.fa-external-link
-  %a.btn.btn-secondary{ :href => '#' }
-    %i.fa.fa-refresh
 %a.list-group-item{ :'data-toggle' => 'collapse', :href => "#summary-#{random_id}" } Summary
-.collapse.summary-collapse{ :id => "summary-#{random_id}", :data => { :plsload => 'yes', :source => licserver_summary_path(params[:id], :format => :template)} }
-  .list-group-item
+.collapse.summary-collapse{ :id => "summary-#{random_id}", :data => { :plsload => 'yes', :'load-target' => "#summary-table-#{random_id}" ,  :source => licserver_summary_path(params[:id], :format => :template)} }
+  .list-group-item{ :id => "summary-table-#{random_id}"}
     %i.fa.fa-cog.fa-spin.fa-2x
 - @licserver.feature_headers.where{ last_seen.gt 1.week.ago }.each do |feature|
   - collapse_id = "b-#{SecureRandom.hex(6)}"
