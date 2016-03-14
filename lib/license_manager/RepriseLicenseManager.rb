@@ -104,4 +104,11 @@ class RepriseLicenseManager
       returnArray.select{ |x| x[:name] == options[:feature] }
     end
   end
+
+  def self.raw *args
+    default_options = { :licserver => "@localhost", :command => "rlmstat", :options => ""}
+    options = default_options.merge(args[0])
+
+    `#{LMUTIL_PATH} #{options[:command]} -c #{options[:licserver]} #{options[:options]}`
+  end
 end

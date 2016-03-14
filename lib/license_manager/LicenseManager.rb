@@ -18,5 +18,9 @@ module LicenseManager
     puts "not implemented yet"
   end
 
+  # pump out the raw about
+  def raw *args
+    puts "not implemented yet"
+  end
 
 end

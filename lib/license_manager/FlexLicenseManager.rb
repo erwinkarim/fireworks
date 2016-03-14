@@ -115,6 +115,13 @@ class FlexLicenseManager
     `#{LMUTIL_PATH} lmremove -c #{options[:licserver]} -h #{options[:feature]} #{options[:host]} #{options[:port]} #{options[:handle]}`
   end
 
+  def self.raw *args
+    default_options = { :licserver => "@localhost", :command => "lmstat", :options => ""}
+    options = default_options.merge(args[0])
+
+    `#{LMUTIL_PATH} #{options[:command]} -c #{options[:licserver]} #{options[:options]}`
+  end
+
 	# return zero if the number is negatie
 	def self.zero_if_negative the_number
 		return the_number < 0 ? 0 : the_number
