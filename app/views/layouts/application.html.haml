@@ -16,7 +16,7 @@
 	%body
 		%nav.navbar.nvabar-light.bg-transparent.navbar-fixed-top
 			- if ads_user_signed_in? then
-				%a.btn.btn-primary{ :href => root_path } Fireworks
+				%a.btn.btn-secondary{ :href => root_path } Fireworks
 			%ul.nav.navbar-nav.pull-right
 				%li.nav-item
 					- if ads_user_signed_in? then
@@ -27,7 +27,7 @@
 								.dropdown-divider
 								= button_to 'Sign Out', destroy_ads_user_session_path, :method => :delete, :class => 'dropdown-item'
 					- else
-						%a.btn.btn-primary.nav-link{ :href => new_ads_user_session_path } Login
+						%a.btn.btn-secondary.nav-link{ :href => new_ads_user_session_path } Login
 		= yield
 		%footer
 			%p

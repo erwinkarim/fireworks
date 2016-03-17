@@ -25,6 +25,7 @@ Fireworks::Application.routes.draw do
   end
 
   get 'disclaimer' => 'welcome#disclaimer'
+  get 'search' => 'welcome#search'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

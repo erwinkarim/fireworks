@@ -34,4 +34,7 @@ class WelcomeController < ApplicationController
 
 	def disclaimer
 	end
+
+  def search
+  end
 end

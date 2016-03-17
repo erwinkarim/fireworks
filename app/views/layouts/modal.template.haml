@@ -152,3 +152,7 @@
   $('#feature-settings-modal').on('show.bs.modal', function(e){
 
   });
+
+  $('#induce-search').click(function(){
+    window.location.href = '/search?query=' + $('#search-query').val();
+  });
