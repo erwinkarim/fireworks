@@ -29,6 +29,7 @@
 					- else
 						%a.btn.btn-secondary.nav-link{ :href => new_ads_user_session_path } Login
 		= yield
+		= render :file => "layouts/modal.template"
 		%footer
 			%p
 				Build #{Fireworks::REVISION}

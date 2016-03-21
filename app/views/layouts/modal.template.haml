@@ -153,6 +153,16 @@
 
   });
 
-  $('#induce-search').click(function(){
-    window.location.href = '/search?query=' + $('#search-query').val();
+  $('#search-query').on('keyup', function(){
+      $('#tags-target').empty();
+
+      //if the query empty, just reload the tags page otherwise, the search result page
+      if( $(this).val() == '' ){
+        //load the main page
+        load_main($('#tags-target') );
+      } else {
+        $.get( "#{search_path(:format => :template)}", { query:$('search-query').val() }, function(data){
+            $('#tags-target').append(data);
+        });
+      }
   });

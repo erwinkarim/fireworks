@@ -9,7 +9,6 @@
         %li.active #{ params[:id]}
     .col-xs-12
       = render :file => "features/show.template.haml"
-= render :file => "layouts/modal.template"
 :javascript
   console.log('setup collapse on individual page');
   $(document).find('.collapse').each( function(){

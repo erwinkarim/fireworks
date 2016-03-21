@@ -35,6 +35,23 @@ class WelcomeController < ApplicationController
 	def disclaimer
 	end
 
+  #must have query
   def search
+    if params.has_key? :query then
+      @tags = Tag.select(:title).where( :title => params[:query] ).uniq.map{ |x|
+        { :title => x.title, :licservers => Tag.where(:title => x.title).map{ |y| y.licserver } }
+      }
+    else
+      @tags = Tag.select(:title).uniq.map{ |x|
+        { :title => x.title, :licservers => Tag.where(:title => x.title).map{ |y| y.licserver } }
+      }
+    end
+
+    respond_to do |format|
+      format.template {
+        render :file => "tags/index.template", :locals => { :'@tags' => @tags }
+      }
+    end
   end
+
 end

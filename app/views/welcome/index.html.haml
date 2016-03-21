@@ -5,5 +5,7 @@
       %p.lead Flexera and Reprise License Monitoring
 .jumbotron.jumbotron-fluid
   .container-fluid
+    %fieldset.form-group
+      %input.form-control#search-query{ :type => "text", :placeholder => "Search ... "}
     #tags-target{ :'data-source' => tags_path(:format => :template) }
       %i.fa.fa-cog.fa-spin.fa-2x

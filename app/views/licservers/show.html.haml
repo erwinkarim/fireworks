@@ -7,7 +7,6 @@
         %li.active #{ @licserver.get_port_at_server }
     .col-xs-12
       = render :file => "licservers/show.template.haml"
-= render :file => "layouts/modal.template"
 :javascript
   console.log('setup collapse on individual page');
   $(document).find('.collapse').each( function(){
