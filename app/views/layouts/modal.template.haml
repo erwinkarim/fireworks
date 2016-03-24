@@ -153,16 +153,25 @@
 
   });
 
-  $('#search-query').on('keyup', function(){
-      $('#tags-target').empty();
+  //typeahad to look for search-query
+  $('#search-query').typeahead({
+      source: function(){
+          $.get( "#{search_path}", { query: $('#search-query').val()}, function(data){
+              $('#tags-target').empty().append(data).ready( function(){
+                $(document).find('.collapse').each( function(){
+                  setup_collapse($(this));
+                });
+              });
+          });
+          return [];
+      },
+      delay: 200,
+  });
 
-      //if the query empty, just reload the tags page otherwise, the search result page
-      if( $(this).val() == '' ){
-        //load the main page
-        load_main($('#tags-target') );
-      } else {
-        $.get( "#{search_path(:format => :template)}", { query:$('search-query').val() }, function(data){
-            $('#tags-target').append(data);
-        });
-      }
+  $('#search-query').on('keyup', function(){
+      if( $('#search-query').val() == "") {
+        //clear and reapply
+        $('#tags-target').empty();
+        load_main($('#tags-target'));
+      };
   });

@@ -226,8 +226,4 @@ var company_usage_graph = function(target, options){
 
     target.highcharts('Chart', settings);
   });
-
-  console.log("updated settings");
-  console.log(settings);
-
 };

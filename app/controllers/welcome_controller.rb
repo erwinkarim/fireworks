@@ -1,15 +1,5 @@
 class WelcomeController < ApplicationController
   def index
-    @userAgent=request.env['HTTP_USER_AGENT']
-    if @userAgent.downcase.match('linux') then
-        @clientOS = 'Linux'
-    elsif @userAgent.downcase.match('windows') then
-        @clientOS = 'Windows'
-    elsif @userAgent.downcase.match('os x') then
-        @clientOS = 'Mac Os X'
-    else
-        @clientOS = nil
-    end
   end
 
   def download_client
@@ -38,9 +28,7 @@ class WelcomeController < ApplicationController
   #must have query
   def search
     if params.has_key? :query then
-      @tags = Tag.select(:title).where( :title => params[:query] ).uniq.map{ |x|
-        { :title => x.title, :licservers => Tag.where(:title => x.title).map{ |y| y.licserver } }
-      }
+      @tags = Tag.search(params[:query])
     else
       @tags = Tag.select(:title).uniq.map{ |x|
         { :title => x.title, :licservers => Tag.where(:title => x.title).map{ |y| y.licserver } }
