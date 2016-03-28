@@ -78,7 +78,9 @@
       $.parseHTML('<i class="fa fa-cog fa-spin"></i>')
     );
     $.get($('#user-collapse-#{random_id}').attr('data-source'), null, function(data){
-        $("#user-list-#{random_id}").empty().append(data);
+        $("#user-list-#{random_id}").empty().append(data).ready(function(){
+            $("user-list-#{random_id}").find('.collapse').each( setup_collapse( $(this)));
+        });
     });
   });
 

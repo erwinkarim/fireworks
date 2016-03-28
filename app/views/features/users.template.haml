@@ -8,7 +8,10 @@
     - @users.each do |user|
       - random_id = SecureRandom.hex(8)
       %tr{ :id => "user-#{random_id}"}
-        %td #{user[:user]}@#{user[:machine]} since #{user[:since]}
+        %td
+          #{link_to user[:user], "#user-info-#{random_id}", :'data-toggle' => 'collapse'}@#{user[:machine]} since #{user[:since]}
+          .collapse{ :id => "user-info-#{random_id}", :data => { :plsload => "yes", :source => user_path(user[:user_id].id, :format => :template) }}
+            %i.fa.fa-cog.fa-spin
         - if ads_user_signed_in? then
           %td
             = button_to( "&times;".html_safe,

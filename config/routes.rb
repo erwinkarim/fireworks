@@ -21,7 +21,7 @@ Fireworks::Application.routes.draw do
   resources :tags, :only => [:index] do
   end
 
-  resources :users, :only => [:index] do
+  resources :users, :only => [:index, :show] do
   end
 
   get 'disclaimer' => 'welcome#disclaimer'

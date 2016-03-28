@@ -1,0 +1,12 @@
+.card
+  .card-block
+    - if !@user.ads_user.nil? then
+      %h5.card-title #{@user.ads_user.name}
+      %ul.list-group.list-group-flush
+        %li.list-group-item #{@user.ads_user.email }
+        %li.list-group-item #{@user.ads_user.ads_department.name}
+        %li.list-group-item #{@user.ads_user.ads_department.company_name}
+    - else
+      %h5.card-title #{@user.name}
+      .card-text
+        %p Last seen: #{@user.last_seen_at}
