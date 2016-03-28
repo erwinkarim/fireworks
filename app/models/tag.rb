@@ -12,7 +12,7 @@ class Tag < ActiveRecord::Base
     licserver_result = Tag.where(:licserver_id => Licserver.where{ upper(server) =~ "%#{query.upcase}%"}.map{ |x| x.id } )
 
     #find modules w/ search term
-    module_result = Tag.where(:licserver_id => FeatureHeader.where{ (last_seen.gt 7.days.ago) & ( upper(name) =~ "%#{query.upcase}%") }.map{ |x| x.licserver_id}.uniq )
+    module_result = Tag.where(:licserver_id => FeatureHeader.where{ (last_seen.gt 7.days.ago) && ( upper(name) =~ "%#{query.upcase}%") }.map{ |x| x.licserver_id}.uniq )
 
     #collase and return w/ the search results
     final_results = Array.new
