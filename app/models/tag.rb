@@ -6,15 +6,17 @@ class Tag < ActiveRecord::Base
   # returns as [ { :title, :licservers => [licserver1, licserver2, ... that are connected w/ title ] } ]
   def self.search( query = "")
     #find title w/ search term
-    title_result = self.where{ title =~ "%#{query}%"}
+    title_result = self.where{ upper(title) =~ "%#{query.upcase}%"}
 
     #find licserver w/ search term
-    licserver_result = Tag.where(:licserver_id => Licserver.where{ server =~ "%#{query}%"}.map{ |x| x.id } )
-    #find users w/ search term
+    licserver_result = Tag.where(:licserver_id => Licserver.where{ upper(server) =~ "%#{query.upcase}%"}.map{ |x| x.id } )
+
+    #find modules w/ search term
+    module_result = Tag.where(:licserver_id => FeatureHeader.where{ (last_seen.gt 7.days.ago) && ( upper(name) =~ "%#{query.upcase}%") }.map{ |x| x.licserver_id}.uniq )
 
     #collase and return w/ the search results
     final_results = Array.new
-    (title_result + licserver_result).uniq.each do |e|
+    (title_result + licserver_result + module_result).uniq.each do |e|
       #pump into each
       if final_results.select{|x| x[:title] == e.title }.empty? then
         #new index
