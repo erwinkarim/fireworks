@@ -33,6 +33,15 @@ class User < ActiveRecord::Base
 
   end
 
+  #return names of features that being used in the last 24h
+  def popular_features
+    Feature.joins(
+      :machine_features => { :machine => :user}
+    ).where{
+        (machines.user_id.eq self.id) & (features.created_at.lt 1.day.ago)
+    }.select(:name).uniq.map{|x| x[:name] }
+  end
+
 	def email_required?
 		false
 	end
