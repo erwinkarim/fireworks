@@ -8,9 +8,6 @@
         %p Last seen at #{@user.last_seen_at}
   - if !@user.ads_user.nil? then
     %ul.list-group.list-group-flush
-      %li.list-group-item
-        %a.btn.btn-secondary{ :href => user_path(@user), :target => "_blank"}
-          %i.fa.fa-external-link
       %li.list-group-item #{mail_to @user.ads_user.email }
       %li.list-group-item #{@user.ads_user.ads_department.name}
       %li.list-group-item #{@user.ads_user.ads_department.company_name}

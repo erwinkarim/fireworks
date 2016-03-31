@@ -1,9 +1,0 @@
-- content_for :head do
-  = "#{@user.name } -"
-.container{:style => "margin-top:70px;"}
-  .row
-    .col-xs-12
-      %ol.breadcrumb
-        %li.active #{@user.name}
-    .col-xs-12
-      = render :file => "users/show.template.haml"
