@@ -33,7 +33,7 @@ class LicserversController < ApplicationController
 			return
 		end
 
-		match_data =  /(?<port_id>\d*)@(?<server_id>[\w.]+)/.match( params[:'licserver-location'])
+		match_data =  /(?<port_id>\d*)@(?<server_id>[\w.-]+)/.match( params[:'licserver-location'])
 
 		#start creating
 		licserver = Licserver.new( :port => match_data[:port_id], :server => match_data[:server_id])
