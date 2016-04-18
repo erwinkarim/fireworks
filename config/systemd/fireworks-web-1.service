@@ -1,0 +1,22 @@
+[Unit]
+StopWhenUnneeded=true
+
+[Service]
+User=erwinkarim
+WorkingDirectory=/code/fireworks
+Environment=PORT=5000
+Environment=DEVISE_LDAP_HOST=CEN-INF-5.PETRONAS.PETRONET.DIR
+Environment=DEVISE_LDAP_DOMAINS=PETRONAS.PETRONET.DIR
+Environment=DEVISE_LDAP_BASE=DC=PETRONAS,DC=PETRONET,DC=DIR
+Environment=DEVISE_REQ_GROUPS=CN={TD-PD-AW-DL},OU=PMU,OU=Distribution List,OU=Migration,DC=PETRONAS,DC=PETRONET,DC=DIR
+Environment=DEVISE_CHECK_GROUP=false
+Environment=ADS_USER=pgadmin@PETRONAS.PETRONET.DIR
+Environment=ADS_PASSWORD=Petronas2014
+Environment=MAILER_REPLY_ADDRESS=do-not-reply@petronas.com.my
+ExecStart=/bin/bash -lc 'unicorn_rails -c config/unicorn.rb'
+Restart=always
+StandardInput=null
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=%n
+KillMode=process

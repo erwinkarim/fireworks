@@ -7,34 +7,34 @@ module Devise
 			def authenticate!
 				if params[:ads_user]
 					ldap = Net::LDAP.new
-					ldap.host = ENV['devise_ldap_host']
+					ldap.host = ENV['DEVISE_LDAP_HOST']
 					ldap.port = 636
-					ldap.base = ENV['devise_ldap_base']
+					ldap.base = ENV['DEVISE_LDAP_BASE']
 					ldap.encryption :simple_tls
 					#ldap.auth "#{login}@#{params[:ads_user][:domain]}", password
 					ldap.auth "#{params[:ads_user][:username] }@#{params[:ads_user][:domain]}", password
 
 					valid_login = false
 					in_group = false
-						
+
 					if ldap.bind
 						valid_login = true
-		
+
 						#find the user
 						filter = Net::LDAP::Filter.eq( 'samaccountname', params[:ads_user][:username] )
-						search_result = ldap.search( :base => ENV['devise_ldap_base'], :filter => filter).first
+						search_result = ldap.search( :base => ENV['DEVISE_LDAP_BASE'], :filter => filter).first
 
 						#check if the user is in the proper group
-						if ENV['devise_check_group'] == 'true' then
-							group_search_results = ldap.search( :base => search_result[:dn].first, 
-								:filter => Net::LDAP::Filter.ex( "memberof:1.2.840.113556.1.4.1941", ENV['devise_req_groups']),
+						if ENV['DEVISE_CHECK_GROUP'] == 'true' then
+							group_search_results = ldap.search( :base => search_result[:dn].first,
+								:filter => Net::LDAP::Filter.ex( "memberof:1.2.840.113556.1.4.1941", ENV['DEVISE_REQ_GROUPS']),
 								:scope => Net::LDAP::SearchScope_BaseObject)
 							if group_search_results.length == 1 then
 								in_group = true
 							end
 						else
 							in_group = true
-						end	
+						end
 					end
 
 					if valid_login && in_group then
@@ -43,16 +43,16 @@ module Devise
 						ads_user = AdsUser.where(:login => params[:ads_user][:username]).first
 
 						if ads_user.nil? then
-							ads_user = AdsUser.new(:login => params[:ads_user][:username], 
-								:email => search_result[:mail].first, 
-								:name => search_result[:displayname].first, 
-								:username => search_result[:samaccountname].first, 
+							ads_user = AdsUser.new(:login => params[:ads_user][:username],
+								:email => search_result[:mail].first,
+								:name => search_result[:displayname].first,
+								:username => search_result[:samaccountname].first,
 								:password => params[:ads_user][:password], :domain => params[:ads_user][:domain] )
 							ads_user.save!
 							params[:ads_user][:email] = search_result[:mail].first
 						else
-							ads_user.update_attributes({ :email => search_result[:mail].first, 
-								:name => search_result[:displayname].first, 
+							ads_user.update_attributes({ :email => search_result[:mail].first,
+								:name => search_result[:displayname].first,
 								:password => params[:ads_user][:password], :domain => params[:ads_user][:domain] } )
 						end
 
@@ -82,7 +82,7 @@ module Devise
 				params[:ads_user][:username]
 			end
 
-			def user_data 
+			def user_data
 				login:login
 			end
 		end

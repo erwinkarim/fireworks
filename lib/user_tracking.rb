@@ -2,9 +2,9 @@ module UserTracking
 	def self.link_user_to_ad ad_username, ad_password
 		#create ldap connection
 		ldap = Net::LDAP.new
-		ldap.host = ENV['devise_ldap_host']
+		ldap.host = ENV['DEVISE_LDAP_HOST']
 		ldap.port = 636
-		ldap.base = ENV['devise_ldap_base']
+		ldap.base = ENV['DEVISE_LDAP_BASE']
 		ldap.encryption :simple_tls
 		ldap.authenticate ad_username, ad_password
 
@@ -23,10 +23,10 @@ module UserTracking
 						# AdsUser entry doesn't exist but he's a valid user
 						# 	so, let's create a AdsUser entry
 						random_password = SecureRandom::hex
-						ads_user = AdsUser.new( :login => result[:samaccountname].first, 
-							:password => random_password, :password_confirmation => random_password, 
+						ads_user = AdsUser.new( :login => result[:samaccountname].first,
+							:password => random_password, :password_confirmation => random_password,
 							:email => result[:mail].first, :name => result[:displayname].first,
-							:username => result[:userprincipalname].first, 
+							:username => result[:userprincipalname].first,
 							:domain => result[:userprincipalname].first.split('@').last )
 						puts ads_user.inspect
 						if ads_user.valid? then
@@ -63,7 +63,7 @@ module UserTracking
 							end
 
 							#update company name
-							department.update_attribute(:company_name, result[:company].first)	
+							department.update_attribute(:company_name, result[:company].first)
 						end
 					end
 				end #if result !=0
@@ -74,5 +74,5 @@ module UserTracking
 			return -1
 		end
 
-	end	
+	end
 end

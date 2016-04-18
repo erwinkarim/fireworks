@@ -1,5 +1,5 @@
 class FireworksMailer < ActionMailer::Base
-  default from: "Fireworks <#{ENV["mailer_reply_address"]}>"
+  default from: "Fireworks <#{ENV["MAILER_REPLY_ADDRESS"]}>"
   layout 'mailer'
 
   def test_mail email

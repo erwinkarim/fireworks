@@ -1,0 +1,6 @@
+[Unit]
+StopWhenUnneeded=true
+Wants=fireworks-web.target fireworks-scheduler.target fireworks-worker.target
+
+[Install]
+WantedBy=multi-user.target

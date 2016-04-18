@@ -3,13 +3,13 @@
 # You can also just copy and paste the tree (do not include the "authorizations") to each
 # environment if you need something different per enviornment.
 authorizations: &AUTHORIZATIONS
-  admin_user: <%= ENV['devise_ldap_admin'] %>
-  admin_password: <%= ENV['devise_ldap_admin_password'] %>
+  admin_user: <%= ENV['DEVISE_LDAP_ADMIN'] %>
+  admin_password: <%= ENV['DEVISE_LDAP_ADMIN_PASSWORD'] %>
   #group_base: ou=PCSB,dc=petronas,dc=petronas,dc=dir
   ## Requires config.ldap_check_group_membership in devise.rb be true
   # Can have multiple values, must match all to be authorized
   required_groups:
-    - <%= ENV['devise_req_groups'] %>
+    - <%= ENV['DEVISE_REQ_GROUPS'] %>
     # If only a group name is given, membership will be checked against "uniqueMember"
     #- cn=admins,ou=groups,dc=petronas,dc=petronet,dc=dir
     #- cn=users,ou=groups,dc=petronas,dc=petronet,dc=dir
@@ -30,18 +30,18 @@ authorizations: &AUTHORIZATIONS
 development:
   #host: localhost
   #port: 389
-  host: <%= ENV['devise_ldap_host'] %> 
+  host: <%= ENV['DEVISE_LDAP_HOST'] %>
   port: 636
   attribute: userprincipalname
   #base: dc=petronas,dc=petronet,dc=dir
   #admin_user: cn=admin,dc=test,dc=com
   #admin_password: admin_password
-  base: <%= ENV['devise_ldap_base'] %>
+  base: <%= ENV['DEVISE_LDAP_BASE'] %>
   #base: nil
   # ssl: false
   ssl: simple_tls
   #check_group_membership: true
-  check_group_membership_without_admin: <%= ENV['devise_check_group'] %>
+  check_group_membership_without_admin: <%= ENV['DEVISE_CHECK_GROUP'] %>
   <<: *AUTHORIZATIONS
 
 test:
@@ -55,10 +55,10 @@ test:
   # <<: *AUTHORIZATIONS
 
 production:
-  host: <%= ENV['devise_ldap_host'] %> 
+  host: <%= ENV['DEVISE_LDAP_HOST'] %>
   port: 636
   attribute: userprincipalname
-  base: <%= ENV['devise_ldap_base'] %>
+  base: <%= ENV['DEVISE_LDAP_BASE'] %>
   ssl: simple_tls
-  check_group_membership_without_admin: <%= ENV['devise_check_group'] %>
+  check_group_membership_without_admin: <%= ENV['DEVISE_CHECK_GROUP'] %>
   <<: *AUTHORIZATIONS
