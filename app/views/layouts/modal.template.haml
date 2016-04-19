@@ -61,6 +61,10 @@
           %fieldset.form-group
             %label tags
             %input.form-control#licserver-tags{ :type => "text", :placeholder => "tags seperated by spaces", :name => "licserver-tags"}
+          %fieldset.form-group
+            %label License Type
+            %select.form-control#licserver-type{ :name => "licserver_type" }
+              = options_for_select LicenseType.all.map{|x| [x.name, x.id]}
       .modal-footer
         %button.btn.btn-secondary{ :type => 'button', :'data-dismiss' => 'modal'} Close
         %button.btn.btn-primary#licserver-create{ :type => 'button'} Create Licserver
@@ -132,14 +136,33 @@
   });
 
   $('#new-licserver-modal').on('show.bs.modal', function(e){
-      //clean up before display
-      console.log('attempt to clean up');
-      $(document).find('#licserver-address').val('');
-      $(document).find('#licserver-tags').val('');
+    //clean up before display
+    console.log('attempt to clean up');
+    $(document).find('#licserver-address').val('');
+    $(document).find('#licserver-tags').val('');
+    $('#new-licserver-form').data('mode', 'create');
+    $('#new-licserver-form').attr('action', "#{licservers_path}");
+    $('#new-licserver-form').attr('method', "post");
+
+    var handle = $(e.relatedTarget)
+    if( handle.data('type') == 'edit' ){
+        $.get(handle.data('source'), null, function(data){
+          $(document).find('#licserver-address').val(data.name);
+          $(document).find('#licserver-tags').val(data.tags);
+          $(document).find('#licserver-type').val(data.type);
+
+          //setup to edit
+          $('#new-licserver-form').data('mode', 'edit')
+          $('#new-licserver-form').attr('action', handle.data('patch'));
+          $('#new-licserver-form').attr('method', "patch");
+        })
+    };
   });
 
   $('#licserver-create').click( function(){
     console.log('attempt to create license');
+    //need to handle between creating new licserver and updating current one
+
     $.post( $('#new-licserver-form').attr('action'), $('#new-licserver-form').serialize(), function(data, textStatus){
         console.log('posted new licserver info with status ' + textStatus);
     } ).fail( function( jqXHR, textStatus){

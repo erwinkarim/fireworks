@@ -5,7 +5,7 @@ Fireworks::Application.routes.draw do
 	resources :ads_users, :ads_user_id => /[^\/]+/ , only: [ :show ]  do
 	end
 
-  resources :licservers, :only => [:index, :show, :create ]  do
+  resources :licservers, :only => [:index, :show, :create, :update ]  do
     get 'summary'
     # need to take care of the . and /
     resources :features, :only => [:index, :show, :update] do

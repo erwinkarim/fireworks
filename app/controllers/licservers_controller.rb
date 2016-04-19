@@ -9,6 +9,13 @@ class LicserversController < ApplicationController
 		respond_to do |format|
 			format.template
 			format.html
+			format.json {
+				render json: {
+					:name => @licserver.get_port_at_server,
+					:type => @licserver.license_type_id,
+					:tags => @licserver.tags.map{ |x| x.title }.join(" ")
+				}
+			}
 		end
   end
 

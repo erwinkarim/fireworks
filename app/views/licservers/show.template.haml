@@ -2,6 +2,11 @@
 .list-group-item
   %a.btn.btn-secondary{:target => "_blank", :href => licserver_path(params[:id]) }
     %i.fa.fa-external-link
+  %button.btn.btn-secondary{ :type => "button", :data => { :toggle => "modal",
+    :target => "#new-licserver-modal", :type => "edit",
+    :source => licserver_path(params[:id], :format => :json),
+    :patch => licserver_path(params[:id])}, :licserver => params[:id]}
+    %i.fa.fa-cog
 %a.list-group-item{ :'data-toggle' => 'collapse', :href => "#summary-#{random_id}" } Summary
 .collapse.summary-collapse{ :id => "summary-#{random_id}", :data => { :plsload => 'yes', :'load-target' => "#summary-table-#{random_id}" ,  :source => licserver_summary_path(params[:id], :format => :template)} }
   .list-group-item{ :id => "summary-table-#{random_id}"}
