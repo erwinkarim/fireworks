@@ -27,10 +27,9 @@ module UserTracking
 							:password => random_password, :password_confirmation => random_password,
 							:email => result[:mail].first, :name => result[:displayname].first,
 							:username => result[:userprincipalname].first,
+							:title => result[:title].first,
 							:domain => result[:userprincipalname].first.split('@').last )
-						puts ads_user.inspect
 						if ads_user.valid? then
-						#if ads_user.save! then
 							ads_user.save!
 							#user is a valid ads user
 							#check for department
@@ -48,6 +47,12 @@ module UserTracking
 						#reassign if the guy already exists
 						if user.ads_user_id != ads_user.id then
 							user.update_attribute(:ads_user_id, ads_user.id)
+						end
+
+						puts "checking title for #{ads_user.name}"
+						#update the title if different
+						if result[:title].first != ads_user.title then
+							ads_user.update_attribute(:title, result[:title].first)
 						end
 
 						# AdsUser already exists, update department info
@@ -74,5 +79,31 @@ module UserTracking
 			return -1
 		end
 
+	end
+
+	def self.update_user_info ad_username, ad_password
+		ldap = Net::LDAP.new
+		ldap.host = ENV['DEVISE_LDAP_HOST']
+		ldap.port = 636
+		ldap.base = ENV['DEVISE_LDAP_BASE']
+		ldap.encryption :simple_tls
+		ldap.authenticate ad_username, ad_password
+
+		if ldap.bind then
+			User.where.not(:ads_user_id => nil).each do |user|
+				filter = Net::LDAP::Filter.eq('samaccountname', user.name)
+				result = ldap.search(:base => ldap.base, :filter => filter).first
+
+				if !result.nil? then
+					#update the user info
+					ads_user = AdsUser.find_by_login result[:samaccountname].first
+					ads_user.update_attributes({
+						:name => result[:displayname].first,
+						:title => result[:title].first
+					})
+					#check if they swich department
+				end
+			end
+		end
 	end
 end
