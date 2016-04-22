@@ -46,6 +46,13 @@
         Click to Load
       %div{ :id => "usage-by-company-graph-#{random_id}", :data => { :'graph-source' => licserver_feature_usage_report_data_path(params[:licserver_id], params[:id], :format => :json ) } }
 :javascript
+  Highcharts.setOptions({
+    global: {
+      useUTC: false
+    }
+
+  });
+
   load_graph( $('#graph-#{ random_id}'), { title: { text:'#{params[:id]}'} } );
 
   //setup the graph loading button
