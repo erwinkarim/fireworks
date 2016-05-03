@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160111064615) do
+ActiveRecord::Schema.define(version: 20160422024424) do
 
   create_table "ads_departments", force: true do |t|
     t.string   "name"
@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(version: 20160111064615) do
     t.string   "email"
     t.string   "domain"
     t.integer  "ads_department_id",      precision: 38, scale: 0
+    t.string   "title"
   end
 
   add_index "ads_users", ["ads_department_id"], name: "i_ads_users_ads_department_id"

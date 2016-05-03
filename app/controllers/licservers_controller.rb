@@ -67,6 +67,29 @@ class LicserversController < ApplicationController
 		end
 	end
 
+	# PATCH  /licservers/:id
+	def update
+		#sanity checks
+		if params[:'licserver-tags'].empty? || params[:'licserver-location'].empty? then
+			render :nothing => true, :status => :bad_request
+			return
+		end
+
+		match_data =  /(?<port_id>\d*)@(?<server_id>[\w.-]+)/.match( params[:'licserver-location'])
+		licserver = Licserver.find(params[:id])
+		licserver.update_attributes( {:port => match_data[:port_id], :server => match_data[:server_id]})
+
+		if licserver.save! then
+			#update tag list
+			licserver.update_tag_list params[:'licserver-tags']
+			render :nothing => true, :status => :ok
+		else
+			render :nothing => true, :status => :bad_request
+			return
+		end
+
+	end
+
 	def licserver_params
 		params.require(:licserver).permit( :port, :server, :to_delete, :monitor_idle, :license_type_id )
 	end

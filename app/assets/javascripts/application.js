@@ -171,7 +171,9 @@ var company_usage_graph = function(target, options){
         }
 			},
       series:[
-        { name: "Company", colorByPoint: true, data: [] }
+        {
+          name: "Company", colorByPoint: true, data: []
+        }
       ],
       plotOptions: {
         series: {

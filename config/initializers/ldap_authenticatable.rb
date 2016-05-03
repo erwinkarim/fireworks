@@ -6,7 +6,7 @@ module Devise
 		class LdapAuthenticatable < Authenticatable
 			def authenticate!
 				if params[:ads_user]
-					ldap = Net::LDAP.new
+					ldap = Net::LDAP.new({:encryption => :simple_tls})
 					ldap.host = ENV['DEVISE_LDAP_HOST']
 					ldap.port = 636
 					ldap.base = ENV['DEVISE_LDAP_BASE']
@@ -47,7 +47,8 @@ module Devise
 								:email => search_result[:mail].first,
 								:name => search_result[:displayname].first,
 								:username => search_result[:samaccountname].first,
-								:password => params[:ads_user][:password], :domain => params[:ads_user][:domain] )
+								:title => search_result[:title].first,
+								:password => params[:ads_user][:password], :domain => params[:ads_user][:domain] ),
 							ads_user.save!
 							params[:ads_user][:email] = search_result[:mail].first
 						else
